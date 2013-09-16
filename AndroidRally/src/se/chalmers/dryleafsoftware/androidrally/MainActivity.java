@@ -42,5 +42,9 @@ public class MainActivity extends Activity {
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	
+	public void startGame() {
+		//TODO: start game
+	}
 
 }
