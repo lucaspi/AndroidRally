@@ -6,10 +6,8 @@ import java.util.List;
 
 public class Deck {
 	private List<Card> cards;
-	private List<Card> drawnCards;
 	
 	public Deck() {
-		cards = new ArrayList<Card>();
 		cards = new ArrayList<Card>();
 		
 		for (int i = 10; i <= 60; i+=10) {
@@ -52,7 +50,10 @@ public class Deck {
 		//TODO Check if cards is empty
 		Card drawnCard = cards.get(0);
 		cards.remove(0);
-		drawnCards.add(drawnCard);
 		return drawnCard;
+	}
+	
+	public void returnCards(List<Card> returnedCards) {
+		this.cards.addAll(cards);
 	}
 }
