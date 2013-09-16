@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.model.cards;
+package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
 public class Move extends Card {
 	private int nbrOfSteps;

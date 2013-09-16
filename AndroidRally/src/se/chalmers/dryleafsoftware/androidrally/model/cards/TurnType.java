@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.model.cards;
+package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
 public enum TurnType {
 	LEFT,

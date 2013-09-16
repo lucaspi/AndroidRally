@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.model.cards;
+package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
 public class Turn extends Card {
 	private TurnType turnType;

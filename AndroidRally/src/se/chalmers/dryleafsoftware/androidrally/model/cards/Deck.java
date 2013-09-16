@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.model.cards;
+package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
 import java.util.ArrayList;
 import java.util.Collections;

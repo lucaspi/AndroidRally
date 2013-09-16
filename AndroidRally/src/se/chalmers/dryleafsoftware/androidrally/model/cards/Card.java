@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.model.cards;
+package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
 public abstract class Card {
 	private int priority;
