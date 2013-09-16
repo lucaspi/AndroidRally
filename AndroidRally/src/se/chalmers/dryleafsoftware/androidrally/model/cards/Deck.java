@@ -6,11 +6,13 @@ import java.util.List;
 
 public class Deck {
 	private List<Card> cards;
+	private List<Card> drawnCards;
 	
 	public Deck() {
 		cards = new ArrayList<Card>();
+		cards = new ArrayList<Card>();
+		
 		for (int i = 10; i <= 60; i+=10) {
-			
 			cards.add(new Turn(i, TurnType.UTURN));
 		}
 		for (int i = 70; i <= 410; i+=20) {
@@ -31,6 +33,14 @@ public class Deck {
 		for (int i = 790; i <= 840; i+=10) {
 			cards.add(new Move(i, 3));
 		}
+		
+		//Remove locked cards from deck
+		for (int i = 0; i < cards.size(); i++) {
+			if (cards.get(i).isLocked()) {
+				cards.remove(i);
+			}
+		}
+		
 		shuffleDeck();
 	}
 	
@@ -42,6 +52,7 @@ public class Deck {
 		//TODO Check if cards is empty
 		Card drawnCard = cards.get(0);
 		cards.remove(0);
+		drawnCards.add(drawnCard);
 		return drawnCard;
 	}
 }
