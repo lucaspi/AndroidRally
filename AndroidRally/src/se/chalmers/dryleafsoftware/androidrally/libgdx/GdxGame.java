@@ -1,66 +1,50 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class GdxGame implements ApplicationListener {
 	
 	private OrthographicCamera camera;
-	private SpriteBatch batch;
-	private ShapeRenderer shapeRenderer;
-	
-	private Texture texture;	// TODO: Move this
-	private List<Sprite> sprites = new ArrayList<Sprite>();	// TODO: Move this
+	private SpriteBatch spriteBatch;
+	private BoardView gameBoard;
+	private Texture texture;
 	
 	@Override
-	public void create() {	
-				
+	public void create() {					
 		camera = new OrthographicCamera(480, 800);
 		camera.position.set(240, 400, 0f);
 		camera.update();
-		batch = new SpriteBatch();
-		shapeRenderer = new ShapeRenderer();
+		spriteBatch = new SpriteBatch();	
 		
 		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		TextureRegion factoryFloor = new TextureRegion(texture, 0, 0, 
-				texture.getWidth()/2, texture.getHeight());
-		TextureRegion dockFloor = new TextureRegion(texture, texture.getWidth()/2, 0, 
-				texture.getWidth()/2, texture.getHeight());
+		gameBoard = new BoardView();		
+		gameBoard.createBoard(texture);
 		
-		// TODO: Move this
-		for(int x = 0; x < 12; x++) {
-			for(int y = 0; y < 12; y++) {
-				Sprite s = new Sprite(factoryFloor);
-				s.setSize(40, 40);
-				s.setPosition(40 * x, 760 - 40 * y);
-				sprites.add(s);
-			}
-			for(int y = 0; y < 4; y++) {
-				Sprite s = new Sprite(dockFloor);
-				s.setSize(40, 40);
-				s.setPosition(40 * x, 760 - 40 * y - 40 * 12);
-				sprites.add(s);
-			}
-		}
+		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 
+				64, 64);
+		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
+		player1.setPosition(80, 800 - 160);
+		gameBoard.addPlayer(player1);
+		
+		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 
+				64, 64);
+		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
+		player2.setPosition(160, 400);
+		gameBoard.addPlayer(player2);
 	}
 
 	@Override
 	public void dispose() {
-		batch.dispose();
-		shapeRenderer.dispose();
+		spriteBatch.dispose();
 	}
 
 	@Override
@@ -68,12 +52,10 @@ public class GdxGame implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();	
-		for(Sprite s : sprites) {
-			s.draw(batch);
-		}
-		batch.end();
+		spriteBatch.setProjectionMatrix(camera.combined);
+		spriteBatch.begin();	
+		gameBoard.render(spriteBatch);
+		spriteBatch.end();
 	}
 
 	@Override
