@@ -1,7 +1,10 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
+import java.util.List;
+
 public class GameBoard {
 	Tile[][] tiles = null;
+	List<Laser> lasers;
 	
 	public GameBoard(int width, int height, int gameBoard) {
 		tiles = new Tile[width][height];
@@ -10,6 +13,7 @@ public class GameBoard {
 				tiles[i][j] = new Tile(0, null);
 			}
 		}
+		lasers = new ArrayList<Laser>();
 		
 	}
 	
