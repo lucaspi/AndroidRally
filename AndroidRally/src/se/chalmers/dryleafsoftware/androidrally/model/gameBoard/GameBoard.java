@@ -1,5 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
