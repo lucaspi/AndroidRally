@@ -17,7 +17,10 @@ public class GdxGame implements ApplicationListener {
 	private Texture texture;
 	
 	@Override
-	public void create() {					
+	public void create() {	
+		// Turn off rendering loop to save battery
+		Gdx.graphics.setContinuousRendering(false);	    
+		
 		camera = new OrthographicCamera(480, 800);
 		camera.position.set(240, 400, 0f);
 		camera.update();
@@ -40,6 +43,8 @@ public class GdxGame implements ApplicationListener {
 		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
 		player2.setPosition(160, 400);
 		gameBoard.addPlayer(player2);
+				
+		Gdx.graphics.requestRendering();
 	}
 
 	@Override
