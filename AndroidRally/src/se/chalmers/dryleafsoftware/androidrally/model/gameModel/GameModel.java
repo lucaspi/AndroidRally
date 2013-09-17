@@ -15,7 +15,7 @@ public class GameModel {
 	private Deck deck;
 	
 	public GameModel(int nbrOfPlayers) {
-		gameBoard = new GameBoard(12, 16);
+		gameBoard = new GameBoard(12, 16, nbrOfPlayers);
 		for (int i = 0; i < nbrOfPlayers; i++) {
 			robots.add(new Robot(i, 14));
 		}
@@ -33,4 +33,15 @@ public class GameModel {
 		}
 	}
 	
+	public void setLockedCards(List<Card> cards) {
+		for (Card card : cards) {
+			card.setIsLocked(true);
+		}
+	}
+	
+	public void activateBoardElements() {
+		for (Robot robot : robots) {
+			
+		}
+	}
 }
