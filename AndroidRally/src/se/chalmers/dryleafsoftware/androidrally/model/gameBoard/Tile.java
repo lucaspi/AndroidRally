@@ -29,7 +29,7 @@ public class Tile {
 	}
 	
 	
-	public void Action(Robot robot){
+	public void action(Robot robot){
 		if(boardElements != null){
 			for(BoardElement e : boardElements){
 				e.action(robot);

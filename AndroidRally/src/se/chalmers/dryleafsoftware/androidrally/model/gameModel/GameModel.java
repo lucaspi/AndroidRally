@@ -41,7 +41,11 @@ public class GameModel {
 	
 	public void activateBoardElements() {
 		for (Robot robot : robots) {
-			
+			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
 		}
+	}
+	
+	public void fireLasers() {
+		
 	}
 }
