@@ -33,13 +33,6 @@ public class Deck {
 			cards.add(new Move(i, 3));
 		}
 		
-		//Remove locked cards from deck
-		for (int i = 0; i < cards.size(); i++) {
-			if (cards.get(i).isLocked()) {
-				cards.remove(i);
-			}
-		}
-		
 		shuffleDeck();
 	}
 	

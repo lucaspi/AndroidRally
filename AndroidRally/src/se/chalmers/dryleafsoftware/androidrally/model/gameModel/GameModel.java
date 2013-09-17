@@ -22,6 +22,9 @@ public class GameModel {
 		deck = new Deck();
 	}
 	
+	/**
+	 * Give cards to all players/CPU:s.
+	 */
 	public void dealCards() {
 		for(Robot robot : robots) {
 			int health = robot.getHealth();
@@ -32,12 +35,7 @@ public class GameModel {
 			robot.addCards(drawnCards);
 		}
 	}
-	
-	public void setLockedCards(List<Card> cards) {
-		for (Card card : cards) {
-			card.setIsLocked(true);
-		}
-	}
+
 	
 	public void activateBoardElements() {
 		for (Robot robot : robots) {
