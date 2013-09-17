@@ -4,30 +4,26 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 
 public class Robot {
-	public static final int NORTH = 0;
-	public static final int EAST = 1;
-	public static final int SOUTH = 2;
-	public static final int WEST = 3;
-	
 	private static final int STARTING_HEALTH = 9;
 	private static final int STARTING_LIFE = 3;
 	
 	private int positionX;
 	private int positionY;
-	private int direction = NORTH;
+	private int direction = GameBoard.NORTH;
 	private List<Card> cards;
 	private int damage = 0;
 	private int life = 3;
 	private int spawnPointX;
 	private int spawnPointY;
+	private int checkpoint = 0;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
 		positionY = startY;
-		spawnPointX = startX;
-		spawnPointY = startY;
+		newSpawnPoint();
 	}
 	
 	/**
@@ -36,13 +32,13 @@ public class Robot {
 	 * @param direction use int constants in Robot class
 	 */
 	public void move(int distance, int direction){
-		if(direction == NORTH){
+		if(direction == GameBoard.NORTH){
 			this.positionY -= distance;
-		}else if(direction == EAST){
+		}else if(direction == GameBoard.EAST){
 			this.positionX += distance;
-		}else if(direction == SOUTH){
+		}else if(direction == GameBoard.SOUTH){
 			this.positionY += distance;
-		}else if(direction == WEST){
+		}else if(direction == GameBoard.WEST){
 			this.positionX -= distance;
 		}
 	}
@@ -72,18 +68,25 @@ public class Robot {
 	}
 	
 	public void die(){
-		life -= 1;
-		//TODO change position
+		life--;
+		positionX = spawnPointX;
+		positionY = spawnPointY;
 	}
 	
-	public void setNewSpawnPoint(int x, int y){
-		spawnPointX = x;
-		spawnPointY = y;
-	}
-	
-	public void reachCheckPoint(int checkPoint){
+	public void newSpawnPoint(){
 		spawnPointX = positionX;
 		spawnPointY = positionY;
+	}
+	
+	public void reachCheckPoint(int checkpoint){
+		newSpawnPoint();
+		if(checkpoint == this.checkpoint + 1){
+			this.checkpoint ++;
+		}
+	}
+	
+	public int getLastCheckPoint(){
+		return checkpoint;
 	}
 	
 	public int getX(){
