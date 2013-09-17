@@ -20,11 +20,14 @@ public class Robot {
 	private List<Card> cards;
 	private int damage = 0;
 	private int life = 3;
-	
+	private int spawnPointX;
+	private int spawnPointY;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
 		positionY = startY;
+		spawnPointX = startX;
+		spawnPointY = startY;
 	}
 	
 	/**
@@ -73,8 +76,22 @@ public class Robot {
 		//TODO change position
 	}
 	
+	public void setNewSpawnPoint(int x, int y){
+		spawnPointX = x;
+		spawnPointY = y;
+	}
+	
 	public void reachCheckPoint(int checkPoint){
-		
+		spawnPointX = positionX;
+		spawnPointY = positionY;
+	}
+	
+	public int getX(){
+		return positionX;
+	}
+	
+	public int getY(){
+		return positionY;
 	}
 
 	public int getDirection() {
