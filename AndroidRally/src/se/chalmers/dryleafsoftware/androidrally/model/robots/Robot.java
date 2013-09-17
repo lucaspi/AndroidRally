@@ -2,7 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.model.robots;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 
-public abstract class Robot {
+public class Robot {
 	public static final int NORTH = 0;
 	public static final int EAST = 1;
 	public static final int SOUTH = 2;
