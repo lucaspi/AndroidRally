@@ -48,4 +48,22 @@ public class GameModel {
 	public void fireLasers() {
 		
 	}
+	
+	public void deleteDeadRobots() {
+		int i = 0;
+		while (i < robots.size()) {
+			if (robots.get(i).getLife() == 0) {
+				robots.remove(i);
+			} else {
+				i++;
+			}
+		}
+		if (robots.size() == 1) {
+			gameOver(robots.get(0));
+		}
+	}
+	
+	public void gameOver(Robot winner) {
+		//TODO add functionality
+	}
 }
