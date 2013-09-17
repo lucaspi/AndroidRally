@@ -14,6 +14,12 @@ public class GameModel {
 	private List<Robot> robots;
 	private Deck deck;
 	
+	/**
+	 * Creates a game board of size 12x16 tiles. Also creates robots based
+	 * on the amount of players. Creates a deck with cards that is shuffled.
+	 * 
+	 * @param nbrOfPlayers the number of players in the game including CPU:s
+	 */
 	public GameModel(int nbrOfPlayers) {
 		gameBoard = new GameBoard(12, 16, nbrOfPlayers);
 		for (int i = 0; i < nbrOfPlayers; i++) {
@@ -36,7 +42,10 @@ public class GameModel {
 		}
 	}
 
-	
+	/**
+	 * A method that make board elements "do things" with robots, i.e.
+	 * move robots that are standing on a conveyor belt and so on.
+	 */
 	public void activateBoardElements() {
 		for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
@@ -47,6 +56,9 @@ public class GameModel {
 		
 	}
 	
+	/**
+	 * If a robots life is equal to 0 it will be deleted from the game.
+	 */
 	public void deleteDeadRobots() {
 		int i = 0;
 		while (i < robots.size()) {
@@ -63,5 +75,13 @@ public class GameModel {
 	
 	public void gameOver(Robot winner) {
 		//TODO add functionality
+	}
+	
+	public void moveRobots() {
+		for (Robot robot : robots) {
+			for (Card card : robot.getChosenCards()) {
+				card.action(robot);
+			}
+		}
 	}
 }

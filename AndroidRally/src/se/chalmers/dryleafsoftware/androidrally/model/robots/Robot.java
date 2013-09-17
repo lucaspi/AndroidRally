@@ -1,5 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.model.robots;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
@@ -14,6 +15,7 @@ public class Robot {
 	private int positionY;
 	private int direction = GameBoard.NORTH;
 	private List<Card> cards;
+	private List<Card> chosenCards;
 	private int damage = 0;
 	private int life = STARTING_LIFE;
 	private int spawnPointX;
@@ -24,6 +26,8 @@ public class Robot {
 		positionX = startX;
 		positionY = startY;
 		newSpawnPoint();
+		cards = new ArrayList<Card>();
+		chosenCards = new ArrayList<Card>();
 	}
 	
 	/**
@@ -106,5 +110,9 @@ public class Robot {
 
 	public int getLife() {
 		return life;
+	}
+
+	public List<Card> getChosenCards() {
+		return chosenCards;
 	}
 }
