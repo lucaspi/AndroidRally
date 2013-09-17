@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 public class Deck {
 	private List<Card> cards;
 	
 	public Deck() {
 		cards = new ArrayList<Card>();
+		
 		for (int i = 10; i <= 60; i+=10) {
-			
 			cards.add(new Turn(i, TurnType.UTURN));
 		}
 		for (int i = 70; i <= 410; i+=20) {
@@ -31,6 +32,7 @@ public class Deck {
 		for (int i = 790; i <= 840; i+=10) {
 			cards.add(new Move(i, 3));
 		}
+		
 		shuffleDeck();
 	}
 	
@@ -43,5 +45,9 @@ public class Deck {
 		Card drawnCard = cards.get(0);
 		cards.remove(0);
 		return drawnCard;
+	}
+	
+	public void returnCards(List<Card> returnedCards) {
+		this.cards.addAll(cards);
 	}
 }

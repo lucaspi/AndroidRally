@@ -8,15 +8,28 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+/**
+ * A gameboard contains all the tiles and dynamic objects, like all the players' robots.
+ * 
+ * @author
+ *
+ */
 public class BoardView {
 
 	private List<Sprite> staticSprites = new ArrayList<Sprite>();
 	private List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
 	
+	/**
+	 * Creates a new instance of BoardView.
+	 */
 	public BoardView() {
 		
 	}
 	
+	/**
+	 * Builds the board using the specified texture and map data.
+	 * @param texture The texture to use.
+	 */
 	public void createBoard(Texture texture/*TODO: need map*/) {
 		TextureRegion factoryFloor = new TextureRegion(texture, 0, 0, 
 				64, 64);
@@ -39,10 +52,19 @@ public class BoardView {
 		}
 	}
 	
+	/**
+	 * Adds the specified player to the board.
+	 * @param player The player to add.
+	 */
 	public void addPlayer(PlayerPieceView player) {
 		players.add(player);
 	}
 	
+	/**
+	 * Gives the player with the specified ID-number.
+	 * @param playerID The ID-number to look for.
+	 * @return The player with the specified ID.
+	 */
 	public PlayerPieceView getPlayer(int playerID) {
 		for(PlayerPieceView p : players) {
 			if(p.getPlayerID() == playerID) {
@@ -52,6 +74,10 @@ public class BoardView {
 		return null;
 	}
 	
+	/**
+	 * Renders the scene.
+	 * @param spriteBatch The instance of spritebatch to use when rendering.
+	 */
 	public void render(SpriteBatch spriteBatch) {
 		for(Sprite s : staticSprites) {
 			s.draw(spriteBatch);
