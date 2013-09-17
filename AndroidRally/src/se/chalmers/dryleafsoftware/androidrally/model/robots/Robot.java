@@ -15,7 +15,7 @@ public class Robot {
 	private int direction = GameBoard.NORTH;
 	private List<Card> cards;
 	private int damage = 0;
-	private int life = 3;
+	private int life = STARTING_LIFE;
 	private int spawnPointX;
 	private int spawnPointY;
 	private int checkpoint = 0;
@@ -65,6 +65,9 @@ public class Robot {
 	
 	public void damage(int damage){
 		this.damage += damage;
+		if (damage > STARTING_HEALTH) {
+			die();
+		}
 	}
 	
 	public void die(){
@@ -99,5 +102,9 @@ public class Robot {
 
 	public int getDirection() {
 		return direction;
+	}
+
+	public int getLife() {
+		return life;
 	}
 }
