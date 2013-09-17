@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.model.cards;
 
+import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
+
 public class Turn extends Card {
 	private TurnType turnType;
 	
@@ -9,8 +11,7 @@ public class Turn extends Card {
 	}
 	
 	@Override
-	public void action() {
-		
+	public void action(Robot robot) {
+		robot.turn(turnType);
 	}
-
 }
