@@ -33,6 +33,8 @@ public class GameController implements GestureListener {
 
 	@Override
 	public boolean pan(float arg0, float arg1, float arg2, float arg3) {
+		
+		camera.position.set(camera.position.x - arg2*camera.zoom, camera.position.y + arg3 * camera.zoom, camera.position.z);
 		return false;
 	}
 
