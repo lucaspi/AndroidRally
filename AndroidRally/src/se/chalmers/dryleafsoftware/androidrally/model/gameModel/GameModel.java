@@ -194,7 +194,7 @@ public class GameModel {
 				
 				if(c instanceof Move) { //TODO do so that robots collide with walls (without instanceof)
 					Move m = (Move)c;
-					int dist = m.getDistance();
+					//int dist = m.getDistance();
 				}
 				
 				currentCards.get(indexOfHighestPriority)[i]
