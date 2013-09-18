@@ -10,6 +10,11 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
+/**
+ * This is the mainModel for AndroidRally.
+ * 
+ *
+ */
 public class GameModel {
 	
 	private GameBoard gameBoard;
@@ -125,6 +130,9 @@ public class GameModel {
 
 	}
 	
+	/**
+	 * Fires all lasers from both robots and lasers attached to walls.
+	 */
 	public void fireAllLasers() {
 		List<Laser> lasers = gameBoard.getLasers();
 		int x;
