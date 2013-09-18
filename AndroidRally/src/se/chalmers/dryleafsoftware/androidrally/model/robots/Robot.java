@@ -63,6 +63,27 @@ public class Robot {
 		this.cards = cards;
 	}
 	
+	public List<Card> returnCards(){
+		List<Card> returnCards= new ArrayList<Card>();
+		returnCards.addAll(cards);
+		int nbrOfLockedCards = 0;
+		nbrOfLockedCards = this.damage;
+		for(int i = 0; i<nbrOfLockedCards-1; i++){
+			returnCards.add(chosenCards[i]);
+		}
+		
+		returnCards.addAll(cards);
+		for(Card card : chosenCards){
+			returnCards.remove(card);
+		}
+		for(int i = 0; i < 9 - damage; i++){
+			returnCards.add(chosenCards[i]);
+			chosenCards[i] = null;
+		}
+		cards.clear();
+		return returnCards;
+	}
+	
 	public int getHealth(){
 		return STARTING_HEALTH - damage;
 	}
@@ -114,5 +135,9 @@ public class Robot {
 
 	public Card[] getChosenCards() {
 		return chosenCards;
+	}
+	
+	public List<Card> getCards(){
+		return cards;
 	}
 }

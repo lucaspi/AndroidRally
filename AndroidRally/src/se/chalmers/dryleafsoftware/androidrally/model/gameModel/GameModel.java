@@ -230,6 +230,7 @@ public class GameModel {
 			deleteDeadRobots();
 
 		}
+		//TODO return cards
 		//TODO give specials to robots standing on "wrench & hammer"
 	}
 }
