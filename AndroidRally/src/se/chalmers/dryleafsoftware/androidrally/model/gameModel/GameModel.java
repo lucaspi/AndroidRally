@@ -5,6 +5,7 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Deck;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -188,6 +189,14 @@ public class GameModel {
 				}
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
+				
+				Card c = currentCards.get(indexOfHighestPriority)[i];
+				
+				if(c instanceof Move) { //TODO do so that robots collide with walls (without instanceof)
+					Move m = (Move)c;
+					int dist = m.getDistance();
+				}
+				
 				currentCards.get(indexOfHighestPriority)[i]
 						.action(currentRobot);
 				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
