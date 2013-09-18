@@ -8,13 +8,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
 
 public class GdxGame implements ApplicationListener {
 	
-	private OrthographicCamera camera;
+	private OrthographicCamera boardCamera, cardCamera;
 	private SpriteBatch spriteBatch;
 	private BoardView gameBoard;
 	private Texture texture;
+	private GameController gameController;
 	
 	private int[][] testmap = new int[][] {
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -34,11 +36,12 @@ public class GdxGame implements ApplicationListener {
 	@Override
 	public void create() {	
 		// Turn off rendering loop to save battery
-//		Gdx.graphics.setContinuousRendering(false);	    
+		Gdx.graphics.setContinuousRendering(false);
 		
-		camera = new OrthographicCamera(480, 800);
-		camera.position.set(240, 400, 0f);
-		camera.update();
+		boardCamera = new OrthographicCamera(480, 800);
+		boardCamera.zoom = 1.0f;
+		boardCamera.position.set(240, 400, 0f);
+		boardCamera.update();
 		spriteBatch = new SpriteBatch();	
 		
 		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
@@ -58,8 +61,11 @@ public class GdxGame implements ApplicationListener {
 		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
 		player2.setPosition(160, 400);
 		gameBoard.addPlayer(player2);
-				
-//		Gdx.graphics.requestRendering();
+		
+		gameController = new GameController(this);
+		Gdx.input.setInputProcessor(new GestureDetector(gameController));
+		
+		Gdx.graphics.requestRendering();
 	}
 
 	@Override
@@ -71,8 +77,8 @@ public class GdxGame implements ApplicationListener {
 	public void render() {		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		spriteBatch.setProjectionMatrix(camera.combined);
+		boardCamera.update();	
+		spriteBatch.setProjectionMatrix(boardCamera.combined);
 		spriteBatch.begin();	
 		gameBoard.render(spriteBatch);
 		spriteBatch.end();
@@ -88,5 +94,17 @@ public class GdxGame implements ApplicationListener {
 
 	@Override
 	public void resume() {
+	}
+	
+	public BoardView getBoardView() {
+		return this.gameBoard;
+	}
+	
+	public OrthographicCamera getBoardCamera() {
+		return this.boardCamera;
+	}
+	
+	public OrthographicCamera getCardCamera() {
+		return this.cardCamera;
 	}
 }
