@@ -50,6 +50,7 @@ public class GameModel {
 		for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
 		}
+		//INSTANTACTION TODO
 	}
 	
 	public void fireLasers() {
@@ -78,10 +79,44 @@ public class GameModel {
 	}
 	
 	public void moveRobots() {
-		for (Robot robot : robots) {
-			for (Card card : robot.getChosenCards()) {
-				card.action(robot);
+		List<Card[]> currentCards = new ArrayList<Card[]>();
+		for (int i = 0; i < robots.size(); i++) {
+			Card[] chosenCards = robots.get(i).getChosenCards();
+			for (int j = 0; j < 5; j++) {
+				currentCards.add(chosenCards);
 			}
 		}
+		
+		for (int i = 0; i < 5; i++) { //loop all 5 cards
+			for(int j = 0; j < robots.size(); j++){ //for all robots
+				int highestPriority = 0;
+				int indexOfHighestPriority = -1; //player index in array
+				for (int k = 0; k < currentCards.size(); k++) { //find highest card
+					if (currentCards.get(k) != null //check if card exists and..
+						&&	highestPriority //..is the highest one
+							< currentCards.get(k)[i].getPriority()) {
+						highestPriority = currentCards.get(k)[i].getPriority();
+						indexOfHighestPriority = k;
+					}
+				}
+				//Move the robot that has the highest priority on its card
+				Robot currentRobot = robots.get(indexOfHighestPriority);
+				currentCards.get(indexOfHighestPriority)[i]
+						.action(currentRobot);
+				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
+						.instantAction(currentRobot);
+				
+				deleteDeadRobots();
+				
+				//Remove the card so it doesn't execute twice
+				currentCards.get(indexOfHighestPriority)[i] = null;
+			}
+			activateBoardElements();
+			deleteDeadRobots();
+			fireLasers();
+			deleteDeadRobots();
+
+		}
+		//TODO give specials to robots standing on "wrench & hammer"
 	}
 }

@@ -15,7 +15,7 @@ public class Robot {
 	private int positionY;
 	private int direction = GameBoard.NORTH;
 	private List<Card> cards;
-	private List<Card> chosenCards;
+	private Card[] chosenCards;
 	private int damage = 0;
 	private int life = STARTING_LIFE;
 	private int spawnPointX;
@@ -27,7 +27,7 @@ public class Robot {
 		positionY = startY;
 		newSpawnPoint();
 		cards = new ArrayList<Card>();
-		chosenCards = new ArrayList<Card>();
+		chosenCards = new Card[5];
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class Robot {
 		return life;
 	}
 
-	public List<Card> getChosenCards() {
+	public Card[] getChosenCards() {
 		return chosenCards;
 	}
 }
