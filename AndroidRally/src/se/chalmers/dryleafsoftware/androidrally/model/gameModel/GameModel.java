@@ -209,7 +209,7 @@ public class GameModel {
 			}
 			activateBoardElements();
 			deleteDeadRobots();
-			fireLasers();
+			fireAllLasers();
 			deleteDeadRobots();
 
 		}
