@@ -170,10 +170,18 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * Method gameOver is called by deleteDeadRobots() when there is only
+	 * one robot left.
+	 * @param winner the winning robot
+	 */
 	public void gameOver(Robot winner) {
-		//TODO add functionality
+		//TODO add functionality or change to boolean?
 	}
 	
+	/**
+	 * Move robots according to the chosen cards.
+	 */
 	public void moveRobots() {
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
