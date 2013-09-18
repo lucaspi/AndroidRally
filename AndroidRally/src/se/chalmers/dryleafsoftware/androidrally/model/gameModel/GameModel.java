@@ -56,8 +56,9 @@ public class GameModel {
 	public void activateBoardElements() {
 		for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
+			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
-		//INSTANTACTION TODO
+		
 	}
 	
 	private boolean isRobotHit(int x, int y){
