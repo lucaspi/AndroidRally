@@ -16,10 +16,25 @@ public class GdxGame implements ApplicationListener {
 	private BoardView gameBoard;
 	private Texture texture;
 	
+	private int[][] testmap = new int[][] {
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 102, 0, 30, 20, 10, 0, 0, 0, 0, 302, 0, 5, 0, 0, 0},
+			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 303, 0, 0, 0, 0, 0},
+			{0, 5, 0, 0, 1, 0, 1, 0, 0, 0, 303, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 4, 104, 0, 0, 0, 0, 0, 202, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	};
+	
 	@Override
 	public void create() {	
 		// Turn off rendering loop to save battery
-		Gdx.graphics.setContinuousRendering(false);	    
+//		Gdx.graphics.setContinuousRendering(false);	    
 		
 		camera = new OrthographicCamera(480, 800);
 		camera.position.set(240, 400, 0f);
@@ -30,7 +45,7 @@ public class GdxGame implements ApplicationListener {
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		gameBoard = new BoardView();		
-		gameBoard.createBoard(texture);
+		gameBoard.createBoard(texture, testmap);
 		
 		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 
 				64, 64);
@@ -44,7 +59,7 @@ public class GdxGame implements ApplicationListener {
 		player2.setPosition(160, 400);
 		gameBoard.addPlayer(player2);
 				
-		Gdx.graphics.requestRendering();
+//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
