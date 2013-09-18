@@ -11,6 +11,9 @@ public class GameBoard {
 	public static final int SOUTH = 2;
 	public static final int NORTH = 0;
 	
+	public static final int WIDTH = 12;
+	public static final int HEIGHT = 16;
+	
 	public GameBoard(int width, int height, int gameBoard) {
 		tiles = new Tile[width][height];
 		for(int i = 0; i < width; i++) {
@@ -28,5 +31,9 @@ public class GameBoard {
 	
 	public int[][] getStartingPositions(){
 		return null;// TODO
+	}
+	
+	public List<Laser> getLasers(){
+		return lasers;
 	}
 }

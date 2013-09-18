@@ -6,6 +6,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Deck;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 public class GameModel {
@@ -53,8 +54,94 @@ public class GameModel {
 		//INSTANTACTION TODO
 	}
 	
-	public void fireLasers() {
+	private boolean isRobotHit(int x, int y){
+		for(Robot robot : this.robots){
+			if(robot.getX() == x && robot.getY() == y){
+				robot.damage(1);
+				return true;
+			}
+		}
+		return true;
+	}
+	
+	private boolean canMove(int x, int y, int direction){
+		if(direction == GameBoard.NORTH){
+			if(!gameBoard.getTile(x, y).getNorthWall() && !gameBoard.getTile(x, y-1).getSouthWall()){
+				return isPositionValid(x, y);
+			}
+		}else if(direction == GameBoard.WEST){
+			if(!gameBoard.getTile(x, y).getWestWall() && !gameBoard.getTile(x-1, y).getEastWall()){
+				return isPositionValid(x, y);
+			}
+		}else if(direction == GameBoard.SOUTH){
+			if(!gameBoard.getTile(x, y).getSouthWall() && !gameBoard.getTile(x, y+1).getNorthWall()){
+				return isPositionValid(x, y);
+			}
+		}else if(direction == GameBoard.EAST){
+			if(!gameBoard.getTile(x, y).getEastWall() && !gameBoard.getTile(x+1, y).getWestWall()){
+				return isPositionValid(x, y);
+			}
+		}
+		return false;
+	}
+	
+	private boolean isPositionValid(int x, int y){
+		if(x<0 || x>=GameBoard.WIDTH || y<0 || y<=GameBoard.HEIGHT){
+			return false;
+		}
+		return false;
+	}
+	
+	private void fireLaser(int x, int y, int direction){
+		boolean robotIsHit = false;
+		boolean noWall = true;
+		if(direction == GameBoard.NORTH){
+			while(y >= 0 && !robotIsHit && noWall){
+				robotIsHit = isRobotHit(x, y);
+				noWall = canMove(x, y, direction);
+				y--;
+			}
+			
+		}else if(direction == GameBoard.EAST){
+			while(x < GameBoard.WIDTH && !robotIsHit){
+				robotIsHit = isRobotHit(x, y);
+				noWall = canMove(x, y, direction);
+				x++;
+			}
+		}else if(direction == GameBoard.SOUTH){
+			while(y < GameBoard.HEIGHT && !robotIsHit){
+				robotIsHit = isRobotHit(x, y);
+				noWall = canMove(x, y, direction);
+				y++;
+			}
+		}else if(direction == GameBoard.WEST){
+			while(x >= 0 && !robotIsHit){
+				robotIsHit = isRobotHit(x, y);
+				noWall = canMove(x, y, direction);
+				x--;
+			}
+		}
+
+	}
+	
+	public void fireAllLasers() {
+		List<Laser> lasers = gameBoard.getLasers();
+		int x;
+		int y;
+		int direction;
 		
+		for(Laser laser : lasers){
+			x = laser.getX();
+			y = laser.getY();
+			direction = laser.getDirection();
+			fireLaser(x, y, direction);
+		}
+		for(Robot robot : robots){
+			x = robot.getX();
+			y = robot.getY();
+			direction = robot.getDirection();
+			fireLaser(x, y, direction);
+		}
 	}
 	
 	/**
