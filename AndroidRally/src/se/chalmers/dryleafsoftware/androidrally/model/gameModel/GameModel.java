@@ -40,9 +40,9 @@ public class GameModel {
 	 */
 	public void dealCards() {
 		for(Robot robot : robots) {
-			int health = robot.getHealth();
+			int nbrOfDrawnCards = robot.getHealth();
 			List<Card> drawnCards = new ArrayList<Card>();
-			for (int i = 0; i < health; i++) {
+			for (int i = 0; i < nbrOfDrawnCards; i++) {
 				drawnCards.add(deck.drawCard());
 			}
 			robot.addCards(drawnCards);
