@@ -44,10 +44,14 @@ public class GameController implements GestureListener {
 	@Override
 	public boolean pan(float arg0, float arg1, float arg2, float arg3) {
 		if (modifyBoard) {
-			boardCamera.translate(-arg2 * boardCamera.zoom, arg3
-					* boardCamera.zoom);
+			if (boardCamera.zoom == 1.0f) {
+				boardCamera.translate(0f, arg3);
+			} else {
+				boardCamera.translate(-arg2 * boardCamera.zoom, arg3
+						* boardCamera.zoom);
+			}
 		} else if (modifyCards) {
-			cardCamera.translate(-arg2 * cardCamera.zoom, cardCamera.position.y);
+			cardCamera.translate(-arg2 * cardCamera.zoom, 0f);
 		}
 		return false;
 	}
@@ -65,6 +69,8 @@ public class GameController implements GestureListener {
 				boardCamera.zoom -= 0.05f;
 			} else if (arg0 - arg1 > 0 && boardCamera.zoom < 1.0f) {
 				boardCamera.zoom += 0.05f;
+			} else if (boardCamera.zoom == 1.0f) {
+				boardCamera.position.set(240, 400, 0f);
 			}
 			// checkCameraBounds();
 		} else if (false) {

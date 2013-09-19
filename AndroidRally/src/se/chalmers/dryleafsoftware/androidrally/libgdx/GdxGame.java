@@ -15,9 +15,9 @@ public class GdxGame implements ApplicationListener {
 	
 	private OrthographicCamera boardCamera, cardCamera;
 	private SpriteBatch spriteBatch;
-	private Texture texture;
+	private Texture texture, cardTexture;
 	private GameController gameController;
-	private Stage boardStage;
+	private Stage boardStage, cardStage;
 	
 	/**
 	 * Bara "" ger en tom ruta.
@@ -52,6 +52,12 @@ public class GdxGame implements ApplicationListener {
 		boardCamera.zoom = 1.0f;
 		boardCamera.position.set(240, 400, 0f);
 		boardCamera.update();
+		
+		cardCamera = new OrthographicCamera(480, 800);
+		cardCamera.zoom = 1.0f;
+		cardCamera.position.set(240, 400, 0f);
+		cardCamera.update();
+		
 		spriteBatch = new SpriteBatch();	
 		
 		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
@@ -59,6 +65,12 @@ public class GdxGame implements ApplicationListener {
 		
 		BoardView gameBoard = new BoardView();		
 		gameBoard.createBoard(texture, testmap);
+		
+		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
+		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+		DeckView deckBoard = new DeckView();
+		deckBoard.CreateBoard(cardTexture);
 		
 		// TODO: move this
 		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 
@@ -82,6 +94,13 @@ public class GdxGame implements ApplicationListener {
 		
 		boardStage.setCamera(boardCamera);
 		
+		cardStage = new Stage();
+		Gdx.input.setInputProcessor(cardStage);
+		deckBoard.setVisible(true);
+		cardStage.addActor(deckBoard);
+		
+		cardStage.setCamera(cardCamera);
+		
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
 		
@@ -92,6 +111,7 @@ public class GdxGame implements ApplicationListener {
 	public void dispose() {
 		spriteBatch.dispose();
 		boardStage.dispose();
+		cardStage.dispose();
 	}
 
 	@Override
@@ -100,6 +120,7 @@ public class GdxGame implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);		
 		boardStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		boardStage.draw();
+		cardStage.draw();
 	}
 
 	@Override
