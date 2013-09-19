@@ -1,9 +1,9 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * 
@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class CheckPointView extends Sprite {
+public class CheckPointView extends Image {
 
 	private int number;
 	private BitmapFont font;
@@ -28,8 +28,8 @@ public class CheckPointView extends Sprite {
 	}
 	
 	@Override
-	public void draw(SpriteBatch spriteBatch) {	
-		super.draw(spriteBatch);
+	public void draw(SpriteBatch spriteBatch, float f) {	
+		super.draw(spriteBatch, f);
 		font.draw(spriteBatch, "" + number, getX() + 20, getY() + 20);
 	}
 }

@@ -6,15 +6,15 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * A gameboard contains all the tiles and dynamic objects, like all the players' robots.
@@ -22,10 +22,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
  * @author
  *
  */
-public class BoardView extends Table {
+public class BoardView extends Stage {
 
-	private List<Sprite> tiles = new ArrayList<Sprite>();
-	private List<Sprite> wallList = new ArrayList<Sprite>();
+	private List<Image> walls = new ArrayList<Image>();
 	private List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
 	
 	private static final int 
@@ -58,16 +57,16 @@ public class BoardView extends Table {
 		for(int x = 0; x < map.length; x++) {
 			for(int y = 0; y < map[0].length; y++) {				
 				// Create the floor
-				Sprite floor = null;
+				Image floor = null;
 				if(y < map[0].length - 4) {
-					floor = new Sprite(new TextureRegion(texture, 0, 0, 64, 64));
+					floor = new Image(new TextureRegion(texture, 0, 0, 64, 64));
 				}else{
-					floor = new Sprite(new TextureRegion(texture, 64, 0, 64, 64));
+					floor = new Image(new TextureRegion(texture, 64, 0, 64, 64));
 				}
 				// Add the floor
 				floor.setSize(40, 40);
 				floor.setPosition(40 * x, 800 - 40 * (y+1));
-				tiles.add(floor);
+				addActor(floor);
 
 				// Add all the elements to the tile
 				if(!map[x][y].equals("")) {
@@ -76,45 +75,50 @@ public class BoardView extends Table {
 
 						// Create the boardelement
 						int tile = tileData % 10;
-						Sprite s = null;
+						Image i = null;
 						if(tile == TILE_HOLE) {					
-							s = new Sprite(new TextureRegion(texture, 128, 0, 64, 64));
+							i = new Image(new TextureRegion(texture, 128, 0, 64, 64));
 						}else if(tile == TILE_GEARS) {
-							s = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
+							i = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
 									tileData / 10 == 0 ? false : true);
 						}else if(tile == TILE_CONVEYORBELT) {
-							s = new ConveyorBeltView(new TextureRegion(conveyerTexture, 0, 0, 1f, 1f), 
+							i = new ConveyorBeltView(new TextureRegion(conveyerTexture, 0, 0, 1f, 1f), 
 									(tileData / 10) * 90);
 						}else if(tile == TILE_CHECKPOINT) {
-							s = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
+							i = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
 									(tileData / 10));
 						}else if(tile == TILE_REPAIR) {
-							s = new Sprite(new TextureRegion(texture, 256, 0, 64, 64));
+							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
 							int rotation = tileData / 10;
-							Sprite wallBit;
+							Image wallBit;
 							if(tile == TILE_WALL) {
-								wallBit = new Sprite(new TextureRegion(texture, 384, 0, 64, 64));
+								wallBit = new Image(new TextureRegion(texture, 384, 0, 64, 64));
 							}else{
-								wallBit = new Sprite(new TextureRegion(texture, 448, 0, 64, 64));
+								wallBit = new Image(new TextureRegion(texture, 448, 0, 64, 64));
 							}
 							wallBit.setSize(40, 40);
 							wallBit.setPosition(40 * x - 20, 800 - 40 * (y+1));
 							wallBit.setOrigin(wallBit.getWidth()/2 + 20, wallBit.getHeight()/2);
 							wallBit.rotate(-(1 + rotation) * 90);
-							wallList.add(wallBit);		
+							walls.add(wallBit);		
 
 						}
 						// Add the element if created
-						if(s != null) {
-							s.setSize(40, 40);
-							s.setPosition(40 * x, 800 - 40 * (y+1));
-							tiles.add(s);
+						if(i != null) {
+							i.setSize(40, 40);
+							i.setPosition(40 * x, 800 - 40 * (y+1));
+							addActor(i);
 						}
 					} // loop - elements
 				} // if
 			} // loop - Y
 		} // loop - X
+		
+		//Add walls (added last to be on top of everything else)
+		for(Image i : walls) {
+			addActor(i);
+		}
 	}
 	
 	/**
@@ -123,6 +127,7 @@ public class BoardView extends Table {
 	 */
 	public void addPlayer(PlayerPieceView player) {
 		players.add(player);
+		addActor(player);
 	}
 	
 	/**
@@ -138,18 +143,5 @@ public class BoardView extends Table {
 		}
 		return null;
 	}
-
-	@Override
-	public void draw(SpriteBatch spriteBatch, float arg) {
-		super.draw(spriteBatch, arg);
-		for(Sprite s : tiles) {
-			s.draw(spriteBatch);
-		}
-		for(PlayerPieceView p : players) {
-			p.draw(spriteBatch);
-		}
-		for(Sprite s : wallList) {
-			s.draw(spriteBatch);
-		}
-	}
+	
 }

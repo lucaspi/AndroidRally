@@ -1,7 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * This is the player's robot on the gameboard.
@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class PlayerPieceView extends Sprite  {
+public class PlayerPieceView extends Image  {
 
 	private final int playerID;
 	

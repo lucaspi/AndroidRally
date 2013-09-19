@@ -5,17 +5,17 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-public class DeckView extends Table {
+public class DeckView extends Stage {
 
-	private List<Sprite> deckCards = new ArrayList<Sprite>();
-	private List<Sprite> chosenCards = new ArrayList<Sprite>();
+	private List<Image> deckCards = new ArrayList<Image>();
+	private List<Image> chosenCards = new ArrayList<Image>();
 
-	class CardView extends Sprite {
+	class CardView extends Image {
 		private int priority;
 		private BitmapFont font;
 
@@ -26,11 +26,15 @@ public class DeckView extends Table {
 		}
 
 		@Override
-		public void draw(SpriteBatch spriteBatch) {
-			super.draw(spriteBatch);
-			font.draw(spriteBatch, "" + priority, getX() + (getWidth() / 2
-					- font.getWrappedBounds("" + priority, 200f).width/2), getY()
-					+ getHeight());
+		public void draw(SpriteBatch spriteBatch, float f) {
+			super.draw(spriteBatch, f);
+			font.draw(
+					spriteBatch,
+					"" + priority,
+					getX()
+							+ (getWidth() / 2 - font.getWrappedBounds(""
+									+ priority, 200f).width / 2), getY()
+							+ getHeight());
 		}
 	}
 
@@ -38,22 +42,16 @@ public class DeckView extends Table {
 		super();
 	}
 
-	public void CreateBoard(Texture texture) {
-		Sprite card = new CardView(new TextureRegion(texture, 0, 0, 64, 128),
+	public void createDeck(Texture texture) {
+		Image card = new CardView(new TextureRegion(texture, 0, 0, 64, 128),
 				666);
 		card.setPosition(0, 0);
 		deckCards.add(card);
+		addActor(card);
 	}
 
-	public void setDeckCards(List<Sprite> cards) {
+	public void setDeckCards(List<Image> cards) {
 
 	}
 
-	@Override
-	public void draw(SpriteBatch sb, float arg) {
-		super.draw(sb, arg);
-		for (Sprite s : deckCards) {
-			s.draw(sb);
-		}
-	}
 }

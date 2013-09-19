@@ -1,8 +1,8 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * 
@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class GearsView extends Sprite {
+public class GearsView extends Image {
 
 	private int rotSpeed = -3;
 	
@@ -23,7 +23,7 @@ public class GearsView extends Sprite {
 		super(texture);	
 		this.setOrigin(getWidth()/2, getHeight()/2);
 		if(!clockWise) {
-			this.flip(true, false);
+			texture.flip(true, false);
 			rotSpeed *= -1;
 		}
 	}
@@ -35,8 +35,8 @@ public class GearsView extends Sprite {
 	}
 	
 	@Override
-	public void draw(SpriteBatch spriteBatch) {	
+	public void draw(SpriteBatch spriteBatch, float f) {	
 		this.rotate(rotSpeed);
-		super.draw(spriteBatch);
+		super.draw(spriteBatch, f);
 	}
 }
