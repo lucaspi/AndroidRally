@@ -233,4 +233,8 @@ public class GameModel {
 		//TODO return cards
 		//TODO give specials to robots standing on "wrench & hammer"
 	}
+	
+	public List<Robot> getRobots(){
+		return robots;
+	}
 }
