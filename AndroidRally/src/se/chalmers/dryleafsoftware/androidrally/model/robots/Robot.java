@@ -45,6 +45,9 @@ public class Robot {
 		}else if(direction == GameBoard.WEST){
 			this.positionX -= distance;
 		}
+		if(positionX<0 || positionX > GameBoard.WIDTH || positionY<0 || positionY > GameBoard.HEIGHT){
+			die();
+		}
 	}
 	
 	

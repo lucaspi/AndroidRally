@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -21,13 +23,11 @@ public class Tile {
 	public static int HOLE = 2;
 	public static int WRENCH = 4;
 	
-	private BoardElement[] boardElements = null;
+	private List<BoardElement> boardElements = null;
 	
-	public Tile(int walls, BoardElement[] boardElements){
-		this.boardElements = boardElements;
-		setWalls(walls);
+	public Tile(){
+		
 	}
-	
 	
 	public void action(Robot robot){
 		if(boardElements != null){
@@ -61,7 +61,14 @@ public class Tile {
 		return wallWest;
 	}
 	
-	private void setWalls(int walls){
+	public void addBoardElement(BoardElement boardElement){
+		if(boardElements == null){
+			boardElements = new ArrayList<BoardElement>();
+		}
+		boardElements.add(boardElement);
+	}
+	
+	public void setWalls(int walls){
 		
 		switch(walls){
 		case 1:
