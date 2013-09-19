@@ -22,7 +22,7 @@ public class ConveyorBeltView extends Sprite {
 	public ConveyorBeltView(TextureRegion texture, int degree) {
 		super(texture);
 		this.setOrigin(getWidth()/2, getHeight()/2);
-		this.rotate(degree);
+		this.rotate(-degree);
 	}
 	
 	@Override

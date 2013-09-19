@@ -34,7 +34,8 @@ public class BoardView extends Table {
 			TILE_CONVEYORBELT = 3,
 			TILE_GEARS = 4,
 			TILE_REPAIR = 5,
-			TILE_WALL = 6;
+			TILE_WALL = 6,
+			TILE_LASER = 7;
 	
 	/**
 	 * Creates a new instance of BoardView.
@@ -89,24 +90,19 @@ public class BoardView extends Table {
 									(tileData / 10));
 						}else if(tile == TILE_REPAIR) {
 							s = new Sprite(new TextureRegion(texture, 256, 0, 64, 64));
-						}else if(tile == TILE_WALL) {
-							int wallPos = tileData / 10;
-							if(wallPos >= 2) {
-								Sprite wall = new Sprite(new TextureRegion(texture, 384, 0, 64, 64));
-								wall.setSize(40, 40);
-								wall.setPosition(40 * x - 20, 800 - 40 * (y+1));
-								wall.setOrigin(wall.getWidth()/2, wall.getHeight()/2);
-								wallList.add(wall);
-								wallPos -= 2;
-							}							
-							if(wallPos == 1) {
-								Sprite wall = new Sprite(new TextureRegion(texture, 384, 0, 64, 64));
-								wall.rotate(90);
-								wall.setSize(40, 40);
-								wall.setPosition(40 * x, 800 - 40 * (y+1) - 20);
-								wall.setOrigin(wall.getWidth()/2, wall.getHeight()/2);					
-								wallList.add(wall);
+						}else if(tile == TILE_WALL || tile == TILE_LASER) {
+							int rotation = tileData / 10;
+							Sprite wallBit;
+							if(tile == TILE_WALL) {
+								wallBit = new Sprite(new TextureRegion(texture, 384, 0, 64, 64));
+							}else{
+								wallBit = new Sprite(new TextureRegion(texture, 448, 0, 64, 64));
 							}
+							wallBit.setSize(40, 40);
+							wallBit.setPosition(40 * x - 20, 800 - 40 * (y+1));
+							wallBit.setOrigin(wallBit.getWidth()/2 + 20, wallBit.getHeight()/2);
+							wallBit.rotate(-(1 + rotation) * 90);
+							wallList.add(wallBit);		
 
 						}
 						// Add the element if created
