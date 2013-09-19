@@ -21,7 +21,7 @@ public class Robot {
 	private int life = STARTING_LIFE;
 	private int spawnPointX;
 	private int spawnPointY;
-	private int checkpoint = 0;
+	private int checkpoint;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -29,6 +29,7 @@ public class Robot {
 		newSpawnPoint();
 		cards = new ArrayList<Card>();
 		chosenCards = new Card[5];
+		checkpoint = 0;
 	}
 	
 	/**

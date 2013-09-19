@@ -45,6 +45,10 @@ public class Deck {
 	}
 	
 	public void returnCards(List<Card> returnedCards) {
-		this.cards.addAll(cards);
+		this.cards.addAll(returnedCards);
+	}
+
+	public List<Card> getCards() {
+		return cards;
 	}
 }
