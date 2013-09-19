@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.model.robots;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
@@ -65,19 +66,13 @@ public class Robot {
 	
 	public List<Card> returnCards(){
 		List<Card> returnCards= new ArrayList<Card>();
-		returnCards.addAll(cards);
-		int nbrOfLockedCards = 0;
-		nbrOfLockedCards = this.damage;
-		for(int i = 0; i<nbrOfLockedCards-1; i++){
-			returnCards.add(chosenCards[i]);
-		}
 		
 		returnCards.addAll(cards);
 		for(Card card : chosenCards){
 			returnCards.remove(card);
 		}
-		for(int i = 0; i < 9 - damage; i++){
-			returnCards.add(chosenCards[i]);
+		for(int i = 0; i < damage - 4; i++){
+			returnCards.remove(chosenCards[4-i]);
 			chosenCards[i] = null;
 		}
 		cards.clear();
@@ -135,6 +130,28 @@ public class Robot {
 
 	public Card[] getChosenCards() {
 		return chosenCards;
+	}
+	
+	public void setChosenCards(List<Card> chosenCards){
+		if(this.cards.containsAll(chosenCards)){
+			for(int i = 0; i<5; i++){
+				if(this.chosenCards[i] == null){
+					this.chosenCards[i] = chosenCards.get(i);
+				}
+			}
+		}
+		fillEmptyCardRegisters();
+	}
+	
+	private void fillEmptyCardRegisters(){
+		Random random = new Random();
+		List<Card> tempCards = new ArrayList<Card>();
+		tempCards.addAll(cards);
+		for(int i = 0; i<5; i++){
+			if(this.chosenCards[i] == null){
+				this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
+			}
+		}
 	}
 	
 	public List<Card> getCards(){
