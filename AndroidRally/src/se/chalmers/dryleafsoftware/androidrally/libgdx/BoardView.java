@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /**
@@ -83,8 +82,8 @@ public class BoardView extends Table {
 							s = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
 									tileData / 10 == 0 ? false : true);
 						}else if(tile == TILE_CONVEYORBELT) {
-							s = new ConveyorBeltView(new TextureRegion(conveyerTexture, 0, 0, 1f, 1f), 
-									(tileData / 10) * 90);
+							s = new ConveyorBeltView(new TextureRegion(conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
+									((tileData / 10) % 10) * 90);
 						}else if(tile == TILE_CHECKPOINT) {
 							s = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
 									(tileData / 10));
@@ -146,7 +145,7 @@ public class BoardView extends Table {
 			s.draw(spriteBatch);
 		}
 		for(PlayerPieceView p : players) {
-			p.draw(spriteBatch);
+			p.draw(spriteBatch, arg);
 		}
 		for(Sprite s : wallList) {
 			s.draw(spriteBatch);

@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
 public class GdxGame implements ApplicationListener {
 	
@@ -32,12 +34,12 @@ public class GdxGame implements ApplicationListener {
 			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", ""},
-			{"", "37", "", "1", "", "", "", "", "", "", "1", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "", ""},
 			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "33", "", "", "", "", "", "", "", ""},
-			{"", "5", "", "", "", "", "", "33", "", "", "", "1", "", "", "", ""},
-			{"", "", "", "", "3", "3", "3", "33:3", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
+			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
+			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
 			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
 			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
@@ -57,7 +59,7 @@ public class GdxGame implements ApplicationListener {
 		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		BoardView gameBoard = new BoardView();		
+		BoardView gameBoard = new BoardView();
 		gameBoard.createBoard(texture, testmap);
 		
 		// TODO: move this
@@ -65,12 +67,14 @@ public class GdxGame implements ApplicationListener {
 				64, 64);
 		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
 		player1.setPosition(80, 800 - 160);
+		player1.setOrigin(20, 20);
 		gameBoard.addPlayer(player1);
 		// TODO: move this
 		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 
 				64, 64);
 		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
 		player2.setPosition(160, 400);
+		player2.setOrigin(20, 20);
 		gameBoard.addPlayer(player2);
 		
 		boardStage = new Stage();
@@ -84,6 +88,12 @@ public class GdxGame implements ApplicationListener {
 		
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
+				
+		PlayerPieceView p = gameBoard.getPlayer(1);
+		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
+				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
+		
+		boardStage.addActor(gameBoard.getPlayer(1));
 		
 //		Gdx.graphics.requestRendering();
 	}
@@ -98,7 +108,7 @@ public class GdxGame implements ApplicationListener {
 	public void render() {		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);		
-		boardStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		boardStage.act(Gdx.graphics.getDeltaTime());
 		boardStage.draw();
 	}
 
