@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /**
  * A gameboard contains all the tiles and dynamic objects, like all the players' robots.
@@ -20,13 +22,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author
  *
  */
-public class BoardView {
+public class BoardView extends Table {
 
 	private List<Sprite> tiles = new ArrayList<Sprite>();
 	private List<Sprite> wallList = new ArrayList<Sprite>();
 	private List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
 	
-	private static final int TILE_EMPTY = 0,
+	private static final int 
 			TILE_HOLE = 1,
 			TILE_CHECKPOINT = 2,
 			TILE_CONVEYORBELT = 3,
@@ -38,7 +40,7 @@ public class BoardView {
 	 * Creates a new instance of BoardView.
 	 */
 	public BoardView() {
-		
+		super();
 	}
 	
 	/**
@@ -140,12 +142,10 @@ public class BoardView {
 		}
 		return null;
 	}
-	
-	/**
-	 * Renders the scene.
-	 * @param spriteBatch The instance of spritebatch to use when rendering.
-	 */
-	public void render(SpriteBatch spriteBatch) {
+
+	@Override
+	public void draw(SpriteBatch spriteBatch, float arg) {
+		super.draw(spriteBatch, arg);
 		for(Sprite s : tiles) {
 			s.draw(spriteBatch);
 		}

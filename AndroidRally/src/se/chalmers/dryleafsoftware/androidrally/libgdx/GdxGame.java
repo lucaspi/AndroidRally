@@ -9,14 +9,15 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class GdxGame implements ApplicationListener {
 	
 	private OrthographicCamera boardCamera, cardCamera;
 	private SpriteBatch spriteBatch;
-	private BoardView gameBoard;
 	private Texture texture;
 	private GameController gameController;
+	private Stage boardStage;
 	
 	/**
 	 * Bara "" ger en tom ruta.
@@ -56,20 +57,30 @@ public class GdxGame implements ApplicationListener {
 		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		gameBoard = new BoardView();		
+		BoardView gameBoard = new BoardView();		
 		gameBoard.createBoard(texture, testmap);
 		
+		// TODO: move this
 		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 
 				64, 64);
 		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
 		player1.setPosition(80, 800 - 160);
 		gameBoard.addPlayer(player1);
-		
+		// TODO: move this
 		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 
 				64, 64);
 		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
 		player2.setPosition(160, 400);
 		gameBoard.addPlayer(player2);
+		
+		boardStage = new Stage();
+		Gdx.input.setInputProcessor(boardStage);
+		gameBoard.setVisible(true);
+		gameBoard.setPosition(0, 0);
+		gameBoard.setSize(200, 200);
+		boardStage.addActor(gameBoard);
+		
+		boardStage.setCamera(boardCamera);
 		
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
@@ -80,17 +91,15 @@ public class GdxGame implements ApplicationListener {
 	@Override
 	public void dispose() {
 		spriteBatch.dispose();
+		boardStage.dispose();
 	}
 
 	@Override
 	public void render() {		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		boardCamera.update();	
-		spriteBatch.setProjectionMatrix(boardCamera.combined);
-		spriteBatch.begin();	
-		gameBoard.render(spriteBatch);
-		spriteBatch.end();
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);		
+		boardStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		boardStage.draw();
 	}
 
 	@Override
@@ -103,10 +112,6 @@ public class GdxGame implements ApplicationListener {
 
 	@Override
 	public void resume() {
-	}
-	
-	public BoardView getBoardView() {
-		return this.gameBoard;
 	}
 	
 	public OrthographicCamera getBoardCamera() {
