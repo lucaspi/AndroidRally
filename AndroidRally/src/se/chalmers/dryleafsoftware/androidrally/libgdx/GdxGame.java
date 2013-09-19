@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
 
 public class GdxGame implements ApplicationListener {
 
@@ -25,19 +27,20 @@ public class GdxGame implements ApplicationListener {
 	 * (10) = 12 osv.
 	 */
 	private String[][] testmap = new String[][] {
-			{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-			{ "", "16", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-			{ "", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", "" },
-			{ "", "37", "", "1", "", "", "", "", "", "", "1", "", "", "", "","" },
-			{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-			{ "", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", "" },
-			{ "", "", "", "", "", "", "", "33", "", "", "", "", "", "", "", "" },
-			{ "", "5", "", "", "", "", "", "33", "", "", "", "1", "", "", "","" },
-			{ "", "", "", "", "3", "3", "3", "33:3", "", "", "", "", "", "","", "" },
-			{ "", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-			{ "", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", "" },
-			{ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" }, };
-
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", ""},
+			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
+			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
+			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
+			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+	};
+	
 	@Override
 	public void create() {
 		// Turn off rendering loop to save battery
@@ -69,12 +72,14 @@ public class GdxGame implements ApplicationListener {
 		TextureRegion playerTexture1 = new TextureRegion(boardTexture, 0, 64, 64, 64);
 		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
 		player1.setPosition(80, 800 - 160);
+		player1.setOrigin(20, 20);
 		gameBoard.addPlayer(player1);
 		// TODO: move this
 		TextureRegion playerTexture2 = new TextureRegion(boardTexture, 64, 64, 64,
 				64);
 		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
 		player2.setPosition(160, 400);
+		player2.setOrigin(20, 20);
 		gameBoard.addPlayer(player2);
 
 		Gdx.input.setInputProcessor(gameBoard);
@@ -85,8 +90,12 @@ public class GdxGame implements ApplicationListener {
 
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
-
-		// Gdx.graphics.requestRendering();
+				
+		PlayerPieceView p = gameBoard.getPlayer(1);
+		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
+				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
+		
+//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
