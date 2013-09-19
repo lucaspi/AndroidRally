@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class GameController implements GestureListener {
 
@@ -45,6 +46,8 @@ public class GameController implements GestureListener {
 		if (modifyBoard) {
 			boardCamera.translate(-arg2 * boardCamera.zoom, arg3
 					* boardCamera.zoom);
+		} else if (modifyCards) {
+			cardCamera.translate(-arg2 * cardCamera.zoom, cardCamera.position.y);
 		}
 		return false;
 	}
@@ -63,6 +66,13 @@ public class GameController implements GestureListener {
 			} else if (arg0 - arg1 > 0 && boardCamera.zoom < 1.0f) {
 				boardCamera.zoom += 0.05f;
 			}
+			// checkCameraBounds();
+		} else if (false) {
+			if (arg1 - arg0 > 0 && cardCamera.zoom > 0.4f) {
+				cardCamera.zoom -= 0.05f;
+			} else if (arg0 - arg1 > 0 && cardCamera.zoom < 2.0f) {
+				cardCamera.zoom += 0.05f;
+			}
 		}
 		return false;
 	}
@@ -73,4 +83,29 @@ public class GameController implements GestureListener {
 		return false;
 	}
 
+	public void checkCameraBounds() {
+		Vector3 position = this.cardCamera.position;
+		Vector3 relativeMinimum = new Vector3(240 * this.cardCamera.zoom,
+				400 * this.cardCamera.zoom, 0);
+		Vector3 relativeMaximum = new Vector3(480 - relativeMinimum.x,
+				800 - relativeMinimum.y, 0);
+
+		if (position.x < relativeMinimum.x) {
+			if (position.y < relativeMinimum.y) {
+				this.cardCamera.translate(relativeMinimum);
+			} else if (position.y > relativeMaximum.y) {
+				this.cardCamera.translate(relativeMinimum.x, relativeMaximum.y);
+			} else {
+				this.cardCamera.translate(relativeMinimum.x, position.y);
+			}
+		} else if (position.x > relativeMaximum.x) {
+			if (position.y < relativeMinimum.y) {
+				this.cardCamera.translate(relativeMaximum.x, relativeMinimum.y);
+			} else if (position.y > relativeMaximum.y) {
+				this.cardCamera.translate(relativeMaximum);
+			} else {
+				this.cardCamera.translate(relativeMaximum.x, position.y);
+			}
+		}
+	}
 }
