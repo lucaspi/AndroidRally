@@ -18,25 +18,34 @@ public class GdxGame implements ApplicationListener {
 	private Texture texture;
 	private GameController gameController;
 	
-	private int[][] testmap = new int[][] {
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 102, 0, 30, 20, 10, 0, 0, 0, 0, 302, 0, 5, 0, 0, 0},
-			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 303, 0, 0, 0, 0, 0},
-			{0, 5, 0, 0, 1, 0, 1, 0, 0, 0, 303, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 4, 104, 0, 0, 0, 0, 0, 202, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	/**
+	 * Bara "" ger en tom ruta.
+	 * "12:33" kommer skapa två elements på den rutan.
+	 * entalen står för ID för elementet på den rutan.
+	 * tiotalen står för speciella egenskaper för det elementet, 
+	 * 		t.ex 33 ger ett rullband (3) + roterat 3 gånger (30) = 33
+	 * 		t.ex 12 ger checkpoint (2) + numerordning 1 (10) = 12
+	 * 		osv.
+	 */
+	private String[][] testmap = new String[][] {
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "12", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", ""},
+			{"", "", "", "1", "", "", "", "", "", "", "1", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "", "", "", "33", "", "", "", "", "", "", "", ""},
+			{"", "5", "", "", "", "", "", "33", "", "", "", "1", "", "", "", ""},
+			{"", "", "", "", "3", "3", "3", "33:3", "", "", "", "", "", "", "", ""},
+			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 	};
 	
 	@Override
 	public void create() {	
 		// Turn off rendering loop to save battery
-		Gdx.graphics.setContinuousRendering(false);
+//		Gdx.graphics.setContinuousRendering(false);
 		
 		boardCamera = new OrthographicCamera(480, 800);
 		boardCamera.zoom = 1.0f;
@@ -65,7 +74,7 @@ public class GdxGame implements ApplicationListener {
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
 		
-		Gdx.graphics.requestRendering();
+//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
