@@ -69,7 +69,7 @@ public class Client {
 			}else if(prio <= 840) {
 				regX = 384;	// Move 3
 			}				
-			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 128), 
+			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
 				card.getPriority());
 			cards.add(cv);
 		}

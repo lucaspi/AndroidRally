@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -27,6 +25,11 @@ public class DeckView extends Stage {
 
 	public void setDeckCards(List<CardView> list) {
 		this.deckCards = list;
+		for(int i = 0; i < list.size(); i++) {
+			CardView cv = list.get(i);
+			cv.setPosition((cv.getWidth() + 10) * i, 0);
+			addActor(cv);
+		}
 	}
 
 }
