@@ -37,4 +37,8 @@ public class ConveyorBelt implements BoardElement{
 		// Do nothing
 	}
 
+	public int getTravelDistance() {
+		return travelDistance;
+	}
+
 }

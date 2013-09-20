@@ -21,8 +21,9 @@ public class Tile {
 	public static int BOARD_ELEMENT_NONE = 0;
 	public static int CONVEYOR_BELT = 1;
 	public static int HOLE = 2;
+	public static int GEARS = 3;
 	public static int WRENCH = 4;
-	
+
 	private List<BoardElement> boardElements = null;
 	
 	public Tile(){
@@ -31,16 +32,16 @@ public class Tile {
 	
 	public void action(Robot robot){
 		if(boardElements != null){
-			for(BoardElement e : boardElements){
-				e.action(robot);
+			for(BoardElement boardElement : boardElements){
+				boardElement.action(robot);
 			}
 		}
 	}
 	
 	public void instantAction(Robot robot){
 		if(boardElements != null){
-			for(BoardElement e : boardElements){
-				e.instantAction(robot);
+			for(BoardElement boardElement : boardElements){
+				boardElement.instantAction(robot);
 			}
 		}
 	}
@@ -65,7 +66,11 @@ public class Tile {
 		if(boardElements == null){
 			boardElements = new ArrayList<BoardElement>();
 		}
-		boardElements.add(boardElement);
+		if (boardElement instanceof ConveyorBelt) {
+			boardElements.add(0, boardElement);
+		} else {
+			boardElements.add(boardElement);
+		}
 	}
 	
 	public void setWalls(int walls){
