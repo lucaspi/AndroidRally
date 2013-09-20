@@ -105,11 +105,11 @@ public class GameController implements GestureListener {
 				if (deckView.getPositionX() + arg2 > 0) {
 					deckView.setPositionX(0);
 				} else {
-					deckView.setPositionX(deckView.getPositionX() + (int)arg2);
-				}
+					 deckView.setPositionX(deckView.getPositionX() + (int)arg2);
+				 }
 			} else if (arg2 < 0) {
-				 if (deckView.getLastPositionX() + arg2 < 480) {
-					 deckView.setPositionX(480);
+				 if (deckView.getCardDeckWidth() - deckView.getPositionX() + arg2 < 480) {
+					 deckView.setPositionX(480 - deckView.getCardDeckWidth());
 				 } else {
 					 deckView.setPositionX(deckView.getPositionX() + (int)arg2);
 				 }
@@ -128,9 +128,9 @@ public class GameController implements GestureListener {
 	public boolean zoom(float arg0, float arg1) {
 		if (modifyBoard) {
 			if (arg1 - arg0 > 0 && boardCamera.zoom > 0.4f) {
-				boardCamera.zoom -= 0.05f;
+				boardCamera.zoom -= 0.03f;
 			} else if (arg0 - arg1 > 0 && boardCamera.zoom < 1.0f) {
-				boardCamera.zoom += 0.05f;
+				boardCamera.zoom += 0.03f;
 			} else if (boardCamera.zoom == 1.0f) {
 				boardCamera.position.set(240, 400, 0f);
 			}
