@@ -8,7 +8,7 @@ public class GameBoardTest {
 
 	@Test
 	public void testCreateBoard() {
-		String[][] map = new String();
+		String[][] map = new String[][]{};
 		GameBoard gameBoard = new GameBoard(map);
 	}
 
