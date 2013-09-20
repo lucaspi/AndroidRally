@@ -1,5 +1,8 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.util.List;
+
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
 
 import com.badlogic.gdx.Gdx;
@@ -44,11 +47,16 @@ public class GameController implements GestureListener {
 			game.getBoardView().addPlayer(player);
 		}		
 		
-		PlayerView p = game.getBoardView().getPlayer(1);
-		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
-				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
+//		PlayerView p = game.getBoardView().getPlayer(1);
+//		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
+//				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
 		
 		game.getDeckView().setDeckCards(client.getCards(cardTexture));
+		
+		List<GameAction> actions = client.getRoundResult();
+		for(GameAction a : actions) {
+			a.action(game.getBoardView().getPlayers());
+		}
 	}
 
 	@Override
