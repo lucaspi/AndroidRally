@@ -1,16 +1,17 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
-import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MoveAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RotationAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.Turn;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -26,8 +27,12 @@ public class Client {
 	private final GameModel model;
 	private final int clientID;
 	
+	// 1 framför = en position
+	private String indata = "0:10101;0:1;1:10203";
+	
 	/**
 	 * Creates a new client instance.
+	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
 		this.model = new GameModel(8);
@@ -42,9 +47,27 @@ public class Client {
 		return model.getMap();
 	}
 	
+	public List<GameAction> getRoundResult() {
+		List<GameAction> actions = new ArrayList<GameAction>();
+		
+		String[] allActions = indata.split(";");
+		for(String s : allActions) {
+			String[] singleAction = s.split(":");
+			int player = Integer.parseInt(singleAction[0]);
+			int data = Integer.parseInt(singleAction[1]);
+			if(data / 10000 == 1) {	// Pos
+				actions.add(new MoveAction(player, (data % 10000) / 100, data % 100));
+			}else {	// Dir
+				actions.add(new RotationAction(player, data));
+			}
+		}
+		
+		return actions;
+	}
+	
 	/**
-	 * 
-	 * @return
+	 * Gives the client's cards.
+	 * @return A list of the client's cards.
 	 */
 	public List<CardView> getCards(Texture texture) {
 		model.dealCards();
@@ -73,6 +96,7 @@ public class Client {
 				card.getPriority());
 			cards.add(cv);
 		}
+		Collections.sort(cards);
 		return cards;
 	}
 	
