@@ -143,6 +143,10 @@ public class BoardView extends Stage {
 		addActor(player);
 	}
 	
+	public List<PlayerView> getPlayers() {
+		return this.players;
+	}
+	
 	/**
 	 * Gives the player with the specified ID-number.
 	 * @param playerID The ID-number to look for.
