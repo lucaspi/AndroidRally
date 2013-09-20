@@ -3,10 +3,18 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.StartPointView;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * A gameboard contains all the tiles and dynamic objects, like all the players' robots.
@@ -14,41 +22,106 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author
  *
  */
-public class BoardView {
+public class BoardView extends Stage {
 
-	private List<Sprite> staticSprites = new ArrayList<Sprite>();
+	private List<Image> walls = new ArrayList<Image>();
 	private List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
+	
+	private static final int 
+			TILE_HOLE = 1,
+			TILE_CHECKPOINT = 2,
+			TILE_CONVEYORBELT = 3,
+			TILE_GEARS = 4,
+			TILE_REPAIR = 5,
+			TILE_WALL = 6,
+			TILE_LASER = 7,
+			TILE_START = 8;
 	
 	/**
 	 * Creates a new instance of BoardView.
 	 */
 	public BoardView() {
-		
+		super();
 	}
 	
 	/**
 	 * Builds the board using the specified texture and map data.
 	 * @param texture The texture to use.
+	 * @param map An array of integers mapping the map's layout. 
+	 * NOTE: The bottom 4 rows will be the dock area.
 	 */
-	public void createBoard(Texture texture/*TODO: need map*/) {
-		TextureRegion factoryFloor = new TextureRegion(texture, 0, 0, 
-				64, 64);
-		TextureRegion dockFloor = new TextureRegion(texture, 64, 0, 
-				64, 64);
+	public void createBoard(Texture texture, String[][] map) {
+		Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
+		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
+				
+		for(int x = 0; x < map.length; x++) {
+			for(int y = 0; y < map[0].length; y++) {				
+				// Create the floor
+				Image floor = null;
+				if(y < map[0].length - 4) {
+					floor = new Image(new TextureRegion(texture, 0, 0, 64, 64));
+				}else{
+					floor = new Image(new TextureRegion(texture, 64, 0, 64, 64));
+				}
+				// Add the floor
+				floor.setSize(40, 40);
+				floor.setPosition(40 * x, 800 - 40 * (y+1));
+				addActor(floor);
+
+				// Add all the elements to the tile
+				if(!map[x][y].equals("")) {
+					for(String elementData : map[x][y].split(":")) {
+						int tileData = Integer.parseInt(elementData);
+
+						// Create the boardelement
+						int tile = tileData % 10;
+						Image i = null;
+						// TODO : Switch
+						if(tile == TILE_HOLE) {					
+							i = new Image(new TextureRegion(texture, 128, 0, 64, 64));
+						}else if(tile == TILE_GEARS) {
+							i = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
+									tileData / 10 == 0 ? false : true);
+						}else if(tile == TILE_CONVEYORBELT) {
+							i = new ConveyorBeltView(new TextureRegion(conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
+									((tileData / 10) % 10) * 90, tileData / 100);
+						}else if(tile == TILE_CHECKPOINT) {
+							i = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
+									(tileData / 10));
+						}else if(tile == TILE_REPAIR) {
+							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
+						}else if(tile == TILE_START) {
+							i = new StartPointView(new TextureRegion(texture, 0, 128, 64, 64), tileData / 10);
+						}else if(tile == TILE_WALL || tile == TILE_LASER) {
+							int rotation = tileData / 10;
+							Image wallBit;
+							if(tile == TILE_WALL) {
+								wallBit = new Image(new TextureRegion(texture, 384, 0, 64, 64));
+							}else{
+								wallBit = new Image(new TextureRegion(texture, 448, 0, 64, 64));
+							}
+							wallBit.setSize(40, 40);
+							wallBit.setPosition(40 * x - 20, 800 - 40 * (y+1));
+							wallBit.setOrigin(wallBit.getWidth()/2 + 20, wallBit.getHeight()/2);
+							wallBit.rotate(-(1 + rotation) * 90);
+							walls.add(wallBit);		
+
+						}
+						// Add the element if created
+						if(i != null) {
+							i.setSize(40, 40);
+							i.setPosition(40 * x, 800 - 40 * (y+1));
+							addActor(i);
+						}
+					} // loop - elements
+				} // if
+			} // loop - Y
+		} // loop - X
 		
-		for(int x = 0; x < 12; x++) {
-			for(int y = 0; y < 12; y++) {
-				Sprite s = new Sprite(factoryFloor);
-				s.setSize(40, 40);
-				s.setPosition(40 * x, 760 - 40 * y);
-				staticSprites.add(s);
-			}
-			for(int y = 0; y < 4; y++) {
-				Sprite s = new Sprite(dockFloor);
-				s.setSize(40, 40);
-				s.setPosition(40 * x, 760 - 40 * y - 40 * 12);
-				staticSprites.add(s);
-			}
+		//Add walls (added last to be on top of everything else)
+		for(Image i : walls) {
+			addActor(i);
 		}
 	}
 	
@@ -58,6 +131,7 @@ public class BoardView {
 	 */
 	public void addPlayer(PlayerPieceView player) {
 		players.add(player);
+		addActor(player);
 	}
 	
 	/**
@@ -72,18 +146,5 @@ public class BoardView {
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Renders the scene.
-	 * @param spriteBatch The instance of spritebatch to use when rendering.
-	 */
-	public void render(SpriteBatch spriteBatch) {
-		for(Sprite s : staticSprites) {
-			s.draw(spriteBatch);
-		}
-		for(PlayerPieceView p : players) {
-			p.draw(spriteBatch);
-		}
 	}
 }

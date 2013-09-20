@@ -6,67 +6,69 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 
+
 public class GdxGame implements ApplicationListener {
-	
-	private OrthographicCamera camera;
-	private SpriteBatch spriteBatch;
-	private BoardView gameBoard;
-	private Texture texture;
+
+	private OrthographicCamera boardCamera, cardCamera;
+	private Texture cardTexture;
 	private GameController gameController;
+	private BoardView gameBoard;
+	private DeckView cardDeck;
 	
 	@Override
-	public void create() {	
+	public void create() {
 		// Turn off rendering loop to save battery
-		Gdx.graphics.setContinuousRendering(false);
+		// Gdx.graphics.setContinuousRendering(false);
+
+		boardCamera = new OrthographicCamera(480, 800);
+		boardCamera.zoom = 1.0f;
+		boardCamera.position.set(240, 400, 0f);
+		boardCamera.update();
+
+		cardCamera = new OrthographicCamera(480, 800);
+		cardCamera.zoom = 1.0f;
+		cardCamera.position.set(240, 400, 0f);
+		cardCamera.update();
+
+		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
+		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		gameBoard = new BoardView();
 		
-		camera = new OrthographicCamera(480, 800);
-		camera.zoom = 1.0f;
-		camera.position.set(240, 400, 0f);
-		camera.update();
-		spriteBatch = new SpriteBatch();	
+		cardDeck = new DeckView();
+		cardDeck.createDeck(cardTexture);
+
+		Gdx.input.setInputProcessor(gameBoard);
+		Gdx.input.setInputProcessor(cardDeck);
 		
-		texture = new Texture(Gdx.files.internal("textures/testTile.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
-		gameBoard = new BoardView();		
-		gameBoard.createBoard(texture);
-		
-		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 
-				64, 64);
-		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
-		player1.setPosition(80, 800 - 160);
-		gameBoard.addPlayer(player1);
-		
-		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 
-				64, 64);
-		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
-		player2.setPosition(160, 400);
-		gameBoard.addPlayer(player2);
-		
+		gameBoard.setCamera(boardCamera);
+		cardDeck.setCamera(cardCamera);
+
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
-		
-		Gdx.graphics.requestRendering();
+				
+//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
 	public void dispose() {
-		spriteBatch.dispose();
+		gameBoard.dispose();
+		cardDeck.dispose();
 	}
 
 	@Override
-	public void render() {		
+	public void render() {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		camera.update();	
-		spriteBatch.setProjectionMatrix(camera.combined);
-		spriteBatch.begin();	
-		gameBoard.render(spriteBatch);
-		spriteBatch.end();
+		gameBoard.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		gameBoard.draw();
+		cardDeck.draw();
+	}
+	
+	public BoardView getBoardView() {
+		return this.gameBoard;
 	}
 
 	@Override
@@ -80,12 +82,12 @@ public class GdxGame implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
-	
-	public BoardView getBoardView() {
-		return this.gameBoard;
+
+	public OrthographicCamera getBoardCamera() {
+		return this.boardCamera;
 	}
-	
-	public OrthographicCamera getCamera() {
-		return this.camera;
+
+	public OrthographicCamera getCardCamera() {
+		return this.cardCamera;
 	}
 }

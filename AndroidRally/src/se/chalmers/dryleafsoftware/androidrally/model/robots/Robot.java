@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.model.robots;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
@@ -13,14 +14,14 @@ public class Robot {
 	
 	private int positionX;
 	private int positionY;
-	private int direction = GameBoard.NORTH;
+	private int robotDirection = GameBoard.NORTH;
 	private List<Card> cards;
 	private Card[] chosenCards;
 	private int damage = 0;
 	private int life = STARTING_LIFE;
 	private int spawnPointX;
 	private int spawnPointY;
-	private int checkpoint = 0;
+	private int checkpoint;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -28,6 +29,7 @@ public class Robot {
 		newSpawnPoint();
 		cards = new ArrayList<Card>();
 		chosenCards = new Card[5];
+		checkpoint = 0;
 	}
 	
 	/**
@@ -45,18 +47,21 @@ public class Robot {
 		}else if(direction == GameBoard.WEST){
 			this.positionX -= distance;
 		}
+		if(positionX<0 || positionX > GameBoard.WIDTH || positionY<0 || positionY > GameBoard.HEIGHT){
+			die();
+		}
 	}
 	
 	
 	public void turn(TurnType turn){
 		if (turn == TurnType.LEFT){
-			direction += 3;
+			robotDirection += 3;
 		} else if(turn == TurnType.RIGHT){
-			direction += 1;
+			robotDirection += 1;
 		} else if(turn == TurnType.UTURN){
-			direction += 2;
+			robotDirection += 2;
 		}
-		direction %= 4;
+		robotDirection %= 4;
 	}
 	
 	public void addCards(List<Card> cards){
@@ -65,19 +70,13 @@ public class Robot {
 	
 	public List<Card> returnCards(){
 		List<Card> returnCards= new ArrayList<Card>();
-		returnCards.addAll(cards);
-		int nbrOfLockedCards = 0;
-		nbrOfLockedCards = this.damage;
-		for(int i = 0; i<nbrOfLockedCards-1; i++){
-			returnCards.add(chosenCards[i]);
-		}
 		
 		returnCards.addAll(cards);
 		for(Card card : chosenCards){
 			returnCards.remove(card);
 		}
-		for(int i = 0; i < 9 - damage; i++){
-			returnCards.add(chosenCards[i]);
+		for(int i = 0; i < damage - 4; i++){
+			returnCards.remove(chosenCards[4-i]);
 			chosenCards[i] = null;
 		}
 		cards.clear();
@@ -126,7 +125,7 @@ public class Robot {
 	}
 
 	public int getDirection() {
-		return direction;
+		return robotDirection;
 	}
 
 	public int getLife() {
@@ -135,6 +134,28 @@ public class Robot {
 
 	public Card[] getChosenCards() {
 		return chosenCards;
+	}
+	
+	public void setChosenCards(List<Card> chosenCards){
+		if(this.cards.containsAll(chosenCards)){
+			for(int i = 0; i<5; i++){
+				if(this.chosenCards[i] == null){
+					this.chosenCards[i] = chosenCards.get(i);
+				}
+			}
+		}
+		fillEmptyCardRegisters();
+	}
+	
+	private void fillEmptyCardRegisters(){
+		Random random = new Random();
+		List<Card> tempCards = new ArrayList<Card>();
+		tempCards.addAll(cards);
+		for(int i = 0; i<5; i++){
+			if(this.chosenCards[i] == null){
+				this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
+			}
+		}
 	}
 	
 	public List<Card> getCards(){
