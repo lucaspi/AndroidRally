@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class DeckView extends Stage {
 
-	private List<Image> deckCards = new ArrayList<Image>();
-	private List<Image> chosenCards = new ArrayList<Image>();
+	private List<CardView> deckCards = new ArrayList<CardView>();
+	private List<CardView> chosenCards = new ArrayList<CardView>();
 
 	public DeckView() {
 		super();
@@ -25,8 +25,8 @@ public class DeckView extends Stage {
 		addActor(deck);
 	}
 
-	public void setDeckCards(List<Image> cards) {
-		this.deckCards = cards;
+	public void setDeckCards(List<CardView> list) {
+		this.deckCards = list;
 	}
 
 }

@@ -35,6 +35,8 @@ public class GameController implements GestureListener {
 		
 		Texture boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
+		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		game.getBoardView().createBoard(boardTexture, client.getMap());
 		
@@ -45,6 +47,8 @@ public class GameController implements GestureListener {
 		PlayerView p = game.getBoardView().getPlayer(1);
 		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
 				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
+		
+		game.getDeckView().setDeckCards(client.getCards(cardTexture));
 	}
 
 	@Override
