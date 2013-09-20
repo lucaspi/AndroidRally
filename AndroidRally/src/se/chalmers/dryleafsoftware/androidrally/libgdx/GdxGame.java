@@ -70,6 +70,10 @@ public class GdxGame implements ApplicationListener {
 	public BoardView getBoardView() {
 		return this.gameBoard;
 	}
+	
+	public DeckView getDeckView() {
+		return this.cardDeck;
+	}
 
 	@Override
 	public void resize(int width, int height) {

@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class DeckView extends Stage {
 
-	private List<Image> deckCards = new ArrayList<Image>();
-	private List<Image> chosenCards = new ArrayList<Image>();
+	private List<CardView> deckCards = new ArrayList<CardView>();
+	private List<CardView> chosenCards = new ArrayList<CardView>();
 
 	public DeckView() {
 		super();
@@ -25,8 +23,13 @@ public class DeckView extends Stage {
 		addActor(deck);
 	}
 
-	public void setDeckCards(List<Image> cards) {
-		this.deckCards = cards;
+	public void setDeckCards(List<CardView> list) {
+		this.deckCards = list;
+		for(int i = 0; i < list.size(); i++) {
+			CardView cv = list.get(i);
+			cv.setPosition((cv.getWidth() + 10) * i, 0);
+			addActor(cv);
+		}
 	}
 
 }

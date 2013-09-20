@@ -47,6 +47,7 @@ public class Client {
 	 * @return
 	 */
 	public List<CardView> getCards(Texture texture) {
+		model.dealCards();
 		List<CardView> cards = new ArrayList<CardView>();
 		
 		// TODO: change to clientID and input to string
@@ -68,8 +69,9 @@ public class Client {
 			}else if(prio <= 840) {
 				regX = 384;	// Move 3
 			}				
-//			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 128), 
-//				card.getPriority());
+			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
+				card.getPriority());
+			cards.add(cv);
 		}
 		return cards;
 	}
