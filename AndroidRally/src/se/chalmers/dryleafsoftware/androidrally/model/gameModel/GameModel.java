@@ -69,6 +69,10 @@ public class GameModel {
 		
 	}
 	
+	public String[][] getMap(){
+		return gameBoard.getMapAsString();
+	}
+	
 	private boolean isRobotHit(int x, int y){
 		for(Robot robot : this.robots){
 			if(robot.getX() == x && robot.getY() == y){
