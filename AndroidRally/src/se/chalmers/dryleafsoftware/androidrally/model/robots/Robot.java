@@ -22,6 +22,7 @@ public class Robot {
 	private int spawnPointX;
 	private int spawnPointY;
 	private int checkpoint;
+	private boolean sentCards;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -80,6 +81,7 @@ public class Robot {
 			chosenCards[i] = null;
 		}
 		cards.clear();
+		setSentCards(false);
 		return returnCards;
 	}
 	
@@ -106,9 +108,10 @@ public class Robot {
 	}
 	
 	public void reachCheckPoint(int checkpoint){
-		newSpawnPoint();
 		if(checkpoint == this.checkpoint + 1){
 			this.checkpoint ++;
+			newSpawnPoint();
+			damage--;
 		}
 	}
 	
@@ -160,5 +163,13 @@ public class Robot {
 	
 	public List<Card> getCards(){
 		return cards;
+	}
+
+	public boolean haveSentCards() {
+		return sentCards;
+	}
+
+	public void setSentCards(boolean sentCards) {
+		this.sentCards = sentCards;
 	}
 }

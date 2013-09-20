@@ -21,6 +21,21 @@ public class GameModel {
 	private List<Robot> robots;
 	private Deck deck;
 	
+	private String[][] testmap = new String[][] {
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
+			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
+			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
+			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
+			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
+			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
+			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
+			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
+			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+	};
+	
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.
@@ -29,15 +44,11 @@ public class GameModel {
 	 */
 	public GameModel(int nbrOfPlayers) {
 //		gameBoard = new GameBoard(12, 16, nbrOfPlayers);// TODO createGameBoard with proper data
-		String[][] map = new String[12][16];
-		for(int i = 0; i<12; i++){
-			for(String string : map[i]){
-				string = "";
-			}
-		}
-		gameBoard = new GameBoard(map);
+		gameBoard = new GameBoard(testmap);
+		robots = new ArrayList<Robot>();
+		int[][] startingPositions = gameBoard.getStartingPositions();
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			robots.add(new Robot(i, 14));
+			robots.add(new Robot(startingPositions[i][0], startingPositions[i][1]));
 		}
 		deck = new Deck();
 	}
@@ -66,6 +77,10 @@ public class GameModel {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
 		
+	}
+	
+	public String[][] getMap(){
+		return gameBoard.getMapAsString();
 	}
 	
 	private boolean isRobotHit(int x, int y){

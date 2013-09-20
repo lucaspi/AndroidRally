@@ -1,17 +1,21 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.StartPointView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
@@ -24,8 +28,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public class BoardView extends Stage {
 
 	private List<Image> walls = new ArrayList<Image>();
-	private List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
-	
+	private List<PlayerView> players = new ArrayList<PlayerView>();
+	private Vector2[] startPoints = new Vector2[8];
+			
 	private static final int 
 			TILE_HOLE = 1,
 			TILE_CHECKPOINT = 2,
@@ -33,7 +38,8 @@ public class BoardView extends Stage {
 			TILE_GEARS = 4,
 			TILE_REPAIR = 5,
 			TILE_WALL = 6,
-			TILE_LASER = 7;
+			TILE_LASER = 7,
+			TILE_START = 8;
 	
 	/**
 	 * Creates a new instance of BoardView.
@@ -75,6 +81,7 @@ public class BoardView extends Stage {
 						// Create the boardelement
 						int tile = tileData % 10;
 						Image i = null;
+						// TODO : Switch
 						if(tile == TILE_HOLE) {					
 							i = new Image(new TextureRegion(texture, 128, 0, 64, 64));
 						}else if(tile == TILE_GEARS) {
@@ -88,6 +95,9 @@ public class BoardView extends Stage {
 									(tileData / 10));
 						}else if(tile == TILE_REPAIR) {
 							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
+						}else if(tile == TILE_START) {
+							i = new StartPointView(new TextureRegion(texture, 0, 128, 64, 64), tileData / 10);
+							startPoints[tileData/10 - 1] = new Vector2(40 * x, 800 - 40 * (y+1));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
 							int rotation = tileData / 10;
 							Image wallBit;
@@ -120,13 +130,21 @@ public class BoardView extends Stage {
 		}
 	}
 	
+	public Vector2[] getStartPositions() {
+		return this.startPoints;
+	}
+	
 	/**
 	 * Adds the specified player to the board.
 	 * @param player The player to add.
 	 */
-	public void addPlayer(PlayerPieceView player) {
+	public void addPlayer(PlayerView player) {
 		players.add(player);
 		addActor(player);
+	}
+	
+	public List<PlayerView> getPlayers() {
+		return this.players;
 	}
 	
 	/**
@@ -134,8 +152,8 @@ public class BoardView extends Stage {
 	 * @param playerID The ID-number to look for.
 	 * @return The player with the specified ID.
 	 */
-	public PlayerPieceView getPlayer(int playerID) {
-		for(PlayerPieceView p : players) {
+	public PlayerView getPlayer(int playerID) {
+		for(PlayerView p : players) {
 			if(p.getPlayerID() == playerID) {
 				return p;
 			}
