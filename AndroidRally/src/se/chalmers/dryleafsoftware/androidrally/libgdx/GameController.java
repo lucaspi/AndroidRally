@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,18 +23,18 @@ public class GameController implements GestureListener {
 		this.game = game;
 		this.boardCamera = this.game.getBoardCamera();
 		this.cardCamera = this.game.getCardCamera();
-		this.client = new Client();
+		this.client = new Client(1);
 		
 		Texture boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		game.getBoardView().createBoard(boardTexture, client.getMap());
 		
-		for(PlayerPieceView player : client.getPlayers(boardTexture)) {
+		for(PlayerView player : client.getPlayers(boardTexture, game.getBoardView().getStartPositions())) {
 			game.getBoardView().addPlayer(player);
 		}		
 		
-		PlayerPieceView p = game.getBoardView().getPlayer(1);
+		PlayerView p = game.getBoardView().getPlayer(1);
 		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
 				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
 	}

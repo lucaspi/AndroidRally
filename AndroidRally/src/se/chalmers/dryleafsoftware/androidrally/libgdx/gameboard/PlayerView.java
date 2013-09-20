@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
  * @author 
  *
  */
-public class PlayerPieceView extends Image  {
+public class PlayerView extends Image  {
 
 	private final int playerID;
 	
@@ -19,7 +19,7 @@ public class PlayerPieceView extends Image  {
 	 * @param playerID The ID-number of the player whose piece this is.
 	 * @param texture The texture to use.
 	 */
-	public PlayerPieceView(int playerID, TextureRegion texture) {
+	public PlayerView(int playerID, TextureRegion texture) {
 		super(texture);
 		this.setSize(40, 40);
 		this.playerID = playerID;
