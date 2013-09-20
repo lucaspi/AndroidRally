@@ -19,11 +19,39 @@ public class CheckPointTest {
 		
 		assertTrue(robot.getLastCheckPoint() == 0);
 		
-		robot.reachCheckPoint(checkPoint2.getNbrOfCheckPoint());
+		checkPoint2.action(robot);
 		assertTrue(robot.getLastCheckPoint() == 0);
 		
+		checkPoint3.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 0);
+		
+		checkPoint4.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 0);
+		
+		
 		checkPoint1.action(robot);
-
+		assertTrue(robot.getLastCheckPoint() == 1);
+		
+		checkPoint3.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 1);
+		
+		checkPoint4.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 1);
+		
+		
+		checkPoint2.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 2);
+		
+		checkPoint4.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 2);
+		
+		
+		checkPoint3.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 3);
+		
+		
+		checkPoint4.action(robot);
+		assertTrue(robot.getLastCheckPoint() == 4);
 	}
 
 }
