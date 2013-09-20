@@ -15,20 +15,35 @@ public class GameController {
 	private Timer timer;
 	private TimerTask endOfRound;
 	private int hoursEachRound;
+	private boolean isRunRunning;
+	private int nbrOfRobotsDone;
 	
 	public GameController(int nbrOfPlayers) {
+		isRunRunning = false;
+		nbrOfRobotsDone = 0;
 		gameModel = new GameModel(nbrOfPlayers);
 		timer = new Timer();
 		endOfRound = new TimerTask() {
 			@Override
 			public void run() {
+				isRunRunning = true;
 				stopRoundTimer();
-				setChosenCardsToRobots();
+				handleRemainingRobots();
 				gameModel.moveRobots();
 				startRoundTimer();
+				nbrOfRobotsDone = 0;
+				isRunRunning = false;
 			}
 		};
 		hoursEachRound = 24;
+	}
+
+	public void handleRemainingRobots() {
+		for (int i = 0; i < gameModel.getRobots().size(); i++) {
+			if (!gameModel.getRobots().get(i).haveSentCards()) {
+				setChosenCardsToRobots(new int[]{0,0,0,0,0}, i);
+			}
+		}
 	}
 
 	public GameModel getGameModel() {
@@ -65,6 +80,13 @@ public class GameController {
 			}
 		}
 		robot.setChosenCards(chosenCards);
+		robot.setSentCards(true);
+		nbrOfRobotsDone++;
+		
+		if(gameModel.getRobots().size() == nbrOfRobotsDone && !isRunRunning) {
+			endOfRound.run();
+		}
+		
 	}
 
 	public int getHoursEachRound() {
