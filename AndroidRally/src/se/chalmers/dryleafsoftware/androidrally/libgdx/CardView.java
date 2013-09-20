@@ -9,11 +9,17 @@ public class CardView extends Image implements Comparable<CardView> {
 	
 	private int priority;
 	private BitmapFont font;
+	private final int index;
 
-	public CardView(TextureRegion tr, int priority) {
+	public CardView(TextureRegion tr, int priority, int index) {
 		super(tr);
 		this.priority = priority;
+		this.index = index;
 		font = new BitmapFont();
+	}
+	
+	public int getIndex() {
+		return this.index;
 	}
 	
 	public int getPriority() {
