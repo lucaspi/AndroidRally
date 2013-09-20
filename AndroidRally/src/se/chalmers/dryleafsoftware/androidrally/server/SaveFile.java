@@ -1,8 +1,12 @@
 package se.chalmers.dryleafsoftware.androidrally.server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.List;
+
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 
 /**
  * This is the class that saves the files that are sent 
@@ -11,12 +15,10 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
  *
  */
 public class SaveFile {
-	GameModel gameModel;
-	Robot[] robots;
-	String cardsString;
+	private List<Robot> robots;
+	private String cardsString;
 	
 	public SaveFile(GameModel gameModel){
-		this.gameModel = gameModel;
 		this.robots = gameModel.getRobots();
 	}
 	/**
@@ -24,9 +26,20 @@ public class SaveFile {
 	 * @return a String representing each robot's cards
 	 */
 	public String cardsToString(){
-		for(int i = 0; i < robot.getCards().length; i++){
-			cardsString += "" + robot.getCards().get(i).get
+		cardsString = "";
+		for(Robot robot : robots){
+			for(int i = 0; i < robot.getCards().size(); i++){
+				cardsString += "" + robot.getCards().get(i).getPriority() + ",";
+			}
+			cardsString += "\n";
 		}
+		return cardsString;
 	}
-
+	
+	/**
+	 * Saves the card info to a .txt file
+	 */
+	public void cardsToFile(){
+		//TODO
+	}
 }
