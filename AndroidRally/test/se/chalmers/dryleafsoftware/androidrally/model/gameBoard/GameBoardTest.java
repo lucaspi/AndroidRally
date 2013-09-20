@@ -7,8 +7,9 @@ import org.junit.Test;
 public class GameBoardTest {
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testCreateBoard() {
+		String[][] map = new String();
+		GameBoard gameBoard = new GameBoard(map);
 	}
 
 }
