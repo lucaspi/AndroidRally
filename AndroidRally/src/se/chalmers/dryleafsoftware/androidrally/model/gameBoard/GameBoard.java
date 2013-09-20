@@ -98,8 +98,8 @@ public class GameBoard {
 						}else if(tile == TILE_LASER){
 							lasers.add(new Laser(x, y, tileData / 10));
 						}else if(tile == TILE_START){
-							startingPosition[tileData / 10][0] = x;
-							startingPosition[tileData / 10][1] = y;
+							startingPosition[tileData / 10 - 1][0] = x;
+							startingPosition[tileData / 10 - 1][1] = y;
 						}
 					} // loop - elements
 					tiles[x][y].setWalls(wall);

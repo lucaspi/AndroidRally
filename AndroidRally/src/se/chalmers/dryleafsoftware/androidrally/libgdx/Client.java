@@ -1,62 +1,93 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Turn;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
+/**
+ * 
+ * 
+ * @author
+ *
+ */
 public class Client {
 
-	private GameModel model;
+	private final GameModel model;
+	private final int clientID;
 	
 	/**
-	 * Bara "" ger en tom ruta. "12:33" kommer skapa två elements på den rutan.
-	 * entalen står för ID för elementet på den rutan. tiotalen står för
-	 * speciella egenskaper för det elementet, t.ex 33 ger ett rullband (3) +
-	 * roterat 3 gånger (30) = 33 t.ex 12 ger checkpoint (2) + numerordning 1
-	 * (10) = 12 osv.
+	 * Creates a new client instance.
 	 */
-	private String[][] testmap = new String[][] {
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
-			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
-			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
-			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
-			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
-			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
-			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
-			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-	};
-	
-	public Client() {
-//		this.model = new GameModel(5);
+	public Client(int clientID) {
+		this.model = new GameModel(8);
+		this.clientID = clientID;
 	}
 	
+	/**
+	 * Returns the map of the board as a matrix of strings.
+	 * @return A map of the board as a matrix of strings.
+	 */
 	public String[][] getMap() {
-		return testmap;
+		return model.getMap();
 	}
 	
-	public List<PlayerPieceView> getPlayers(Texture texture) {
-		List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
-				
-		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 64, 64);
-		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
-		player1.setPosition(80, 800 - 160);
-		player1.setOrigin(20, 20);
-		players.add(player1);
+	/**
+	 * 
+	 * @return
+	 */
+	public List<CardView> getCards(Texture texture) {
+		List<CardView> cards = new ArrayList<CardView>();
 		
-		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 64, 64);
-		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
-		player2.setPosition(160, 400);
-		player2.setOrigin(20, 20);
-		players.add(player2);
-		
+		// TODO: change to clientID and input to string
+		for(Card card : model.getRobots().get(0).getCards()) {
+			int prio = card.getPriority();
+			int regX = 0;
+			if(prio <= 60) {
+				regX = 0;	// UTURN
+			}else if(prio <= 410 && prio % 20 != 0) {
+				regX = 64;	// LEFT
+			}else if(prio <= 420 && prio % 20 == 0) {
+				regX = 128;	// LEFT
+			}else if(prio <= 480) {
+				regX = 192;	// Back 1
+			}else if(prio <= 660) {
+				regX = 256;	// Move 1
+			}else if(prio <= 780) {
+				regX = 320;	// Move 2
+			}else if(prio <= 840) {
+				regX = 384;	// Move 3
+			}				
+//			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 128), 
+//				card.getPriority());
+		}
+		return cards;
+	}
+	
+	/**
+	 * Gives all the players as a list.
+	 * @param texture The textures to use.
+	 * @param startPoints The points to start at.
+	 * @return A list of all the players.
+	 */
+	public List<PlayerView> getPlayers(Texture texture, Vector2[] startPoints) {
+		List<PlayerView> players = new ArrayList<PlayerView>();		
+		for(int i = 0; i < model.getRobots().size(); i++) {
+			PlayerView player1 = new PlayerView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
+			player1.setPosition(startPoints[i].x, startPoints[i].y);
+			player1.setOrigin(20, 20);
+			players.add(player1);
+		}		
 		return players;
 	}
 }

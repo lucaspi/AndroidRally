@@ -12,7 +12,7 @@ import com.badlogic.gdx.input.GestureDetector;
 public class GdxGame implements ApplicationListener {
 
 	private OrthographicCamera boardCamera, cardCamera;
-	private Texture cardTexture;
+	private Texture deckTexture;
 	private GameController gameController;
 	private BoardView gameBoard;
 	private DeckView cardDeck;
@@ -32,13 +32,13 @@ public class GdxGame implements ApplicationListener {
 		cardCamera.position.set(240, 400, 0f);
 		cardCamera.update();
 
-		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
-		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
+		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		gameBoard = new BoardView();
 		
 		cardDeck = new DeckView();
-		cardDeck.createDeck(cardTexture);
+		cardDeck.createDeck(deckTexture);
 
 		Gdx.input.setInputProcessor(gameBoard);
 		Gdx.input.setInputProcessor(cardDeck);
