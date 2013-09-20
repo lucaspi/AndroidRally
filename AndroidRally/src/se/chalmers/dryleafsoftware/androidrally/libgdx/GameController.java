@@ -75,7 +75,7 @@ public class GameController implements GestureListener {
 
 	@Override
 	public boolean touchDown(float arg0, float arg1, int arg2, int arg3) {
-		if (arg1 < Gdx.graphics.getHeight() / 2) {
+		if (arg1 < Gdx.graphics.getHeight() * 2 / 3) {
 			modifyBoard = true;
 			modifyCards = false;
 		} else {
