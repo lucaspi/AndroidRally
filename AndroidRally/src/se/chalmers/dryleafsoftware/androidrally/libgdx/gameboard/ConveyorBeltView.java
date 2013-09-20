@@ -14,17 +14,19 @@ public class ConveyorBeltView extends Image {
 	
 	private float scrollTimer = 0;
 	private TextureRegion texture;
+	private float scrollSpeed = 0.01f;
 	
 	/**
 	 * Creates a new conveyor belt at the specified position.
 	 * @param texture The texture of the conveyor belt.
 	 * @param degree The direction of the conveyorbelt (counterclockwise).
 	 */
-	public ConveyorBeltView(TextureRegion texture, int degree) {
+	public ConveyorBeltView(TextureRegion texture, int degree, int speedMulti) {
 		super(texture);
 		this.texture = texture;
 		this.setOrigin(getWidth()/2, getHeight()/2);
 		this.rotate(-degree);
+		this.scrollSpeed *= speedMulti;
 	}
 	
 	@Override
@@ -35,7 +37,7 @@ public class ConveyorBeltView extends Image {
 	
 	@Override
 	public void draw(SpriteBatch spriteBatch, float f) {	
-		scrollTimer += 0.01f;
+		scrollTimer += scrollSpeed;
 		if (scrollTimer > 1.0f)
 		        scrollTimer = 0.0f;
 		texture.setV(scrollTimer);

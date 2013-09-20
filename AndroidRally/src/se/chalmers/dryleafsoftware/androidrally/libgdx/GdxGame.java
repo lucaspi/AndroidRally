@@ -6,40 +6,16 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 
 public class GdxGame implements ApplicationListener {
 
 	private OrthographicCamera boardCamera, cardCamera;
-	private Texture boardTexture, cardTexture;
+	private Texture cardTexture;
 	private GameController gameController;
 	private BoardView gameBoard;
 	private DeckView cardDeck;
-
-	/**
-	 * Bara "" ger en tom ruta. "12:33" kommer skapa två elements på den rutan.
-	 * entalen står för ID för elementet på den rutan. tiotalen står för
-	 * speciella egenskaper för det elementet, t.ex 33 ger ett rullband (3) +
-	 * roterat 3 gånger (30) = 33 t.ex 12 ger checkpoint (2) + numerordning 1
-	 * (10) = 12 osv.
-	 */
-	private String[][] testmap = new String[][] {
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", ""},
-			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
-			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
-			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
-			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-	};
 	
 	@Override
 	public void create() {
@@ -56,31 +32,13 @@ public class GdxGame implements ApplicationListener {
 		cardCamera.position.set(240, 400, 0f);
 		cardCamera.update();
 
-		boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
-		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
 		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
 		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		gameBoard = new BoardView();
-		gameBoard.createBoard(boardTexture, testmap);
 		
 		cardDeck = new DeckView();
 		cardDeck.createDeck(cardTexture);
-
-		// TODO: move this
-		TextureRegion playerTexture1 = new TextureRegion(boardTexture, 0, 64, 64, 64);
-		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
-		player1.setPosition(80, 800 - 160);
-		player1.setOrigin(20, 20);
-		gameBoard.addPlayer(player1);
-		// TODO: move this
-		TextureRegion playerTexture2 = new TextureRegion(boardTexture, 64, 64, 64,
-				64);
-		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
-		player2.setPosition(160, 400);
-		player2.setOrigin(20, 20);
-		gameBoard.addPlayer(player2);
 
 		Gdx.input.setInputProcessor(gameBoard);
 		Gdx.input.setInputProcessor(cardDeck);
@@ -91,10 +49,6 @@ public class GdxGame implements ApplicationListener {
 		gameController = new GameController(this);
 		Gdx.input.setInputProcessor(new GestureDetector(gameController));
 				
-		PlayerPieceView p = gameBoard.getPlayer(1);
-		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
-				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
-		
 //		Gdx.graphics.requestRendering();
 	}
 
@@ -111,6 +65,10 @@ public class GdxGame implements ApplicationListener {
 		gameBoard.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		gameBoard.draw();
 		cardDeck.draw();
+	}
+	
+	public BoardView getBoardView() {
+		return this.gameBoard;
 	}
 
 	@Override

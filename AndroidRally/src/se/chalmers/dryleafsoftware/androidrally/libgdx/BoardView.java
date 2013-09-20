@@ -82,7 +82,7 @@ public class BoardView extends Stage {
 									tileData / 10 == 0 ? false : true);
 						}else if(tile == TILE_CONVEYORBELT) {
 							i = new ConveyorBeltView(new TextureRegion(conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
-									((tileData / 10) % 10) * 90);
+									((tileData / 10) % 10) * 90, tileData / 100);
 						}else if(tile == TILE_CHECKPOINT) {
 							i = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
 									(tileData / 10));
