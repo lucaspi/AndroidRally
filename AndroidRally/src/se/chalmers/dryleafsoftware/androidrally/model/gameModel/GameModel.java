@@ -28,7 +28,14 @@ public class GameModel {
 	 * @param nbrOfPlayers the number of players in the game including CPU:s
 	 */
 	public GameModel(int nbrOfPlayers) {
-		gameBoard = new GameBoard(12, 16, nbrOfPlayers);
+//		gameBoard = new GameBoard(12, 16, nbrOfPlayers);// TODO createGameBoard with proper data
+		String[][] map = new String[12][16];
+		for(int i = 0; i<12; i++){
+			for(String string : map[i]){
+				string = "";
+			}
+		}
+		gameBoard = new GameBoard(map);
 		for (int i = 0; i < nbrOfPlayers; i++) {
 			robots.add(new Robot(i, 14));
 		}
@@ -74,27 +81,16 @@ public class GameModel {
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
 			if(!gameBoard.getTile(x, y).getNorthWall() && !gameBoard.getTile(x, y-1).getSouthWall()){
-				return isPositionValid(x, y);
 			}
 		}else if(direction == GameBoard.WEST){
 			if(!gameBoard.getTile(x, y).getWestWall() && !gameBoard.getTile(x-1, y).getEastWall()){
-				return isPositionValid(x, y);
 			}
 		}else if(direction == GameBoard.SOUTH){
 			if(!gameBoard.getTile(x, y).getSouthWall() && !gameBoard.getTile(x, y+1).getNorthWall()){
-				return isPositionValid(x, y);
 			}
 		}else if(direction == GameBoard.EAST){
 			if(!gameBoard.getTile(x, y).getEastWall() && !gameBoard.getTile(x+1, y).getWestWall()){
-				return isPositionValid(x, y);
 			}
-		}
-		return false;
-	}
-	
-	private boolean isPositionValid(int x, int y){
-		if(x<0 || x>=GameBoard.WIDTH || y<0 || y<=GameBoard.HEIGHT){
-			return false;
 		}
 		return false;
 	}
