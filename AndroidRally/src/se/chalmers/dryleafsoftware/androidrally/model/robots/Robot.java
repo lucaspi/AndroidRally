@@ -14,7 +14,7 @@ public class Robot {
 	
 	private int positionX;
 	private int positionY;
-	private int direction = GameBoard.NORTH;
+	private int robotDirection = GameBoard.NORTH;
 	private List<Card> cards;
 	private Card[] chosenCards;
 	private int damage = 0;
@@ -52,13 +52,13 @@ public class Robot {
 	
 	public void turn(TurnType turn){
 		if (turn == TurnType.LEFT){
-			direction += 3;
+			robotDirection += 3;
 		} else if(turn == TurnType.RIGHT){
-			direction += 1;
+			robotDirection += 1;
 		} else if(turn == TurnType.UTURN){
-			direction += 2;
+			robotDirection += 2;
 		}
-		direction %= 4;
+		robotDirection %= 4;
 	}
 	
 	public void addCards(List<Card> cards){
@@ -122,7 +122,7 @@ public class Robot {
 	}
 
 	public int getDirection() {
-		return direction;
+		return robotDirection;
 	}
 
 	public int getLife() {
