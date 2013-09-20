@@ -20,9 +20,9 @@ public class DeckView extends Stage {
 	}
 
 	public void createDeck(Texture texture) {
-//		Image deck = new Image(new TextureRegion(texture, 0, 0, 512, 256));
-//		deck.setPosition(0, 0);
-//		addActor(deck);
+		Image deck = new Image(new TextureRegion(texture, 0, 0, 512, 256));
+		deck.setPosition(0, 0);
+		addActor(deck);
 	}
 
 	public void setDeckCards(List<Image> cards) {

@@ -30,6 +30,9 @@ public class GameController implements GestureListener {
 		maxZoom = 0.4f;
 		defaultPosition = new Vector3(240, 400, 0f);
 		
+		maxZoom = 0.4f;
+		defaultPosition = new Vector3(240, 400, 0f);
+		
 		Texture boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
