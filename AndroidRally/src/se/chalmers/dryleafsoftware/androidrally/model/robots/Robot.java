@@ -34,8 +34,8 @@ public class Robot {
 	}
 	
 	/**
-	 * 
-	 * @param distance
+	 * Move the robot a number of steps in the given direction.
+	 * @param distance The number of step the robot will take
 	 * @param direction use int constants in Robot class
 	 */
 	public void move(int distance, int direction){
@@ -53,7 +53,11 @@ public class Robot {
 		}
 	}
 	
-	
+	/**
+	 * Make the robot turn according to the given TurnType.
+	 * @param turn Given a TurnType the robot will turn that way
+	 * @see TurnType
+	 */
 	public void turn(TurnType turn){
 		if (turn == TurnType.LEFT){
 			robotDirection += 3;
@@ -65,10 +69,18 @@ public class Robot {
 		robotDirection %= 4;
 	}
 	
+	/**
+	 * The cards given from the Deck is put to the robot with this method.
+	 * @param cards the cards from the Deck
+	 * @see Deck
+	 */
 	public void addCards(List<Card> cards){
 		this.cards = cards;
 	}
 	
+	/**
+	 * The cards that isn't locked to a register will be sent back to the deck.
+	 */
 	public List<Card> returnCards(){
 		List<Card> returnCards= new ArrayList<Card>();
 		
@@ -85,10 +97,21 @@ public class Robot {
 		return returnCards;
 	}
 	
+	/**
+	 * Return how much health the robot have.
+	 * @return Starting health - damage
+	 */
 	public int getHealth(){
 		return STARTING_HEALTH - damage;
 	}
 	
+	/**
+	 * Increase the damage with the value of the parameter.
+	 * <p>
+	 * If the damage rate is higher than the starting health
+	 * the method die() is called. 
+	 * @param damage the amount of damage
+	 */
 	public void damage(int damage){
 		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
@@ -96,20 +119,36 @@ public class Robot {
 		}
 	}
 	
+	/**
+	 * Called when damage is higher than starting health.
+	 * Decreases life with 1 and sets the robot's position
+	 * to the last visited spawnpoint.
+	 */
 	public void die(){
 		life--;
 		positionX = spawnPointX;
 		positionY = spawnPointY;
 	}
 	
+	/**
+	 * Updates the spawnpoint that the robot will get if it dies
+	 * (die() is called).
+	 */
 	public void newSpawnPoint(){
 		spawnPointX = positionX;
 		spawnPointY = positionY;
 	}
 	
+	/**
+	 * If the next checkpoint is reached the "next checkpoint" value
+	 * will be increased with 1. Damage will decrease with 1 and
+	 * newSpawnPoint() will be called so that the robot spawns at the
+	 * specific checkpoint if it dies (die() is called).
+	 * @param checkpoint
+	 */
 	public void reachCheckPoint(int checkpoint){
 		if(checkpoint == this.checkpoint + 1){
-			this.checkpoint ++;
+			this.checkpoint++;
 			newSpawnPoint();
 			damage--;
 		}
