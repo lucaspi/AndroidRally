@@ -106,9 +106,10 @@ public class Robot {
 	}
 	
 	public void reachCheckPoint(int checkpoint){
-		newSpawnPoint();
 		if(checkpoint == this.checkpoint + 1){
 			this.checkpoint ++;
+			newSpawnPoint();
+			damage--;
 		}
 	}
 	
