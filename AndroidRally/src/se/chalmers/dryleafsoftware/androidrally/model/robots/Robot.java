@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.model.robots;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
@@ -15,7 +16,7 @@ public class Robot {
 	private int positionY;
 	private int direction = GameBoard.NORTH;
 	private List<Card> cards;
-	private List<Card> chosenCards;
+	private Card[] chosenCards;
 	private int damage = 0;
 	private int life = STARTING_LIFE;
 	private int spawnPointX;
@@ -27,7 +28,7 @@ public class Robot {
 		positionY = startY;
 		newSpawnPoint();
 		cards = new ArrayList<Card>();
-		chosenCards = new ArrayList<Card>();
+		chosenCards = new Card[5];
 	}
 	
 	/**
@@ -61,6 +62,21 @@ public class Robot {
 	
 	public void addCards(List<Card> cards){
 		this.cards = cards;
+	}
+	
+	public List<Card> returnCards(){
+		List<Card> returnCards= new ArrayList<Card>();
+		
+		returnCards.addAll(cards);
+		for(Card card : chosenCards){
+			returnCards.remove(card);
+		}
+		for(int i = 0; i < damage - 4; i++){
+			returnCards.remove(chosenCards[4-i]);
+			chosenCards[i] = null;
+		}
+		cards.clear();
+		return returnCards;
 	}
 	
 	public int getHealth(){
@@ -112,7 +128,33 @@ public class Robot {
 		return life;
 	}
 
-	public List<Card> getChosenCards() {
+	public Card[] getChosenCards() {
 		return chosenCards;
+	}
+	
+	public void setChosenCards(List<Card> chosenCards){
+		if(this.cards.containsAll(chosenCards)){
+			for(int i = 0; i<5; i++){
+				if(this.chosenCards[i] == null){
+					this.chosenCards[i] = chosenCards.get(i);
+				}
+			}
+		}
+		fillEmptyCardRegisters();
+	}
+	
+	private void fillEmptyCardRegisters(){
+		Random random = new Random();
+		List<Card> tempCards = new ArrayList<Card>();
+		tempCards.addAll(cards);
+		for(int i = 0; i<5; i++){
+			if(this.chosenCards[i] == null){
+				this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
+			}
+		}
+	}
+	
+	public List<Card> getCards(){
+		return cards;
 	}
 }

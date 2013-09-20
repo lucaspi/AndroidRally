@@ -41,10 +41,7 @@ public class Deck {
 	}
 	
 	public Card drawCard() {
-		//TODO Check if cards is empty
-		Card drawnCard = cards.get(0);
-		cards.remove(0);
-		return drawnCard;
+		return cards.remove(0);
 	}
 	
 	public void returnCards(List<Card> returnedCards) {
