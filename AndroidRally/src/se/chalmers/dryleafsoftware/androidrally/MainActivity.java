@@ -1,10 +1,13 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -43,8 +46,9 @@ public class MainActivity extends Activity {
 		toast.show();
 	}
 	
-	public void startGame() {
-		//TODO: start game
+	public void startGame(View view) {
+		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+		startActivity(i);
 	}
 
 }

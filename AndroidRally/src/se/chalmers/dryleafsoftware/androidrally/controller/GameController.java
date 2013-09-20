@@ -8,4 +8,8 @@ public class GameController {
 	public GameController(int nbrOfPlayers) {
 		gameModel = new GameModel(nbrOfPlayers);
 	}
+
+	public GameModel getGameModel() {
+		return gameModel;
+	}
 }
