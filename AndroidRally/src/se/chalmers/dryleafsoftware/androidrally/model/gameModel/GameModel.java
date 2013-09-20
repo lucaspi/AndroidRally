@@ -31,13 +31,14 @@ public class GameModel {
 //		gameBoard = new GameBoard(12, 16, nbrOfPlayers);// TODO createGameBoard with proper data
 		String[][] map = new String[12][16];
 		for(int i = 0; i<12; i++){
-			for(String string : map[i]){
-				string = "";
+			for(int j = 0; j<map[i].length; j++){
+				map[i][j] = "";
 			}
 		}
 		gameBoard = new GameBoard(map);
+		int[][] startingPositions = gameBoard.getStartingPositions();
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			robots.add(new Robot(i, 14));
+			robots.add(new Robot(startingPositions[i][0], startingPositions[i][1]));
 		}
 		deck = new Deck();
 	}

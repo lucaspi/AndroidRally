@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
-	Tile[][] tiles = null;
-	List<Laser> lasers;
+	private Tile[][] tiles = null;
+	private List<Laser> lasers;
+	private String[][] mapAsString;
+	/*
+	 * Max 8 players.
+	 */
+	private int[][] startingPosition = new int[8][2];
+	
 	public static final int EAST = 1;
 	public static final int WEST = 3;
 	public static final int SOUTH = 2;
@@ -18,7 +24,8 @@ public class GameBoard {
 		TILE_GEARS = 4,
 		TILE_REPAIR = 5,
 		TILE_WALL = 6,
-		TILE_LASER = 7;
+		TILE_LASER = 7,
+		TILE_START = 8;
 	
 	public static final int WIDTH = 12;
 	public static final int HEIGHT = 16;
@@ -38,6 +45,7 @@ public class GameBoard {
 	
 	public GameBoard(String[][] map) {
 		createBoard(map);
+		mapAsString = map;
 		lasers = new ArrayList<Laser>();
 		
 	}
@@ -47,11 +55,15 @@ public class GameBoard {
 	}
 	
 	public int[][] getStartingPositions(){
-		return null;// TODO
+		return startingPosition;
 	}
 	
 	public List<Laser> getLasers(){
 		return lasers;
+	}
+	
+	public String[][] getMapAsString(){
+		return mapAsString;
 	}
 		
 	
@@ -85,6 +97,9 @@ public class GameBoard {
 							wall += tileData / 10;
 						}else if(tile == TILE_LASER){
 							lasers.add(new Laser(x, y, tileData / 10));
+						}else if(tile == TILE_START){
+							startingPosition[tileData / 10][0] = x;
+							startingPosition[tileData / 10][1] = y;
 						}
 					} // loop - elements
 					tiles[x][y].setWalls(wall);
