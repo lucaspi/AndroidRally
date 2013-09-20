@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.DeckView.CardView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
