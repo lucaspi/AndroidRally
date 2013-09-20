@@ -3,11 +3,15 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Client {
 
+	private GameModel model;
+	
 	/**
 	 * Bara "" ger en tom ruta. "12:33" kommer skapa två elements på den rutan.
 	 * entalen står för ID för elementet på den rutan. tiotalen står för
@@ -17,11 +21,11 @@ public class Client {
 	 */
 	private String[][] testmap = new String[][] {
 			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "", ""},
-			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "", "", ""},
-			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "", ""},
+			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
+			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
+			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
+			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
+			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
 			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
 			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
 			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
@@ -31,7 +35,7 @@ public class Client {
 	};
 	
 	public Client() {
-		
+//		this.model = new GameModel(5);
 	}
 	
 	public String[][] getMap() {
@@ -40,7 +44,7 @@ public class Client {
 	
 	public List<PlayerPieceView> getPlayers(Texture texture) {
 		List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
-		
+				
 		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 64, 64);
 		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
 		player1.setPosition(80, 800 - 160);

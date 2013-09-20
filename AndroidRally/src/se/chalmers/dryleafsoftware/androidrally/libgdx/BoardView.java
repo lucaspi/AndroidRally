@@ -6,6 +6,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.StartPointView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,7 +34,8 @@ public class BoardView extends Stage {
 			TILE_GEARS = 4,
 			TILE_REPAIR = 5,
 			TILE_WALL = 6,
-			TILE_LASER = 7;
+			TILE_LASER = 7,
+			TILE_START = 8;
 	
 	/**
 	 * Creates a new instance of BoardView.
@@ -75,6 +77,7 @@ public class BoardView extends Stage {
 						// Create the boardelement
 						int tile = tileData % 10;
 						Image i = null;
+						// TODO : Switch
 						if(tile == TILE_HOLE) {					
 							i = new Image(new TextureRegion(texture, 128, 0, 64, 64));
 						}else if(tile == TILE_GEARS) {
@@ -88,6 +91,8 @@ public class BoardView extends Stage {
 									(tileData / 10));
 						}else if(tile == TILE_REPAIR) {
 							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
+						}else if(tile == TILE_START) {
+							i = new StartPointView(new TextureRegion(texture, 0, 128, 64, 64), tileData / 10);
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
 							int rotation = tileData / 10;
 							Image wallBit;
