@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -40,14 +41,12 @@ public class GdxGame implements ApplicationListener {
 		cardDeck = new DeckView();
 		cardDeck.createDeck(deckTexture);
 
-		Gdx.input.setInputProcessor(gameBoard);
-		Gdx.input.setInputProcessor(cardDeck);
-		
 		gameBoard.setCamera(boardCamera);
 		cardDeck.setCamera(cardCamera);
 
 		gameController = new GameController(this);
-		Gdx.input.setInputProcessor(new GestureDetector(gameController));
+		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck, new GestureDetector(gameController));
+		Gdx.input.setInputProcessor(im);
 				
 //		Gdx.graphics.requestRendering();
 	}
@@ -69,6 +68,10 @@ public class GdxGame implements ApplicationListener {
 	
 	public BoardView getBoardView() {
 		return this.gameBoard;
+	}
+	
+	public DeckView getDeckView() {
+		return this.cardDeck;
 	}
 
 	@Override
