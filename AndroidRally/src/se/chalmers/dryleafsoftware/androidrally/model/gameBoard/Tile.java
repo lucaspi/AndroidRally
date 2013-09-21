@@ -68,6 +68,10 @@ public class Tile {
 		boardElements.add(boardElement);
 	}
 	
+	public List<BoardElement> getBoardElements(){
+		return boardElements;
+	}
+	
 	public void setWalls(int walls){
 		
 		switch(walls){
