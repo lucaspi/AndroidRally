@@ -2,9 +2,18 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
+/**
+ * Representing a checkpoint on a gameboard.
+ * @author
+ *
+ */
 public class CheckPoint implements BoardElement{
 	private int nbrOfCheckPoint;
 	
+	/**
+	 * Creates a new checkpoint with the specified number.
+	 * @param checkPoint the number the checkpoint will represent.
+	 */
 	public CheckPoint(int checkPoint){
 		this.nbrOfCheckPoint = checkPoint;
 	}
