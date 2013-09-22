@@ -127,6 +127,13 @@ public class Robot {
 		return positionY;
 	}
 
+	public void setX(int x){
+		positionX = x;
+	}
+	public void setY(int y){
+		positionY = y;
+	}
+	
 	public int getDirection() {
 		return robotDirection;
 	}
