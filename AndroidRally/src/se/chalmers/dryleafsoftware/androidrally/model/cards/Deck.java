@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * A deck with cards that cards are drawn from and put back into.
+ */
 public class Deck {
 	private List<Card> cards;
 	
@@ -36,14 +38,25 @@ public class Deck {
 		shuffleDeck();
 	}
 	
+	/**
+	 * Shuffle the deck.
+	 */
 	public void shuffleDeck() {
 		Collections.shuffle(cards);
 	}
 	
+	/**
+	 * Take and remove a card from the deck.
+	 * @return a drawn card from the deck
+	 */
 	public Card drawCard() {
 		return cards.remove(0);
 	}
 	
+	/**
+	 * Put cards back to the deck.
+	 * @param returnedCards the card to be returned
+	 */
 	public void returnCards(List<Card> returnedCards) {
 		this.cards.addAll(returnedCards);
 	}
