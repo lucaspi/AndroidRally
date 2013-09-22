@@ -2,19 +2,37 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
+/**
+ * A GameAction describes an action on a robot.
+ * 
+ * @author 
+ *
+ */
 public abstract class GameAction {
 
-	private int player;
+	private final int robotID;
 	
-	public GameAction(int player) {
-		this.player = player;
+	/**
+	 * Creates a new instance which will work against the robot with the specified ID.
+	 * @param robotID The ID of the robot to do an action on.
+	 */
+	public GameAction(int robotID) {
+		this.robotID = robotID;
 	}
 	
-	protected int getPlayer() {
-		return this.player;
+	/**
+	 * Gives the ID of the robot to work on.
+	 * @return The ID of the robot to work on.
+	 */
+	protected int getRobotID() {
+		return this.robotID;
 	}
 	
-	public abstract void action(List<PlayerView> players);
+	/**
+	 * Does the action on the robot already specified.
+	 * @param robots A list of all the robots.
+	 */
+	public abstract void action(List<RobotView> robots);
 }

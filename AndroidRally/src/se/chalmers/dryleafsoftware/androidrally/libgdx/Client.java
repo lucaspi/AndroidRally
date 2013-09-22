@@ -7,7 +7,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MoveAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RotationAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 
@@ -16,13 +16,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * 
+ * This class talks to the server. It converts data from the server to appropriate classes which 
+ * can then be fetched through getters. It also converts data is should sent to a format the server
+ * can read.
  * 
  * @author
  *
  */
 public class Client {
 
+	// TODO: the client must somehow know which robotID the player has.
 	private final GameModel model;
 	private final int clientID;
 	
@@ -33,7 +36,7 @@ public class Client {
 	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
-		this.model = new GameModel(8);
+		this.model = new GameModel(8);// TODO: remove
 		this.clientID = clientID;
 	}
 	
@@ -42,11 +45,11 @@ public class Client {
 	 * @return A map of the board as a matrix of strings.
 	 */
 	public String[][] getMap() {
-		return model.getMap();
+		return model.getMap();// TODO: server output
 	}
 	
 	/**
-	 * Sends the cards to the server. Note that the list must contain five cards!
+	 * Sends the cards to the server. Note that the list MUST contain five cards.
 	 * @param cards The cards to send.
 	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
@@ -63,19 +66,19 @@ public class Client {
 				sb.append(":" + cards.get(i).getIndex());
 			}
 		}
-		// TODO: send(sb.toString());
+		// TODO: send to server
 		return true;
 	}
 	
 	/**
-	 * Gives all the actions which happened during the last round.
-	 * @return A list of all the actions which happened during the last round.
+	 * Gives all the actions which was created during the last round.
+	 * @return A list of all the actions was created during the last round.
 	 */
 	public List<GameAction> getRoundResult() {
 		// From server example: "0:10101;0:1;0:10102;0:1;1:10203"
 		List<GameAction> actions = new ArrayList<GameAction>();
 		
-		String[] allActions = indata.split(";");
+		String[] allActions = indata.split(";");// TODO: server input
 		for(String s : allActions) {
 			String[] singleAction = s.split(":");
 			int player = Integer.parseInt(singleAction[0]);
@@ -95,10 +98,10 @@ public class Client {
 	 */
 	public List<CardView> getCards(Texture texture) {
 		// From server example: "410:420:480:660:780:840:190:200:90"
-		model.dealCards();
+		model.dealCards();// TODO: server input
 		List<CardView> cards = new ArrayList<CardView>();
 		
-		// TODO: change to clientID and input to string
+		// TODO: change to robotID and input to string
 		for(int i = 0; i < model.getRobots().get(0).getCards().size(); i++) {
 			Card card = model.getRobots().get(0).getCards().get(i);
 			int prio = card.getPriority();
@@ -127,20 +130,21 @@ public class Client {
 	}
 	
 	/**
-	 * Gives all the players as a list.
-	 * @param texture The textures to use.
-	 * @param startPoints The points to start at.
-	 * @return A list of all the players.
+	 * Gives all the players robots in the current game as a list.
+	 * @param texture The textures to use when displaying the robots.
+	 * @param dockPositions All the docks' positions.
+	 * @return A list of all the robots.
 	 */
-	public List<PlayerView> getPlayers(Texture texture, Vector2[] startPoints) {
+	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {
 		// From server example: "
-		List<PlayerView> players = new ArrayList<PlayerView>();		
+		// TODO: server input
+		List<RobotView> robots = new ArrayList<RobotView>();		
 		for(int i = 0; i < model.getRobots().size(); i++) {
-			PlayerView player = new PlayerView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
-			player.setPosition(startPoints[i].x, startPoints[i].y);
-			player.setOrigin(20, 20);
-			players.add(player);
+			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
+			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+			robot.setOrigin(20, 20);
+			robots.add(robot);
 		}		
-		return players;
+		return robots;
 	}
 }

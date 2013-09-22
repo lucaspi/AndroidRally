@@ -10,22 +10,35 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 
+/**
+ * This view holds all the cards the player has to play with.
+ * 
+ * @author 
+ *
+ */
 public class DeckView extends Stage {
 
 	private List<CardView> deckCards = new ArrayList<CardView>();
 	private List<CardView> chosenCards = new ArrayList<CardView>();
 	private int position;
 	
+	/**
+	 * Creates a new default instance.
+	 */
 	public DeckView() {
 		super();
 	}
-
+	
 	public void createDeck(Texture texture) {
 		Image deck = new Image(new TextureRegion(texture, 0, 0, 512, 256));
 		deck.setPosition(0, 0);
 		addActor(deck);
 	}
 
+	/**
+	 * Sets which cards the deck should display.
+	 * @param list The cards the deck should display.
+	 */
 	public void setDeckCards(List<CardView> list) {
 		this.deckCards = list;
 		for(int i = 0; i < list.size(); i++) {
@@ -43,6 +56,9 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	/**
+	 * Rerenders all the cards currently in the registers at their correct positions.
+	 */
 	public void updateChosenCards() {
 		for(int i = 0; i < this.chosenCards.size(); i++) {
 			CardView cv = this.chosenCards.get(i);
@@ -50,6 +66,10 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	/**
+	 * Adds the specified card to the registers.
+	 * @param card The card to add to the registers.
+	 */
 	public void chooseCard(CardView card) {
 		if(deckCards.remove(card)) {
 			chosenCards.add(card);
@@ -57,11 +77,17 @@ public class DeckView extends Stage {
 		updateCards();
 	}
 	
+	/**
+	 * Rerenders all the player's card at their correct positions.
+	 */
 	public void updateCards() {
 		updateChosenCards();
 		updateDeckCards();
 	}
 	
+	/**
+	 * Rerenders all the cards not yet added to a register.
+	 */
 	public void updateDeckCards() {
 		for(int i = 0; i < this.deckCards.size(); i++) {
 			CardView cv = this.deckCards.get(i);
@@ -69,15 +95,27 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	/**
+	 * Sets the X-coordinate of the cards not yet added to a register.
+	 * @param position
+	 */
 	public void setPositionX(int position) {
 		this.position = position;
 		updateDeckCards();
 	}
 	
+	/**
+	 * Gives the X-coordinate of the cards not yet added to a register.
+	 * @return
+	 */
 	public int getPositionX() {
 		return this.position;
 	}
 	
+	/**
+	 * Gives the total width it takes to render the cards not yet added to a register.
+	 * @return
+	 */
 	public int getCardDeckWidth() {
 		return this.deckCards.size() * ((int)this.deckCards.get(0).getWidth() + 10) - 10;
 	}

@@ -1,14 +1,13 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.StartPointView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,17 +19,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
- * A gameboard contains all the tiles and dynamic objects, like all the players' robots.
+ * This view class displays everything on the game area.
  * 
  * @author
  *
  */
 public class BoardView extends Stage {
 
-	private List<Image> walls = new ArrayList<Image>();
-	private List<PlayerView> players = new ArrayList<PlayerView>();
-	private Vector2[] startPoints = new Vector2[8];
-			
+	private List<Image> overlay = new ArrayList<Image>();
+	private List<RobotView> robots = new ArrayList<RobotView>();
+	private Vector2[] docks = new Vector2[8];
+		
+	/*
+	 * Used when loading the map from data values.
+	 */
 	private static final int 
 			TILE_HOLE = 1,
 			TILE_CHECKPOINT = 2,
@@ -51,8 +53,8 @@ public class BoardView extends Stage {
 	/**
 	 * Builds the board using the specified texture and map data.
 	 * @param texture The texture to use.
-	 * @param map An array of integers mapping the map's layout. 
-	 * NOTE: The bottom 4 rows will be the dock area.
+	 * @param map An array of strings describing the map's layout.
+	 * NOTE: The bottom four rows of the map array will always be created as the dock area.
 	 */
 	public void createBoard(Texture texture, String[][] map) {
 		Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
@@ -88,7 +90,8 @@ public class BoardView extends Stage {
 							i = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
 									tileData / 10 == 0 ? false : true);
 						}else if(tile == TILE_CONVEYORBELT) {
-							i = new ConveyorBeltView(new TextureRegion(conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
+							i = new ConveyorBeltView(new TextureRegion(
+									conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
 									((tileData / 10) % 10) * 90, tileData / 100);
 						}else if(tile == TILE_CHECKPOINT) {
 							i = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
@@ -96,24 +99,29 @@ public class BoardView extends Stage {
 						}else if(tile == TILE_REPAIR) {
 							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
 						}else if(tile == TILE_START) {
-							i = new StartPointView(new TextureRegion(texture, 0, 128, 64, 64), tileData / 10);
-							startPoints[tileData/10 - 1] = new Vector2(40 * x, 800 - 40 * (y+1));
+							i = new DockView(new TextureRegion(
+									texture, 0, 128, 64, 64), tileData / 10);
+							docks[tileData/10 - 1] = new Vector2(40 * x, 800 - 40 * (y+1));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
 							int rotation = tileData / 10;
-							Image wallBit;
+							Image overlayImage;
 							if(tile == TILE_WALL) {
-								wallBit = new Image(new TextureRegion(texture, 384, 0, 64, 64));
+								overlayImage = new Image(
+										new TextureRegion(texture, 384, 0, 64, 64));
 							}else{
-								wallBit = new Image(new TextureRegion(texture, 448, 0, 64, 64));
+								overlayImage = new Image(
+										new TextureRegion(texture, 448, 0, 64, 64));
 							}
-							wallBit.setSize(40, 40);
-							wallBit.setPosition(40 * x - 20, 800 - 40 * (y+1));
-							wallBit.setOrigin(wallBit.getWidth()/2 + 20, wallBit.getHeight()/2);
-							wallBit.rotate(-(1 + rotation) * 90);
-							walls.add(wallBit);		
+							// Sets the objects position and size.
+							overlayImage.setSize(40, 40);
+							overlayImage.setPosition(40 * x - 20, 800 - 40 * (y+1));
+							overlayImage.setOrigin(overlayImage.getWidth()/2 + 20, 
+									overlayImage.getHeight()/2);
+							overlayImage.rotate(-(1 + rotation) * 90);
+							overlay.add(overlayImage);		
 
 						}
-						// Add the element if created
+						// Add the element if created and assign it the right size and position.
 						if(i != null) {
 							i.setSize(40, 40);
 							i.setPosition(40 * x, 800 - 40 * (y+1));
@@ -125,36 +133,45 @@ public class BoardView extends Stage {
 		} // loop - X
 		
 		//Add walls (added last to be on top of everything else)
-		for(Image i : walls) {
+		for(Image i : overlay) {
 			addActor(i);
 		}
 	}
 	
-	public Vector2[] getStartPositions() {
-		return this.startPoints;
+	/**
+	 * Gives an array of the eight docks' positions stored as vectors where (0,0) is the top
+	 * left corner and (40, 40) is the tile to the right and down.
+	 * @return An array of the eight docks.
+	 */
+	public Vector2[] getDocksPositions() {
+		return this.docks;
 	}
 	
 	/**
 	 * Adds the specified player to the board.
 	 * @param player The player to add.
 	 */
-	public void addPlayer(PlayerView player) {
-		players.add(player);
+	public void addRobot(RobotView player) {
+		robots.add(player);
 		addActor(player);
 	}
 	
-	public List<PlayerView> getPlayers() {
-		return this.players;
+	/**
+	 * Gives a list of all the robots on the board.
+	 * @return A list of all the robots on the board.
+	 */
+	public List<RobotView> getRobots() {
+		return this.robots;
 	}
 	
 	/**
-	 * Gives the player with the specified ID-number.
-	 * @param playerID The ID-number to look for.
-	 * @return The player with the specified ID.
+	 * Gives the robot with the specified robot ID-number.
+	 * @param robotID The ID-number to look for.
+	 * @return The robot with the specified ID.
 	 */
-	public PlayerView getPlayer(int playerID) {
-		for(PlayerView p : players) {
-			if(p.getPlayerID() == playerID) {
+	public RobotView getRobot(int robotID) {
+		for(RobotView p : robots) {
+			if(p.getRobotID() == robotID) {
 				return p;
 			}
 		}

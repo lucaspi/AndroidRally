@@ -9,7 +9,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.input.GestureDetector;
 
-
+/**
+ * 
+ * 
+ * @author
+ *
+ */
 public class GdxGame implements ApplicationListener {
 
 	private OrthographicCamera boardCamera, cardCamera;
@@ -66,10 +71,18 @@ public class GdxGame implements ApplicationListener {
 		cardDeck.draw();
 	}
 	
+	/**
+	 * Gives the board.
+	 * @return The board.
+	 */
 	public BoardView getBoardView() {
 		return this.gameBoard;
 	}
 	
+	/**
+	 * Gives the player's card deck.
+	 * @return The player's card deck.
+	 */
 	public DeckView getDeckView() {
 		return this.cardDeck;
 	}
@@ -86,11 +99,11 @@ public class GdxGame implements ApplicationListener {
 	public void resume() {
 	}
 
+	/**
+	 * Gives the camera used by the board.
+	 * @return The camera used by the board.
+	 */
 	public OrthographicCamera getBoardCamera() {
 		return this.boardCamera;
-	}
-
-	public OrthographicCamera getCardCamera() {
-		return this.cardCamera;
 	}
 }

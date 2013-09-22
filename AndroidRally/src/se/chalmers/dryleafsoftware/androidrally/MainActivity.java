@@ -10,6 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+/**
+ * This is the main activity, i.g. it will be the activity started when opening the app 
+ * on the phone.
+ * 
+ * @author
+ *
+ */
 public class MainActivity extends Activity {
 
 	@Override
@@ -25,6 +32,7 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
@@ -46,6 +54,10 @@ public class MainActivity extends Activity {
 		toast.show();
 	}
 	
+	/**
+	 * Starts the game.
+	 * @param view
+	 */
 	public void startGame(View view) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
 		startActivity(i);

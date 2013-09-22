@@ -4,19 +4,30 @@ import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
+/**
+ * A RotationAction rotates a robot a to the specified amount.
+ * 
+ * @author
+ *
+ */
 public class RotationAction extends GameAction {
 
-	private int rotTimes;
+	private final int direction;
 	
-	public RotationAction(int player, int rotTimes) {
-		super(player);
-		this.rotTimes = rotTimes;
+	/**
+	 * Creates a new instance which will rotate the robot with the specified ID.
+	 * @param robotID The ID of the robot to rotate.
+	 * @param direction The direction to rotate to. Note: 0=Facing north, 1=east, 2=south, 3=west.
+	 */
+	public RotationAction(int robotID, int direction) {
+		super(robotID);
+		this.direction = direction;
 	}
 
 	@Override
-	public void action(List<PlayerView> players) {
-		players.get(getPlayer()).addAction(Actions.rotateTo(-rotTimes * 90, 1));		
+	public void action(List<RobotView> robots) {
+		robots.get(getRobotID()).addAction(Actions.rotateTo(-direction * 90, 1));		
 	}
 }

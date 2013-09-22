@@ -3,7 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.PlayerView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,11 +12,16 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+/**
+ * This is the client-side controller which handles the game's logic.
+ * 
+ * @author
+ *
+ */
 public class GameController implements GestureListener {
 
-	private GdxGame game;
+	private final GdxGame game;
 	private OrthographicCamera boardCamera;
 	private boolean modifyBoard, modifyCards;
 	private final Client client;
@@ -24,6 +29,10 @@ public class GameController implements GestureListener {
 	private Vector3 defaultPosition;
 	private DeckView deckView;
 
+	/**
+	 * Creates a new instance which will control the specified game.
+	 * @param game The game to control.
+	 */
 	public GameController(GdxGame game) {
 		this.game = game;
 		this.boardCamera = this.game.getBoardCamera();
@@ -33,9 +42,7 @@ public class GameController implements GestureListener {
 		maxZoom = 0.4f;
 		defaultPosition = new Vector3(240, 400, 0f);
 		
-		maxZoom = 0.4f;
-		defaultPosition = new Vector3(240, 400, 0f);
-		
+		// Only load the textures once.
 		Texture boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
@@ -43,8 +50,8 @@ public class GameController implements GestureListener {
 		
 		game.getBoardView().createBoard(boardTexture, client.getMap());
 		
-		for(PlayerView player : client.getPlayers(boardTexture, game.getBoardView().getStartPositions())) {
-			game.getBoardView().addPlayer(player);
+		for(RobotView player : client.getRobots(boardTexture, game.getBoardView().getDocksPositions())) {
+			game.getBoardView().addRobot(player);
 		}		
 		
 //		PlayerView p = game.getBoardView().getPlayer(1);
@@ -55,7 +62,7 @@ public class GameController implements GestureListener {
 		
 		List<GameAction> actions = client.getRoundResult();
 		for(GameAction a : actions) {
-			a.action(game.getBoardView().getPlayers());
+			a.action(game.getBoardView().getRobots());
 		}
 	}
 
