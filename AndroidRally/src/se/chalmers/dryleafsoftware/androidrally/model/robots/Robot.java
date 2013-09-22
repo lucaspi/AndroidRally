@@ -8,6 +8,9 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 
+/**
+ * The "piece" that the player or CPU moves and plays the game with.
+ */
 public class Robot {
 	private static final int STARTING_HEALTH = 9;
 	private static final int STARTING_LIFE = 3;
@@ -178,6 +181,13 @@ public class Robot {
 		return chosenCards;
 	}
 	
+	/**
+	 * Sets which of the drawn cards that is supposed to be the chosen cards.
+	 * Fills the empty registers with cards from the drawn cards if the amount of cards
+	 * is not enough. If the chosen cards is not part of the drawn cards all registers
+	 * will recieve randomized cards from the drawn cards.
+	 * @param chosenCards the cards from the robots card list that the player/CPU has chosen
+	 */
 	public void setChosenCards(List<Card> chosenCards){
 		if(this.cards.containsAll(chosenCards)){
 			for(int i = 0; i<5; i++){
@@ -204,6 +214,10 @@ public class Robot {
 		return cards;
 	}
 
+	/**
+	 * Method that is used to know if the Robot has chosen his cards or not.
+	 * @return false as default. Else the last value set from method setSentCards
+	 */
 	public boolean haveSentCards() {
 		return sentCards;
 	}
