@@ -1,6 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -60,17 +61,27 @@ public class DeckView extends Stage {
 	public void updateChosenCards() {
 		for (int i = 0; i < this.chosenCards.size(); i++) {
 			CardView cv = this.chosenCards.get(i);
-			cv.setPosition(240 - this.getChosenCardDeckWidth()/2 + (cv.getWidth() + 10) * i, 100);
+			cv.setPosition(240 - this.getChosenCardDeckWidth()/2 + (cv.getWidth() + 10) * i, cv.getHeight() + 10);
 		}
 	}
 
 	public void updateDeckCards() {
+		if (this.getCardDeckWidth() < 480) {
+			this.position = 240 - this.getCardDeckWidth()/2;
+		} else {
+			if (this.position > 0) {
+				this.position = 0;
+			} else if (this.position + getCardDeckWidth() < 480) {
+				this.position = 480 - getCardDeckWidth();
+			}
+		}
+		Collections.sort(this.deckCards);
 		for (int i = 0; i < this.deckCards.size(); i++) {
 			CardView cv = this.deckCards.get(i);
-			cv.setPosition((cv.getWidth() + 10) * i + position, 0);
+			cv.setPosition((cv.getWidth() + 10) * i + this.position, 0);
 		}
 	}
-
+	
 	public void setPositionX(int position) {
 		this.position = position;
 		updateDeckCards();
@@ -97,11 +108,9 @@ public class DeckView extends Stage {
 	public void moveCard(CardView card) {
 		if (chosenCards.remove(card)) {
 			deckCards.add(card);
-//			card.addListener(cl);
 		} else if (chosenCards.size() < 5) {
 			if (deckCards.remove(card)) {
 				chosenCards.add(card);
-//				card.addListener(cl);
 			}
 		}
 		updateCards();

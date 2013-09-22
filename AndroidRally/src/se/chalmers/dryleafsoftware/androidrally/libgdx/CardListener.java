@@ -14,4 +14,10 @@ public class CardListener extends ActorGestureListener {
 	public void tap (InputEvent event, float x, float y, int count, int button) {
 		deckView.moveCard((CardView) event.getListenerActor());
 	}
+	
+	public void pan(InputEvent event, float x, float y, float deltaX, float deltaY) {
+		if (deckView.getCardDeckWidth() > 480) {
+			deckView.setPositionX(deckView.getPositionX() + (int)deltaX);
+		}
+	}
 }
