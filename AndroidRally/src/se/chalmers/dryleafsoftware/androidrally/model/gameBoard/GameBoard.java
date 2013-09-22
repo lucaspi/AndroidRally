@@ -86,7 +86,7 @@ public class GameBoard {
 						if(tile == TILE_HOLE) {
 							tiles[x][y].addBoardElement(new Hole());
 						}else if(tile == TILE_GEARS) {
-							tiles[x][y].addBoardElement(new Gears(!(tileData / 10 == 0)));
+							tiles[x][y].addBoardElement(new Gear(!(tileData / 10 == 0)));
 						}else if(tile == TILE_CONVEYORBELT) {
 							tiles[x][y].addBoardElement(new ConveyorBelt(tileData / 100, ((tileData / 10)%10)));
 						}else if(tile == TILE_CHECKPOINT) {

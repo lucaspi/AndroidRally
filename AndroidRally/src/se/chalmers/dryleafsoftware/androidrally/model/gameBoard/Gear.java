@@ -3,10 +3,10 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
-public class Gears implements BoardElement{
+public class Gear implements BoardElement{
 	private boolean isTurnRight = false;
 	
-	public Gears(boolean isTurnRight){
+	public Gear(boolean isTurnRight){
 		this.isTurnRight = isTurnRight;
 	}
 	

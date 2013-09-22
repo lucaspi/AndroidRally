@@ -22,6 +22,7 @@ public class Robot {
 	private int spawnPointX;
 	private int spawnPointY;
 	private int checkpoint;
+	private boolean sentCards;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -80,6 +81,7 @@ public class Robot {
 			chosenCards[i] = null;
 		}
 		cards.clear();
+		setSentCards(false);
 		return returnCards;
 	}
 	
@@ -125,6 +127,13 @@ public class Robot {
 		return positionY;
 	}
 
+	public void setX(int x){
+		positionX = x;
+	}
+	public void setY(int y){
+		positionY = y;
+	}
+	
 	public int getDirection() {
 		return robotDirection;
 	}
@@ -161,5 +170,13 @@ public class Robot {
 	
 	public List<Card> getCards(){
 		return cards;
+	}
+
+	public boolean haveSentCards() {
+		return sentCards;
+	}
+
+	public void setSentCards(boolean sentCards) {
+		this.sentCards = sentCards;
 	}
 }

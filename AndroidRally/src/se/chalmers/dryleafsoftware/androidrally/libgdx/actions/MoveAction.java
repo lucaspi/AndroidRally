@@ -18,7 +18,7 @@ public class MoveAction extends GameAction {
 
 	@Override
 	public void action(List<PlayerView> players) {
-		players.get(getPlayer()).addAction(Actions.moveBy(x * 40,  y * 40, 1));
+		players.get(getPlayer()).addAction(Actions.moveTo(x * 40,  800 - (y+1) * 40, 1));
 	}
 
 }
