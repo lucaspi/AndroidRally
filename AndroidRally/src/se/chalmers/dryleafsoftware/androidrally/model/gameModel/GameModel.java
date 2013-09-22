@@ -79,6 +79,11 @@ public class GameModel {
 		
 	}
 	
+	/**
+	 * Return the map as a String[][]. Each String representing
+	 * a tile with it's boardelements.
+	 * @return the map as a String[][]
+	 */
 	public String[][] getMap(){
 		return gameBoard.getMapAsString();
 	}
@@ -245,6 +250,10 @@ public class GameModel {
 		//TODO give specials to robots standing on "wrench & hammer"
 	}
 	
+	/**
+	 * Returns a list of all robots in the game.
+	 * @return a list of all robots in the game.
+	 */
 	public List<Robot> getRobots(){
 		return robots;
 	}

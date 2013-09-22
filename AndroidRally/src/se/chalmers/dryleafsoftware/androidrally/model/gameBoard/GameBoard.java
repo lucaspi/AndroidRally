@@ -3,6 +3,11 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representing the map. Holds all tiles and lasers.
+ * @author
+ *
+ */
 public class GameBoard {
 	private Tile[][] tiles = null;
 	private List<Laser> lasers;
@@ -34,15 +39,31 @@ public class GameBoard {
 	 * Hole = 1
 	 * CheckPoint = (nr)2
 	 * ConveyorBelt = (GameBoard.staticfinal)3
-	 * Gear = 4 -> moturs, 14 -> medurs
+	 * Gear = 4 -> left, 14 -> right
 	 * Repair = 5
 	 * Wall = (GameBoard.staticFinal)6
 	 * Laser = (GameBoard.staticFinal)7
 	 * 
-	 *  : mellan olika element per tile
+	 *  : between different elements on the same tile
 	 *  
 	 */
 	
+	/**
+	 * Creates a new gameBoard from a String[][].
+	 * 
+	 * Hole = 1
+	 * CheckPoint = (nr)2
+	 * ConveyorBelt = (GameBoard.staticfinal)3
+	 * Gear = 4 -> left, 14 -> right
+	 * Repair = 5
+	 * Wall = (GameBoard.staticFinal)6
+	 * Laser = (GameBoard.staticFinal)7
+	 * 
+	 *  : between different elements on the same tile
+	 *  
+	 *
+	 * @param map the String[][] which will be converted to a gameBoard.
+	 */
 	public GameBoard(String[][] map) {
 		createBoard(map);
 		mapAsString = map;
@@ -50,18 +71,50 @@ public class GameBoard {
 		
 	}
 	
+	/**
+	 * Returns a specific tile. (0, 0) being the tile in the topleft corner.
+	 * @param x the tile's position on the x-axis.
+	 * @param y the tile's position on the y-axis.
+	 * @return the specified tile.
+	 */
 	public Tile getTile(int x, int y){
 		return tiles[x][y];
 	}
 	
+	/**
+	 * Returns a matrix containing all startingPositions for the map.
+	 * [i][0] will provide the x value for starting position i and [i][1]
+	 * will provide the y value.
+	 * @return a matrix containing all startingPositions for the map.
+	 */
 	public int[][] getStartingPositions(){
 		return startingPosition;
 	}
 	
+	/**
+	 * Returns a list of all lasers on the gameBoard.
+	 * @return a list of all lasers on the gameBoard.
+	 */
 	public List<Laser> getLasers(){
 		return lasers;
 	}
 	
+	/**
+	 * Return a String[][] representation of the map.
+	 * 
+	 * Hole = 1
+	 * CheckPoint = (nr)2
+	 * ConveyorBelt = (GameBoard.staticfinal)3
+	 * Gear = 4 -> left, 14 -> right
+	 * Repair = 5
+	 * Wall = (GameBoard.staticFinal)6
+	 * Laser = (GameBoard.staticFinal)7
+	 * 
+	 *  : between different elements on the same tile
+	 *  
+	 * 
+	 * @return a String[][] representation of the map.
+	 */
 	public String[][] getMapAsString(){
 		return mapAsString;
 	}
@@ -107,77 +160,4 @@ public class GameBoard {
 			} // loop - Y
 		} // loop - X
 	}
-//	/**
-//	* Builds the board using the specified texture and map data.
-//	* @param texture The texture to use.
-//	* @param map An array of integers mapping the map's layout.
-//	* NOTE: The bottom 4 rows will be the dock area.
-//	*/
-//	public void createBoard(String[][] map) {
-//		Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
-//		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-//		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
-//		
-//		for(int x = 0; x < map.length; x++) {
-//			for(int y = 0; y < map[0].length; y++) {	
-//				// Create the floor
-//				Sprite floor = null;
-//				if(y < map[0].length - 4) {
-//					floor = new Sprite(new TextureRegion(texture, 0, 0, 64, 64));
-//				}else{
-//					floor = new Sprite(new TextureRegion(texture, 64, 0, 64, 64));
-//				}
-//				// Add the floor
-//				floor.setSize(40, 40);
-//				floor.setPosition(40 * x, 800 - 40 * (y+1));
-//				tiles.add(floor);
-//				
-//				// Add all the elements to the tile
-//				if(!map[x][y].equals("")) {
-//					for(String elementData : map[x][y].split(":")) {
-//					int tileData = Integer.parseInt(elementData);
-//					
-//					// Create the boardelement
-//					int tile = tileData % 10;
-//					Sprite s = null;
-//					if(tile == TILE_HOLE) {	
-//						s = new Sprite(new TextureRegion(texture, 128, 0, 64, 64));
-//					}else if(tile == TILE_GEARS) {
-//						s = new GearsView(new TextureRegion(texture, 320, 0, 64, 64),
-//						tileData / 10 == 0 ? false : true);
-//					}else if(tile == TILE_CONVEYORBELT) {
-//						s = new ConveyorBeltView(new TextureRegion(conveyerTexture, 0, 0, 1f, 1f),
-//						(tileData / 10) * 90);
-//					}else if(tile == TILE_CHECKPOINT) {
-//						s = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64),
-//						(tileData / 10));
-//					}else if(tile == TILE_REPAIR) {
-//						s = new Sprite(new TextureRegion(texture, 256, 0, 64, 64));
-//					}else if(tile == TILE_WALL || tile == TILE_LASER) {
-//						int rotation = tileData / 10;
-//						Sprite wallBit;
-//					if(tile == TILE_WALL) {
-//						wallBit = new Sprite(new TextureRegion(texture, 384, 0, 64, 64));
-//					}else{
-//						 new Sprite(new TextureRegion(texture, 448, 0, 64, 64));
-//					}
-//						wallBit.setSize(40, 40);
-//						wallBit.setPosition(40 * x - 20, 800 - 40 * (y+1));
-//						wallBit.setOrigin(wallBit.getWidth()/2 + 20, wallBit.getHeight()/2);
-//						wallBit.rotate(-(1 + rotation) * 90);
-//						wallList.add(wallBit);	
-//					
-//					}
-//					// Add the element if created
-//					if(s != null) {
-//						s.setSize(40, 40);
-//						s.setPosition(40 * x, 800 - 40 * (y+1));
-//						tiles.add(s);
-//					}
-//					} // loop - elements
-//				} // if
-//			} // loop - Y
-//		} // loop - X
-//	}
-
 }
