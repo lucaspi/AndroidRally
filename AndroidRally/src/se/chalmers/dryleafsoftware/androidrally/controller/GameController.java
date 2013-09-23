@@ -1,6 +1,8 @@
 package se.chalmers.dryleafsoftware.androidrally.controller;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -12,13 +14,14 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
-public class GameController {
+public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
 	private Timer timer;
 	private TimerTask endOfRound;
 	private int hoursEachRound;
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
+	private CardTimer[] cardTimer;
 	
 	public GameController(int nbrOfPlayers) {
 		isRunRunning = false;
@@ -32,12 +35,15 @@ public class GameController {
 				stopRoundTimer();
 				handleRemainingRobots();
 				gameModel.moveRobots();
-				startRoundTimer();
+				startRoundTimer(); //TODO maybe move?
 				nbrOfRobotsDone = 0;
 				isRunRunning = false;
 			}
 		};
-		
+		cardTimer = new CardTimer[nbrOfPlayers];
+		for (int i = 0; i < nbrOfPlayers; i++) {
+			cardTimer[i] = new CardTimer(65000, 1000, i, this);
+		}
 		hoursEachRound = 24;
 	}
 
@@ -57,7 +63,8 @@ public class GameController {
 	 * Timer is scheduled to what hoursEachRound is set to.
 	 * 24 hours as default.
 	 */
-	public void startRoundTimer() {
+	public void startRoundTimer() { //TODO maybe do more stuff?
+		
 		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 	
@@ -73,6 +80,7 @@ public class GameController {
 	 * @param robotID The index of the robot in the list of robots held by GameModel
 	 */
 	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
+		cardTimer[robotID].cancel();
 		List<Card> chosenCards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {
@@ -99,7 +107,15 @@ public class GameController {
 	public void setHoursEachRound(int hoursEachRound) {
 		this.hoursEachRound = hoursEachRound;
 	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent pce) {
+		if (pce.getPropertyName().equals("cardTimeOut")) {
+			setChosenCardsToRobot(new int[]{0,0,0,0,0}, (Integer)pce.getNewValue());
+		}
+	}
 	
-	
-	
+	public List<Card> getCards(int robotID) {
+		return null; //FIXME dealCards 
+	}	
 }
