@@ -31,9 +31,10 @@ public class Client {
 	
 //	String indata1 = "0:30906;0:20906";
 	// B = board element push
-	// R = robot push 
-	String indata1 = "1:10906;1:00906;0:00509;B#0:10509#1:00905;0:10609;0:00609;0:00608;0:00607;B#0:00507" +
-				";T#1:00904#0:00506;0:00504;B#0:30504";
+	// P = robot push 
+	// R#[card nbr] = indicates new card
+	String indata1 = "R#0;1:10906;1:00906;0:00509;B#0:10509#1:00905;R#1;0:10609;0:00609;0:00608;0:00607;B#0:00507" +
+				";B#1:00904#0:00506;R#2;0:00504;B#0:30504";
 	
 	/**
 	 * Creates a new client instance.
@@ -76,29 +77,33 @@ public class Client {
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public List<GameAction> getRoundResult() {
-		// From server example: "0:10101;0:10102;1:10203"
-		List<GameAction> actions = new ArrayList<GameAction>();
-		
+//	public List<GameAction> getRoundResult() {
+	public RoundResult getRoundResult() {
+		// From server example: "0:10101;0:10102;1:10203"	
+		RoundResult result = new RoundResult();	
 		String[] allActions = indata1.split(";");// TODO: server input
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
-			if(parallel.length >= 2) {				
-				MultiAction multiAction = new MultiAction();
-				for(int i = 1; i < parallel.length; i++) {
-					multiAction.add(createSingleAction(parallel[i]));
-				}				
-				if(parallel[0].equals("B")) { // Conveyer belt
-					multiAction.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
-				}else if(parallel[0].equals("R")) { // Robot push
-					multiAction.setMoveRound(GameAction.PHASE_PUSHED);
+			if(parallel.length >= 2) {	
+				if(parallel[0].equals("R")) { // New phase
+					result.newPhase();
+				}else{
+					MultiAction multiAction = new MultiAction();
+					for(int i = 1; i < parallel.length; i++) {
+						multiAction.add(createSingleAction(parallel[i]));
+					}				
+					if(parallel[0].equals("B")) { // Conveyer belt
+						multiAction.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
+					}else if(parallel[0].equals("P")) { // Robot push
+						multiAction.setMoveRound(GameAction.PHASE_PUSHED);
+					}
+					result.addAction(multiAction);
 				}
-				actions.add(multiAction);
 			}else{
-				actions.add(createSingleAction(parallel[0]));
+				result.addAction(createSingleAction(parallel[0]));
 			}
 		}
-		return actions;
+		return result;
 	}
 	
 	/*

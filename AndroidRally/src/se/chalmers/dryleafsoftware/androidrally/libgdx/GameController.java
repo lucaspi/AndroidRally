@@ -31,7 +31,9 @@ public class GameController implements GestureListener, PropertyChangeListener {
 	private float maxZoom;
 	private Vector3 defaultPosition;
 	private DeckView deckView;
+	
 	private List<GameAction> actions;
+	private RoundResult result;
 
 	/**
 	 * Creates a new instance which will control the specified game.
@@ -65,7 +67,8 @@ public class GameController implements GestureListener, PropertyChangeListener {
 	
 		this.deckView.setDeckCards(client.getCards(cardTexture));
 		
-		actions = client.getRoundResult();
+		result = client.getRoundResult();
+		actions = result.getNextResult();
 //		List<GameAction> actions = client.getRoundResult();
 //		for(GameAction a : actions) {
 //			a.action(game.getBoardView().getRobots());
@@ -82,7 +85,7 @@ public class GameController implements GestureListener, PropertyChangeListener {
 	}
 	
 	private void update() {
-		if(actions != null && !actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
 				actions.remove(0);
 			}
@@ -95,6 +98,11 @@ public class GameController implements GestureListener, PropertyChangeListener {
 				}
 			}else{
 				game.getBoardView().setAnimationElement(false);
+			}
+		}else if(actions.isEmpty()){
+			if(result.hasNext()) {
+				System.out.println("Next round!");
+				actions = result.getNextResult();
 			}
 		}
 	}

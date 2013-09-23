@@ -71,7 +71,7 @@ public abstract class GameAction {
 	 * @return <code>true</code> if the action is done.
 	 */
 	public boolean isDone() {
-		return TimeUtils.millis() - started >= duration;
+		return started == 0 ? false : TimeUtils.millis() - started >= duration;
 	}
 	
 	/**
