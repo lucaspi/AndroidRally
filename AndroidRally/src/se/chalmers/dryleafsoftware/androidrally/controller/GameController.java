@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.os.CountDownTimer;
+
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -35,13 +37,14 @@ public class GameController {
 				isRunRunning = false;
 			}
 		};
+		
 		hoursEachRound = 24;
 	}
 
 	public void handleRemainingRobots() {
 		for (int i = 0; i < gameModel.getRobots().size(); i++) {
 			if (!gameModel.getRobots().get(i).haveSentCards()) {
-				setChosenCardsToRobots(new int[]{0,0,0,0,0}, i);
+				setChosenCardsToRobot(new int[]{0,0,0,0,0}, i);
 			}
 		}
 	}
@@ -69,7 +72,7 @@ public class GameController {
 	 * @param indexOfChosenCard array of length == 5. Index of the robot's card that the robot have chosen.
 	 * @param robotID The index of the robot in the list of robots held by GameModel
 	 */
-	public void setChosenCardsToRobots(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
+	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
 		List<Card> chosenCards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {
