@@ -1,5 +1,8 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -22,6 +25,9 @@ public class GdxGame implements ApplicationListener {
 	private GameController gameController;
 	private BoardView gameBoard;
 	private DeckView cardDeck;
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	
+	public static final String EVENT_UPDATE = "e_update";
 	
 	@Override
 	public void create() {
@@ -69,6 +75,7 @@ public class GdxGame implements ApplicationListener {
 		gameBoard.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		gameBoard.draw();
 		cardDeck.draw();
+		pcs.firePropertyChange(EVENT_UPDATE, 0, 1);
 	}
 	
 	/**
@@ -105,5 +112,13 @@ public class GdxGame implements ApplicationListener {
 	 */
 	public OrthographicCamera getBoardCamera() {
 		return this.boardCamera;
+	}
+	
+	public void addListener(PropertyChangeListener listener) {
+		this.pcs.addPropertyChangeListener(listener);
+	}
+	
+	public void removeListener(PropertyChangeListener listener) {
+		this.pcs.removePropertyChangeListener(listener);
 	}
 }

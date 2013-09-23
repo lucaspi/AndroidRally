@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
@@ -29,6 +31,7 @@ public class BoardView extends Stage {
 	private List<Image> overlay = new ArrayList<Image>();
 	private List<RobotView> robots = new ArrayList<RobotView>();
 	private Vector2[] docks = new Vector2[8];
+	private boolean isAnimated = false;
 		
 	/*
 	 * Used when loading the map from data values.
@@ -135,6 +138,21 @@ public class BoardView extends Stage {
 		//Add walls (added last to be on top of everything else)
 		for(Image i : overlay) {
 			addActor(i);
+		}
+	}
+	
+	/**
+	 * Set to turn on/off all the animation on the board.
+	 * @param enabled Set to turn on/off all the animation on the board.
+	 */
+	public void setAnimationElement(boolean enabled) {
+		if(isAnimated != enabled) {
+			for(Actor a : getActors()) {
+				if(a instanceof AnimatedImage) {
+					((AnimatedImage)a).setEnabled(enabled);
+				}
+			}
+			isAnimated = enabled;
 		}
 	}
 	

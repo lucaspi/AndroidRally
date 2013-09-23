@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MoveAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RotationAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
@@ -29,7 +29,11 @@ public class Client {
 	private final GameModel model;
 	private final int clientID;
 	
-	private String indata = "0:10101;0:1;0:10102;0:1;1:10203";
+//	String indata1 = "0:30906;0:20906";
+	// B = board element push
+	// R = robot push 
+	String indata1 = "1:10906;1:00906;0:00509;B#0:10509#1:00905;0:10609;0:00609;0:00608;0:00607;B#0:00507" +
+				";T#1:00904#0:00506;0:00504;B#0:30504";
 	
 	/**
 	 * Creates a new client instance.
@@ -49,24 +53,22 @@ public class Client {
 	}
 	
 	/**
-	 * Sends the cards to the server. Note that the list MUST contain five cards.
+	 * Sends the cards to the server. Note: This list should not contain more then five!
 	 * @param cards The cards to send.
 	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
 	public boolean sendCard(List<CardView> cards) {
-		// Send example: ”0:7:1:4:-1"
-		if(cards.size() != 5) {
-			return false;
-		}
-		StringBuilder sb = new StringBuilder(clientID);
-		for(int i = 0; i < cards.size(); i++) {
-			if(cards.get(i) == null) {
-				sb.append(":0");
-			}else{
+		// Send example: ”12345:0:7:1:4:-1"
+		StringBuilder sb = new StringBuilder("" + clientID);
+		for(int i = 0; i < 5; i++) {
+			if(cards.size() > i) {
 				sb.append(":" + cards.get(i).getIndex());
+			}else{
+				sb.append(":-1");
 			}
 		}
 		// TODO: send to server
+		System.out.println("Client sending card: " + sb.toString());
 		return true;
 	}
 	
@@ -75,21 +77,40 @@ public class Client {
 	 * @return A list of all the actions was created during the last round.
 	 */
 	public List<GameAction> getRoundResult() {
-		// From server example: "0:10101;0:1;0:10102;0:1;1:10203"
+		// From server example: "0:10101;0:10102;1:10203"
 		List<GameAction> actions = new ArrayList<GameAction>();
 		
-		String[] allActions = indata.split(";");// TODO: server input
+		String[] allActions = indata1.split(";");// TODO: server input
 		for(String s : allActions) {
-			String[] singleAction = s.split(":");
-			int player = Integer.parseInt(singleAction[0]);
-			int data = Integer.parseInt(singleAction[1]);
-			if(data / 10000 == 1) {	// Pos
-				actions.add(new MoveAction(player, (data % 10000) / 100, data % 100));
-			}else {	// Dir
-				actions.add(new RotationAction(player, data));
+			String[] parallel = s.split("#");
+			if(parallel.length >= 2) {				
+				MultiAction multiAction = new MultiAction();
+				for(int i = 1; i < parallel.length; i++) {
+					multiAction.add(createSingleAction(parallel[i]));
+				}				
+				if(parallel[0].equals("B")) { // Conveyer belt
+					multiAction.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
+				}else if(parallel[0].equals("R")) { // Robot push
+					multiAction.setMoveRound(GameAction.PHASE_PUSHED);
+				}
+				actions.add(multiAction);
+			}else{
+				actions.add(createSingleAction(parallel[0]));
 			}
 		}
 		return actions;
+	}
+	
+	/*
+	 * Creates a new action by reading the string provided.
+	 */
+	private SingleAction createSingleAction(String indata) {
+		String[] data = indata.split(":");
+		return new SingleAction(
+				Integer.parseInt(data[0]), 
+				Integer.parseInt(data[1].substring(0, 1)),
+				Integer.parseInt(data[1].substring(1, 3)),
+				Integer.parseInt(data[1].substring(3, 5)));
 	}
 	
 	/**
