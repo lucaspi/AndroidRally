@@ -218,46 +218,60 @@ public class GameModel {
 	 * This method should only be called after conveyorBelts have moved all robots.
 	 * Size of oldPositions needs to be int[robots.size()][2]
 	 */
-	// NOTE this method is under progress currently not correct in all cases
 	private void checkConveyorBeltCollides(int[][] oldPositions){
 		for(int i = 0; i<robots.size(); i++){
 			for(int j = 0; j<robots.size(); j++){
 				if(i != j && robots.get(i).getX() == robots.get(j).getX() && 
 						robots.get(i).getY() == robots.get(j).getY()){
+					boolean robotIMove = oldPositions[i][0] != robots.get(i).getX() || oldPositions[i][1] != 
+							robots.get(i).getY();
+					boolean robotJMove = (oldPositions[j][0] != robots.get(j).getX() || 
+							oldPositions[j][1] != robots.get(j).getY());
 					// If both robots have moved to the same position by conveyorBelt, both should move back.
-					if((oldPositions[i][0] != robots.get(i).getX() || oldPositions[i][1] != 
-							robots.get(i).getY()) && (oldPositions[j][0] != robots.get(j).getX() || 
-							oldPositions[j][1] != robots.get(j).getY())){
+					if(robotIMove && robotJMove){
 						robots.get(i).setX(oldPositions[i][0]);
 						robots.get(j).setY(oldPositions[i][1]);
 						robots.get(i).setX(oldPositions[j][0]);
 						robots.get(j).setY(oldPositions[j][1]);
+					}else{// Push robot
+						if(robotIMove){
+							handleCollision(robots.get(i), oldPositions[i][0], oldPositions[i][1]);
+						}else if(robotJMove){
+							handleCollision(robots.get(i), oldPositions[i][0], oldPositions[i][1]);
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	// NOTE this method is under progress currently not correct in all cases
-	private boolean checkCollide(Robot robot, int oldX, int oldY){
+	/*
+	 * Return true if the collision needs to be reversed
+	 */
+	private boolean handleCollision(Robot robot, int oldX, int oldY){
+		boolean wallCollision = false;
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
+				// Do any robot stand on the same tile as another the robot from the parameters.
 				if(robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
 					
-					if(checkCollide(r, robot.getX(), robot.getY())){
-						
+					// Check if other Robot collides
+					if(handleCollision(r, robot.getX(), robot.getY())){
+						r.setX(r.getX() + (oldX - robot.getX()));
+						r.setY(r.getY() + (oldY - robot.getY()));
+						wallCollision = true;
 					}
 				}
 			}
-		}else{
+		}else{// The robot can't walk through a wall
 			robot.setX(oldX);
 			robot.setY(oldY);
-			return true;
+			wallCollision = true;
 		}
-		return false;
+		return wallCollision;
 	}
 	
 	/**
@@ -289,17 +303,10 @@ public class GameModel {
 				}
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
-				
-//				Card c = currentCards.get(indexOfHighestPriority)[i];
-//				
-//				if(c instanceof Move) { //TODO do so that robots collide with walls (without instanceof)
-//					Move m = (Move)c;
-//					//int dist = m.getDistance();
-//				}
-//				
+
 				currentCards.get(indexOfHighestPriority)[i]
 						.action(currentRobot);
-				checkCollide(currentRobot, oldPosition[indexOfHighestPriority][0], 
+				handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
 						oldPosition[indexOfHighestPriority][1]);
 				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
 						.instantAction(currentRobot);
@@ -310,9 +317,14 @@ public class GameModel {
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
 			activateBoardElements();
+			checkConveyorBeltCollides(oldPosition);
 
 		}
-		//TODO return cards
+		
+		for(Robot robot : robots){
+			deck.returnCards(robot.returnCards());
+		}
+		
 		//TODO give specials to robots standing on "wrench & hammer"
 	}
 	
