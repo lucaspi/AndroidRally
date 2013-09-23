@@ -23,7 +23,7 @@ public class GameController implements GestureListener {
 
 	private final GdxGame game;
 	private OrthographicCamera boardCamera;
-	private boolean modifyBoard, modifyCards;
+	private boolean modifyBoard;
 	private final Client client;
 	private float maxZoom;
 	private Vector3 defaultPosition;
@@ -58,7 +58,7 @@ public class GameController implements GestureListener {
 //		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
 //				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
 	
-		game.getDeckView().setDeckCards(client.getCards(cardTexture));
+		this.deckView.setDeckCards(client.getCards(cardTexture));
 		
 		List<GameAction> actions = client.getRoundResult();
 		for(GameAction a : actions) {
@@ -82,13 +82,7 @@ public class GameController implements GestureListener {
 
 	@Override
 	public boolean touchDown(float arg0, float arg1, int arg2, int arg3) {
-		if (arg1 < Gdx.graphics.getHeight() * 2 / 3) {
-			modifyBoard = true;
-			modifyCards = false;
-		} else {
-			modifyBoard = false;
-			modifyCards = true;
-		}
+		modifyBoard = arg1 < Gdx.graphics.getHeight() * 2 / 3;
 		return false;
 	}
 
@@ -106,20 +100,6 @@ public class GameController implements GestureListener {
 			} else {
 				boardCamera.translate(-arg2 * boardCamera.zoom, arg3
 						* boardCamera.zoom);
-			}
-		} else if (modifyCards) {
-			if (arg2 > 0) {
-				if (deckView.getPositionX() + arg2 > 0) {
-					deckView.setPositionX(0);
-				} else {
-					 deckView.setPositionX(deckView.getPositionX() + (int)arg2);
-				 }
-			} else if (arg2 < 0) {
-				 if (deckView.getCardDeckWidth() - deckView.getPositionX() + arg2 < 480) {
-					 deckView.setPositionX(480 - deckView.getCardDeckWidth());
-				 } else {
-					 deckView.setPositionX(deckView.getPositionX() + (int)arg2);
-				 }
 			}
 		}
 		return false;

@@ -123,6 +123,7 @@ public class Client {
 			}				
 			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
 				card.getPriority(), i);
+			cv.setSize(78, 110);
 			cards.add(cv);
 		}
 		Collections.sort(cards);

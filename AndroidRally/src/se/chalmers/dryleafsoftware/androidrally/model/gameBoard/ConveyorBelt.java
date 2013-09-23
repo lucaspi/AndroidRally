@@ -51,9 +51,13 @@ public class ConveyorBelt implements BoardElement{
 		this.turn = turn;
 	}
 	
+	/**
+	 * The robot will only move one step every time this method is called. If the traveldistance is > 1
+	 * this method should be called several times.
+	 */
 	@Override
 	public void action(Robot robot) {
-		robot.move(travelDistance, direction);
+		robot.move(1, direction);
 		if(turn == TURN_LEFT){
 			robot.turn(TurnType.LEFT);
 		}else if(turn == TURN_RIGHT){
