@@ -115,6 +115,23 @@ public class GameModel {
 		return false;
 	}
 	
+	/*
+	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
+	 */
+	private boolean canMove(int oldX, int oldY, int x, int y){
+		if(oldY > y){
+			return canMove(x,y,GameBoard.NORTH);
+		}else if(oldX < x ){
+			return canMove(x,y,GameBoard.EAST);
+		}else if(oldY < y ){
+			return canMove(x,y,GameBoard.SOUTH);
+		}else if(oldX > x ){
+			return canMove(x,y,GameBoard.WEST);
+		}
+		// This should only happen if the robot is standing still.
+		return true;
+	}
+	
 	private void fireLaser(int x, int y, int direction){
 		boolean robotIsHit = false;
 		boolean noWall = true;
@@ -147,6 +164,7 @@ public class GameModel {
 
 	}
 	
+
 	/**
 	 * Fires all lasers from both robots and lasers attached to walls.
 	 */
