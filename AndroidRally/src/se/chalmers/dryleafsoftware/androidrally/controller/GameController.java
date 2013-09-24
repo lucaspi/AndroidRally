@@ -154,6 +154,6 @@ public class GameController implements PropertyChangeListener {
 		}
 		nbrOfRobotsDone = 0;
 	}
-
+//TODO game end how?
 
 }
