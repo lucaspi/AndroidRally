@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.os.CountDownTimer;
-
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -22,21 +20,25 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	
+	private int nbrOfRobotsAlive;
+
+
 	public GameController(int nbrOfPlayers) {
 		isRunRunning = false;
 		nbrOfRobotsDone = 0;
 		gameModel = new GameModel(nbrOfPlayers);
 		timer = new Timer();
 		endOfRound = new TimerTask() {
+			/* Method that is executing if the round time is out or
+			 * all robots are done playing their cards. */
 			@Override
 			public void run() {
 				isRunRunning = true;
 				stopRoundTimer();
 				handleRemainingRobots();
 				gameModel.moveRobots();
-				startRoundTimer(); //TODO maybe move?
-				nbrOfRobotsDone = 0;
+				//If the game is over a new round will not be started.
+				newRound();
 				isRunRunning = false;
 			}
 		};
@@ -55,24 +57,19 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 
-	public GameModel getGameModel() {
-		return gameModel;
-	}
-	
 	/**
 	 * Timer is scheduled to what hoursEachRound is set to.
 	 * 24 hours as default.
 	 */
-	public void startRoundTimer() { //TODO maybe do more stuff?
-		
+	public void startRoundTimer() {
 		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
-	
+
 	public void stopRoundTimer() {
 		timer.cancel();
 		timer.purge(); //FIXME If there are problems with the timer, this might be it
 	}
-	
+
 	/**
 	 * Set the given input from the client to a specific robots chosen cards.
 	 * 
@@ -93,29 +90,70 @@ public class GameController implements PropertyChangeListener {
 		robot.setChosenCards(chosenCards);
 		robot.setSentCards(true);
 		nbrOfRobotsDone++;
-		
-		if(gameModel.getRobots().size() == nbrOfRobotsDone && !isRunRunning) {
+		if(nbrOfRobotsAlive == nbrOfRobotsDone && !isRunRunning) {
 			endOfRound.run();
 		}
-		
+
 	}
 
+	/**
+	 * Get how long the round is totally.
+	 * @return the number of hours a round is
+	 */
 	public int getHoursEachRound() {
 		return hoursEachRound;
 	}
 
+	/**
+	 * Set how long a round should be. (24 hours as default in the constructor).
+	 * @param hoursEachRound the number of hours a round should be
+	 */
 	public void setHoursEachRound(int hoursEachRound) {
 		this.hoursEachRound = hoursEachRound;
 	}
 
+	/**
+	 * If the server hasn't received information from the client within
+	 * the time of the card timer + ping "time out"-time randomized cards
+	 * will be given to the robot that the card timer went out from.
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals("cardTimeOut")) {
 			setChosenCardsToRobot(new int[]{0,0,0,0,0}, (Integer)pce.getNewValue());
 		}
 	}
-	
+
+	/**
+	 * Get the cards of a specific robot.
+	 * @param robotID the index of the robot in the GameModel's robot list.
+	 * @return the robot's cards (not chosen cards)
+	 */
 	public List<Card> getCards(int robotID) {
-		return null; //FIXME dealCards 
-	}	
+		return gameModel.getRobots().get(robotID).getCards(); 
+	}
+
+	/**
+	 * All robots will receive new cards and
+	 * the round timer will start.
+	 * <p>
+	 * ONLY call when a new game is to be started.
+	 * After that the method will be called when another
+	 * round has ended (unless the game is over).
+	 */
+	public void newRound() {
+		gameModel.dealCards();
+		startRoundTimer();
+		
+		//Check how many robots that are still alive this round
+		nbrOfRobotsAlive = 0;
+		for (Robot robotInList : gameModel.getRobots()) {
+			if (robotInList.getLife() > 0) {
+				nbrOfRobotsAlive++;
+			}
+		}
+		nbrOfRobotsDone = 0;
+	}
+
+
 }
