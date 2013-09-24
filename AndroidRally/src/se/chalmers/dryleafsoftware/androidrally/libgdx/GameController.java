@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * This is the client-side controller which handles the game's logic.
@@ -19,7 +22,7 @@ import com.badlogic.gdx.math.Vector3;
  * @author
  *
  */
-public class GameController implements GestureListener {
+public class GameController implements GestureListener, PropertyChangeListener {
 
 	private final GdxGame game;
 	private OrthographicCamera boardCamera;
@@ -28,6 +31,9 @@ public class GameController implements GestureListener {
 	private float maxZoom;
 	private Vector3 defaultPosition;
 	private DeckView deckView;
+	
+	private List<GameAction> actions;
+	private RoundResult result;
 
 	/**
 	 * Creates a new instance which will control the specified game.
@@ -38,6 +44,7 @@ public class GameController implements GestureListener {
 		this.boardCamera = this.game.getBoardCamera();
 		this.client = new Client(1);
 		this.deckView = game.getDeckView();
+		game.addListener(this);
 		
 		maxZoom = 0.4f;
 		defaultPosition = new Vector3(240, 400, 0f);
@@ -60,9 +67,43 @@ public class GameController implements GestureListener {
 	
 		this.deckView.setDeckCards(client.getCards(cardTexture));
 		
-		List<GameAction> actions = client.getRoundResult();
-		for(GameAction a : actions) {
-			a.action(game.getBoardView().getRobots());
+		result = client.getRoundResult();
+		actions = result.getNextResult();
+//		List<GameAction> actions = client.getRoundResult();
+//		for(GameAction a : actions) {
+//			a.action(game.getBoardView().getRobots());
+//		}
+
+		Timer timer = new Timer();
+		timer.scheduleTask(new Timer.Task() {			
+			@Override
+			public void run() {
+				client.sendCard(deckView.getChosenCards());
+			}
+		}, 3);
+		timer.start();
+	}
+	
+	private void update() {
+		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+			if(actions.get(0).isDone()) {
+				actions.remove(0);
+			}
+			if(!actions.isEmpty()) {
+				actions.get(0).action(game.getBoardView().getRobots());
+				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT) {
+					game.getBoardView().setAnimationElement(true);
+				}else{
+					game.getBoardView().setAnimationElement(false);
+				}
+			}else{
+				game.getBoardView().setAnimationElement(false);
+			}
+		}else if(actions.isEmpty()){
+			if(result.hasNext()) {
+				System.out.println("Next round!");
+				actions = result.getNextResult();
+			}
 		}
 	}
 
@@ -133,5 +174,12 @@ public class GameController implements GestureListener {
 	}
 
 	public void checkCameraBounds() {
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if(event.getPropertyName().equals(GdxGame.EVENT_UPDATE)) {
+			update();
+		}
 	}
 }

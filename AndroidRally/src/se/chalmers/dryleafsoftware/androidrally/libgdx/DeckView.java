@@ -52,6 +52,9 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	public List<CardView> getChosenCards() {
+		return this.chosenCards;
+	}
 	
 	/**
 	 * Adds the specified card to the registers.
