@@ -103,16 +103,24 @@ public class GameModel {
 	
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
-			if(!gameBoard.getTile(x, y).getNorthWall() && !gameBoard.getTile(x, y-1).getSouthWall()){
+			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall() && (y>0 && 
+					!gameBoard.getTile(x, y-1).getSouthWall())){
+				return true;
 			}
 		}else if(direction == GameBoard.WEST){
-			if(!gameBoard.getTile(x, y).getWestWall() && !gameBoard.getTile(x-1, y).getEastWall()){
+			if(x>= 0 && !gameBoard.getTile(x, y).getWestWall() && (x>0 && 
+					!gameBoard.getTile(x-1, y).getEastWall())){
+				return true;
 			}
 		}else if(direction == GameBoard.SOUTH){
-			if(!gameBoard.getTile(x, y).getSouthWall() && !gameBoard.getTile(x, y+1).getNorthWall()){
+			if(y <= GameBoard.HEIGHT-1 && !gameBoard.getTile(x, y).getSouthWall() && 
+					(y<GameBoard.HEIGHT-1 && !gameBoard.getTile(x, y+1).getNorthWall())){
+				return true;
 			}
 		}else if(direction == GameBoard.EAST){
-			if(!gameBoard.getTile(x, y).getEastWall() && !gameBoard.getTile(x+1, y).getWestWall()){
+			if(x <= GameBoard.WIDTH-1 && !gameBoard.getTile(x, y).getEastWall() &&
+					(x<GameBoard.WIDTH-1 && !gameBoard.getTile(x+1, y).getWestWall())){
+				return true;
 			}
 		}
 		return false;
@@ -121,15 +129,15 @@ public class GameModel {
 	/*
 	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
 	 */
-	private boolean canMove(int oldX, int oldY, int x, int y){
-		if(oldY > y){
-			return canMove(x,y,GameBoard.NORTH);
-		}else if(oldX < x ){
-			return canMove(x,y,GameBoard.EAST);
-		}else if(oldY < y ){
-			return canMove(x,y,GameBoard.SOUTH);
-		}else if(oldX > x ){
-			return canMove(x,y,GameBoard.WEST);
+	private boolean canMove(int x, int y, int oldX, int oldY){
+		if(y > oldY){
+			return canMove(oldX,oldY,GameBoard.NORTH);
+		}else if(x < oldX ){
+			return canMove(oldX,oldY,GameBoard.EAST);
+		}else if(y < oldY ){
+			return canMove(oldX,oldY,GameBoard.SOUTH);
+		}else if(x > oldX ){
+			return canMove(oldX,oldY,GameBoard.WEST);
 		}
 		// This should only happen if the robot is standing still.
 		return true;
@@ -285,6 +293,9 @@ public class GameModel {
 	 */
 	private boolean handleCollision(Robot robot, int oldX, int oldY){
 		boolean wallCollision = false;
+		System.out.println("index of robot " + robots.indexOf(robot));
+		System.out.println("rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
+		
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
 				// Do any robot stand on the same tile as another the robot from the parameters.
@@ -320,9 +331,7 @@ public class GameModel {
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
 			Card[] chosenCards = robots.get(i).getChosenCards();
-			for (int j = 0; j < 5; j++) {
 				currentCards.add(chosenCards);
-			}
 		}
 		int[][] oldPosition = new int[robots.size()][2];
 		
@@ -333,7 +342,7 @@ public class GameModel {
 				int highestPriority = 0;
 				int indexOfHighestPriority = -1; //player index in array
 				for (int k = 0; k < currentCards.size(); k++) { //find highest card
-					if (currentCards.get(k) != null //check if card exists and..
+					if (currentCards.get(k)[i] != null //check if card exists and..
 						&&	highestPriority //..is the highest one
 							< currentCards.get(k)[i].getPriority()) {
 						highestPriority = currentCards.get(k)[i].getPriority();
@@ -350,7 +359,7 @@ public class GameModel {
 						oldPosition[indexOfHighestPriority][1]);
 				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
 						.instantAction(currentRobot);
-				
+				checkIfRobotsOnMap();
 				deleteDeadRobots();
 				
 				//Remove the card so it doesn't execute twice
@@ -367,6 +376,15 @@ public class GameModel {
 		}
 		
 		//TODO give specials to robots standing on "wrench & hammer"
+	}
+	
+	private void checkIfRobotsOnMap(){
+		for(int i = 0; i<robots.size(); i++){
+			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= GameBoard.WIDTH || 
+					robots.get(i).getY() < 0 || robots.get(i).getY() >= GameBoard.HEIGHT){
+				robots.get(i).die();
+			}
+		}
 	}
 	
 	private void addConveyorBeltMove(Robot robot){

@@ -75,10 +75,12 @@ public class Client {
 	 * @return A list of all the actions was created during the last round.
 	 */
 	public List<GameAction> getRoundResult() {
+		model.moveRobots();
+		
 		// From server example: "0:10101;0:1;0:10102;0:1;1:10203"
 		List<GameAction> actions = new ArrayList<GameAction>();
 		
-		String[] allActions = indata.split(";");// TODO: server input
+		String[] allActions = model.getAllMoves().split(";");// TODO: server input
 		for(String s : allActions) {
 			String[] singleAction = s.split(":");
 			int player = Integer.parseInt(singleAction[0]);

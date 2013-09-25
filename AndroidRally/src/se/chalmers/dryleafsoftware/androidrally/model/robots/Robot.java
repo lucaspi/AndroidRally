@@ -201,6 +201,7 @@ public class Robot {
 	}
 
 	public Card[] getChosenCards() {
+		fillEmptyCardRegisters();
 		return chosenCards;
 	}
 	
@@ -219,7 +220,6 @@ public class Robot {
 				}
 			}
 		}
-		fillEmptyCardRegisters();
 	}
 	
 	private void fillEmptyCardRegisters(){
