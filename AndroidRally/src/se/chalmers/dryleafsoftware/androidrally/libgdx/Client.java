@@ -1,62 +1,151 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MoveAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RotationAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
+/**
+ * This class talks to the server. It converts data from the server to appropriate classes which 
+ * can then be fetched through getters. It also converts data is should sent to a format the server
+ * can read.
+ * 
+ * @author
+ *
+ */
 public class Client {
 
-	private GameModel model;
+	// TODO: the client must somehow know which robotID the player has.
+	private final GameModel model;
+	private final int clientID;
+	
+	private String indata = "0:10101;0:1;0:10102;0:1;1:10203";
 	
 	/**
-	 * Bara "" ger en tom ruta. "12:33" kommer skapa två elements på den rutan.
-	 * entalen står för ID för elementet på den rutan. tiotalen står för
-	 * speciella egenskaper för det elementet, t.ex 33 ger ett rullband (3) +
-	 * roterat 3 gånger (30) = 33 t.ex 12 ger checkpoint (2) + numerordning 1
-	 * (10) = 12 osv.
+	 * Creates a new client instance.
+	 * @param clientID The ID number of the player.
 	 */
-	private String[][] testmap = new String[][] {
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
-			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
-			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
-			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
-			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
-			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
-			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
-			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-	};
-	
-	public Client() {
-//		this.model = new GameModel(5);
+	public Client(int clientID) {
+		this.model = new GameModel(8);// TODO: remove
+		this.clientID = clientID;
 	}
 	
+	/**
+	 * Returns the map of the board as a matrix of strings.
+	 * @return A map of the board as a matrix of strings.
+	 */
 	public String[][] getMap() {
-		return testmap;
+		return model.getMap();// TODO: server output
 	}
 	
-	public List<PlayerPieceView> getPlayers(Texture texture) {
-		List<PlayerPieceView> players = new ArrayList<PlayerPieceView>();
-				
-		TextureRegion playerTexture1 = new TextureRegion(texture, 0, 64, 64, 64);
-		PlayerPieceView player1 = new PlayerPieceView(1, playerTexture1);
-		player1.setPosition(80, 800 - 160);
-		player1.setOrigin(20, 20);
-		players.add(player1);
+	/**
+	 * Sends the cards to the server. Note that the list MUST contain five cards.
+	 * @param cards The cards to send.
+	 * @return <code>true</code> if the client successfully sent the cards.
+	 */
+	public boolean sendCard(List<CardView> cards) {
+		// Send example: ”0:7:1:4:-1"
+		if(cards.size() != 5) {
+			return false;
+		}
+		StringBuilder sb = new StringBuilder(clientID);
+		for(int i = 0; i < cards.size(); i++) {
+			if(cards.get(i) == null) {
+				sb.append(":0");
+			}else{
+				sb.append(":" + cards.get(i).getIndex());
+			}
+		}
+		// TODO: send to server
+		return true;
+	}
+	
+	/**
+	 * Gives all the actions which was created during the last round.
+	 * @return A list of all the actions was created during the last round.
+	 */
+	public List<GameAction> getRoundResult() {
+		// From server example: "0:10101;0:1;0:10102;0:1;1:10203"
+		List<GameAction> actions = new ArrayList<GameAction>();
 		
-		TextureRegion playerTexture2 = new TextureRegion(texture, 64, 64, 64, 64);
-		PlayerPieceView player2 = new PlayerPieceView(2, playerTexture2);
-		player2.setPosition(160, 400);
-		player2.setOrigin(20, 20);
-		players.add(player2);
+		String[] allActions = indata.split(";");// TODO: server input
+		for(String s : allActions) {
+			String[] singleAction = s.split(":");
+			int player = Integer.parseInt(singleAction[0]);
+			int data = Integer.parseInt(singleAction[1]);
+			if(data / 10000 == 1) {	// Pos
+				actions.add(new MoveAction(player, (data % 10000) / 100, data % 100));
+			}else {	// Dir
+				actions.add(new RotationAction(player, data));
+			}
+		}
+		return actions;
+	}
+	
+	/**
+	 * Gives the client's cards.
+	 * @return A list of the client's cards.
+	 */
+	public List<CardView> getCards(Texture texture) {
+		// From server example: "410:420:480:660:780:840:190:200:90"
+		model.dealCards();// TODO: server input
+		List<CardView> cards = new ArrayList<CardView>();
 		
-		return players;
+		// TODO: change to robotID and input to string
+		for(int i = 0; i < model.getRobots().get(0).getCards().size(); i++) {
+			Card card = model.getRobots().get(0).getCards().get(i);
+			int prio = card.getPriority();
+			int regX = 0;
+			if(prio <= 60) {
+				regX = 0;	// UTURN
+			}else if(prio <= 410 && prio % 20 != 0) {
+				regX = 64;	// LEFT
+			}else if(prio <= 420 && prio % 20 == 0) {
+				regX = 128;	// LEFT
+			}else if(prio <= 480) {
+				regX = 192;	// Back 1
+			}else if(prio <= 660) {
+				regX = 256;	// Move 1
+			}else if(prio <= 780) {
+				regX = 320;	// Move 2
+			}else if(prio <= 840) {
+				regX = 384;	// Move 3
+			}				
+			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
+				card.getPriority(), i);
+			cv.setSize(78, 110);
+			cards.add(cv);
+		}
+		Collections.sort(cards);
+		return cards;
+	}
+	
+	/**
+	 * Gives all the players robots in the current game as a list.
+	 * @param texture The textures to use when displaying the robots.
+	 * @param dockPositions All the docks' positions.
+	 * @return A list of all the robots.
+	 */
+	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {
+		// From server example: "
+		// TODO: server input
+		List<RobotView> robots = new ArrayList<RobotView>();		
+		for(int i = 0; i < model.getRobots().size(); i++) {
+			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
+			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+			robot.setOrigin(20, 20);
+			robots.add(robot);
+		}		
+		return robots;
 	}
 }

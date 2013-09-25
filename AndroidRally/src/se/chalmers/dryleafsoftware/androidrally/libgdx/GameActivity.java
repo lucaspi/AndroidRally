@@ -5,7 +5,14 @@ import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+/**
+ * This is the activity which will simply start the game.
+ * 
+ * @author 
+ *
+ */
 public class GameActivity extends AndroidApplication {
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -6,15 +6,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
- * 
+ * This view will render a checkpoint, a board element which the robots must get to.
  * 
  * @author 
  *
  */
 public class CheckPointView extends Image {
 
-	private int number;
-	private BitmapFont font;
+	private final int number;
+	private final BitmapFont font;
 	
 	/**
 	 * Creates a new checkpoint with the specified texture and the specified number.

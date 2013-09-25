@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
- * 
+ * This will render a gear, a board element which rotates robots.
  * 
  * @author 
  *

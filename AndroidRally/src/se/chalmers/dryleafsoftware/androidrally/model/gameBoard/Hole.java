@@ -6,12 +6,11 @@ public class Hole implements BoardElement{
 
 	@Override
 	public void action(Robot robot) {
-		robot.die();
+		//Do nothing
 	}
 
 	@Override
 	public void instantAction(Robot robot) {
 		robot.die();
 	}
-
 }
