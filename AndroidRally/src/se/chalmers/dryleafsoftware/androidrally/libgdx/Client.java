@@ -86,6 +86,7 @@ public class Client {
 //		String indata = model.getAllMoves();
 //		String[] allActions = indata.split(";");
 		String[] allActions = indata1.split(";");// TODO: server input
+
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
 			if(parallel.length >= 2) {	
