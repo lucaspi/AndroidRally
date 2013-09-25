@@ -69,7 +69,6 @@ public class Client {
 			}
 		}
 		// TODO: send to server
-		System.out.println("Client sending card: " + sb.toString());
 		return true;
 	}
 	
@@ -80,7 +79,12 @@ public class Client {
 //	public List<GameAction> getRoundResult() {
 	public RoundResult getRoundResult() {
 		// From server example: "0:10101;0:10102;1:10203"	
+//		model.dealCards();
+//		model.moveRobots();
+		
 		RoundResult result = new RoundResult();	
+//		String indata = model.getAllMoves();
+//		String[] allActions = indata.split(";");
 		String[] allActions = indata1.split(";");// TODO: server input
 		for(String s : allActions) {
 			String[] parallel = s.split("#");

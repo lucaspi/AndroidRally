@@ -25,15 +25,15 @@ import com.badlogic.gdx.utils.Timer;
 public class GameController implements GestureListener, PropertyChangeListener {
 
 	private final GdxGame game;
-	private OrthographicCamera boardCamera;
-	private boolean modifyBoard;
 	private final Client client;
-	private float maxZoom;
-	private Vector3 defaultPosition;
 	private DeckView deckView;
 	
 	private List<GameAction> actions;
 	private RoundResult result;
+	
+	private final Texture boardTexture, cardTexture;
+	
+//	private 
 
 	/**
 	 * Creates a new instance which will control the specified game.
@@ -41,51 +41,49 @@ public class GameController implements GestureListener, PropertyChangeListener {
 	 */
 	public GameController(GdxGame game) {
 		this.game = game;
-		this.boardCamera = this.game.getBoardCamera();
 		this.client = new Client(1);
 		this.deckView = game.getDeckView();
 		game.addListener(this);
 		
-		maxZoom = 0.4f;
-		defaultPosition = new Vector3(240, 400, 0f);
-		
 		// Only load the textures once.
-		Texture boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
+		boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		Texture cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
-		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
+		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		game.getBoardView().createBoard(boardTexture, client.getMap());
 		
 		for(RobotView player : client.getRobots(boardTexture, game.getBoardView().getDocksPositions())) {
 			game.getBoardView().addRobot(player);
 		}		
-		
-//		PlayerView p = game.getBoardView().getPlayer(1);
-//		p.addAction(Actions.sequence(Actions.moveBy(40, 0, 2),
-//				Actions.parallel(Actions.fadeOut(2), Actions.scaleTo(0.3f, 0.3f, 2))));
 	
 		this.deckView.setDeckCards(client.getCards(cardTexture));
-		
-		result = client.getRoundResult();
-		actions = result.getNextResult();
-//		List<GameAction> actions = client.getRoundResult();
-//		for(GameAction a : actions) {
-//			a.action(game.getBoardView().getRobots());
-//		}
-
+				
 		Timer timer = new Timer();
 		timer.scheduleTask(new Timer.Task() {			
 			@Override
 			public void run() {
+				System.out.println("Sending cards");
 				client.sendCard(deckView.getChosenCards());
 			}
 		}, 3);
+		timer.scheduleTask(new Timer.Task() {			
+			@Override
+			public void run() {
+				System.out.println("Getting actions");
+				result = client.getRoundResult();
+				actions = result.getNextResult();
+			}
+		}, 4);
 		timer.start();
 	}
 	
+	public RoundResult getRoundResults() {
+		return result;
+	}
+	
 	private void update() {
-		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+		if(actions != null && !actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
 				actions.remove(0);
 			}
@@ -99,7 +97,7 @@ public class GameController implements GestureListener, PropertyChangeListener {
 			}else{
 				game.getBoardView().setAnimationElement(false);
 			}
-		}else if(actions.isEmpty()){
+		}else if(actions != null && actions.isEmpty()){
 			if(result.hasNext()) {
 				System.out.println("Next round!");
 				actions = result.getNextResult();
@@ -109,21 +107,11 @@ public class GameController implements GestureListener, PropertyChangeListener {
 
 	@Override
 	public boolean tap(float arg0, float arg1, int arg2, int arg3) {
-		if(modifyBoard && arg2 == 2) {
-			if(boardCamera.zoom == maxZoom){
-				boardCamera.zoom = 1.0f;
-				boardCamera.position.set(defaultPosition);
-			} else {
-				boardCamera.zoom = maxZoom;
-				boardCamera.position.set(arg0, arg1, 0f);
-			}
-		}
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(float arg0, float arg1, int arg2, int arg3) {
-		modifyBoard = arg1 < Gdx.graphics.getHeight() * 2 / 3;
 		return false;
 	}
 
@@ -135,14 +123,6 @@ public class GameController implements GestureListener, PropertyChangeListener {
 
 	@Override
 	public boolean pan(float arg0, float arg1, float arg2, float arg3) {
-		if (modifyBoard) {
-			if (boardCamera.zoom == 1.0f) {
-				boardCamera.translate(0f, arg3);
-			} else {
-				boardCamera.translate(-arg2 * boardCamera.zoom, arg3
-						* boardCamera.zoom);
-			}
-		}
 		return false;
 	}
 
@@ -154,16 +134,6 @@ public class GameController implements GestureListener, PropertyChangeListener {
 
 	@Override
 	public boolean zoom(float arg0, float arg1) {
-		if (modifyBoard) {
-			if (arg1 - arg0 > 0 && boardCamera.zoom > 0.4f) {
-				boardCamera.zoom -= 0.03f;
-			} else if (arg0 - arg1 > 0 && boardCamera.zoom < 1.0f) {
-				boardCamera.zoom += 0.03f;
-			} else if (boardCamera.zoom == 1.0f) {
-				boardCamera.position.set(240, 400, 0f);
-			}
-			// checkCameraBounds();
-		}
 		return false;
 	}
 
