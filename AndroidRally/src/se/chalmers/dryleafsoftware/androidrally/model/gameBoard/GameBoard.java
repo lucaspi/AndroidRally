@@ -53,7 +53,7 @@ public class GameBoard {
 	 * 
 	 * Hole = 1
 	 * CheckPoint = (nr)2
-	 * ConveyorBelt = (GameBoard.staticfinal)3
+	 * ConveyorBelt = (nbrOfSteps)(GameBoard.staticfinal)3
 	 * Gear = 4 -> left, 14 -> right
 	 * Repair = 5
 	 * Wall = (GameBoard.staticFinal)6

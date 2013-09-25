@@ -91,6 +91,14 @@ public class GameModel {
 		return gameBoard.getMapAsString();
 	}
 	
+	/**
+	 * Only for testing!!
+	 * @param map a string map
+	 */
+	public void setMap(String[][] map) {
+		
+	}
+	
 	private boolean isRobotHit(int x, int y){
 		for(Robot robot : this.robots){
 			if(robot.getX() == x && robot.getY() == y){
