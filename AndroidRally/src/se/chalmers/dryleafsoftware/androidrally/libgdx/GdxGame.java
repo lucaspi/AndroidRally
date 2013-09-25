@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
  */
 public class GdxGame implements ApplicationListener {
 
-	private OrthographicCamera cardCamera;
 	private Texture deckTexture;
 	private GameController gameController;
 	private BoardView gameBoard;
@@ -32,35 +31,12 @@ public class GdxGame implements ApplicationListener {
 	
 	@Override
 	public void create() {
-		// Turn off rendering loop to save battery
-		// Gdx.graphics.setContinuousRendering(false);
-
-		cardCamera = new OrthographicCamera(480, 800);
-		cardCamera.zoom = 1.0f;
-		cardCamera.position.set(240, 400, 0f);
-		cardCamera.update();
-
-		deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
-		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
-		gameBoard = new BoardView();
-		
+		gameBoard = new BoardView();		
 		cardDeck = new DeckView();
-		cardDeck.createDeck(deckTexture);
-
-//		gameBoard.setCamera(boardCamera);
-		OrthographicCamera boardCamera2 = new OrthographicCamera(480, 800);
-		boardCamera2.zoom = 1.0f;
-		boardCamera2.position.set(240, 400, 0f);
-		boardCamera2.update();
-//		gameBoard.setCamera(boardCamera2);
-		cardDeck.setCamera(cardCamera);
 
 		gameController = new GameController(this);
 		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck, new GestureDetector(gameController));
 		Gdx.input.setInputProcessor(im);
-				
-//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
