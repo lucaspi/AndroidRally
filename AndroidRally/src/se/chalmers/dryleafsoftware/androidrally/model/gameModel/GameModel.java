@@ -347,15 +347,24 @@ public class GameModel {
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
 
-				currentCards.get(indexOfHighestPriority)[i]
-						.action(currentRobot);
-				addMove(currentRobot);
-				handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
-						oldPosition[indexOfHighestPriority][1]);
-				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
-						.instantAction(currentRobot);
-				checkIfRobotsOnMap();
-				deleteDeadRobots();
+				int numberOfSteps = 1;
+				if(currentCards.get(indexOfHighestPriority)[i] instanceof Move){
+					numberOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
+							).getDistance());
+				}
+				for(int k = 0; k<numberOfSteps; k++){
+					oldPosition[indexOfHighestPriority][0] = robots.get(indexOfHighestPriority).getX();
+					oldPosition[indexOfHighestPriority][1] = robots.get(indexOfHighestPriority).getY();
+					currentCards.get(indexOfHighestPriority)[i]
+							.action(currentRobot);
+					addMove(currentRobot);
+					handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
+							oldPosition[indexOfHighestPriority][1]);
+					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
+							.instantAction(currentRobot);
+					checkIfRobotsOnMap();
+					deleteDeadRobots();
+				}
 				
 				//Remove the card so it doesn't execute twice
 				currentCards.get(indexOfHighestPriority)[i] = null;
