@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.badlogic.gdx.Game;
+
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
@@ -14,11 +16,10 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  *
  */
 public class Tile {
-	public static int WALL_NONE = 0;
-	public static int WALL_NORTH = 1;
-	public static int WALL_EAST = 2;
-	public static int WALL_SOUTH = 4;
-	public static int WALL_WEST = 8;
+	public static int WALL_NORTH = GameBoard.NORTH;
+	public static int WALL_EAST = GameBoard.EAST;
+	public static int WALL_SOUTH = GameBoard.SOUTH;
+	public static int WALL_WEST = GameBoard.WEST;
 	
 	private boolean wallNorth = false;
 	private boolean wallEast = false;
@@ -110,76 +111,21 @@ public class Tile {
 	
 	/**
 	 * Set which walls should exist on the tile.
-	 * @param walls use constants provided in class.
+	 * @param wall use constants provided in GameBoard.
 	 */
-	public void setWalls(int walls){
-		wallNorth = false;
-		wallEast = false;
-		wallSouth = false;
-		wallWest = false;
-		
-		switch(walls){
-		case 1:
+	public void setWall(int wall){		
+		switch(wall){
+		case GameBoard.NORTH:
 			wallNorth = true;
 			break;
-		case 2:
+		case GameBoard.EAST:
 			wallEast = true;
 			break;
-		case 3:
-			wallNorth = true;
-			wallEast = true;
-			break;
-		case 4:
+		case GameBoard.SOUTH:
 			wallSouth = true;
 			break;
-		case 5:
-			wallSouth = true;
-			wallNorth = true;
-			break;
-		case 6:
-			wallSouth = true;
-			wallEast = true;
-			break;
-		case 7:
-			wallSouth = true;
-			wallEast = true;
-			wallNorth = true;
-			break;
-		case 8:
+		case GameBoard.WEST:
 			wallWest = true;
-			break;
-		case 9:
-			wallWest = true;
-			wallNorth = true;
-			break;
-		case 10:
-			wallWest = true;
-			wallEast = true;
-			break;
-		case 11:
-			wallWest = true;
-			wallEast = true;
-			wallNorth = true;
-			break;
-		case 12:
-			wallWest = true;
-			wallSouth = true;
-			break;
-		case 13:
-			wallWest = true;
-			wallSouth = true;
-			wallNorth = true;
-			break;
-		case 14:
-			wallWest = true;
-			wallSouth = true;
-			wallEast = true;
-			break;
-		case 15:
-			wallWest = true;
-			wallSouth = true;
-			wallEast = true;
-			wallNorth = true;
 			break;
 		}
 	}

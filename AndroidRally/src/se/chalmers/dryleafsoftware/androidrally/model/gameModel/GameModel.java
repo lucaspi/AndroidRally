@@ -111,23 +111,19 @@ public class GameModel {
 	
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
-			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall() && (y>0 && 
-					!gameBoard.getTile(x, y-1).getSouthWall())){
+			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall()){
 				return true;
 			}
 		}else if(direction == GameBoard.WEST){
-			if(x>= 0 && !gameBoard.getTile(x, y).getWestWall() && (x>0 && 
-					!gameBoard.getTile(x-1, y).getEastWall())){
+			if(x>= 0 && !gameBoard.getTile(x, y).getWestWall()){
 				return true;
 			}
 		}else if(direction == GameBoard.SOUTH){
-			if(y <= gameBoard.getHeight()-1 && !gameBoard.getTile(x, y).getSouthWall() && 
-					(y<gameBoard.getHeight()-1 && !gameBoard.getTile(x, y+1).getNorthWall())){
+			if(y <= gameBoard.getHeight()-1 && !gameBoard.getTile(x, y).getSouthWall()){
 				return true;
 			}
 		}else if(direction == GameBoard.EAST){
-			if(x <= gameBoard.getWidth()-1 && !gameBoard.getTile(x, y).getEastWall() &&
-					(x<gameBoard.getWidth()-1 && !gameBoard.getTile(x+1, y).getWestWall())){
+			if(x <= gameBoard.getWidth()-1 && !gameBoard.getTile(x, y).getEastWall()){
 				return true;
 			}
 		}
@@ -285,17 +281,6 @@ public class GameModel {
 		for(int i = 0; i<robots.size(); i++){
 			canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1]);
 		}
-		
-		// Alters the last String to the correct syntax.
-		if(nbrOfMovedRobots > 0){
-			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
-			if(allMoves.get(allMoves.size()-1).contains("B#")){
-				stringToBeChanged = stringToBeChanged + ";";
-			}else{
-				stringToBeChanged = stringToBeChanged.replace('#', ';');
-			}
-			allMoves.add(stringToBeChanged);
-		}
 	}
 	
 	/*
@@ -385,10 +370,20 @@ public class GameModel {
 				System.out.println("........." + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
 			}
 			checkConveyorBeltCollides(oldPosition);
+
+			// Alters the last String to the correct syntax.
+			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
+			if(stringToBeChanged.equals("B#")){
+				stringToBeChanged = stringToBeChanged + ";";
+			}else{
+				stringToBeChanged = stringToBeChanged.replace('#', ';');
+			}
+			
+			allMoves.add(stringToBeChanged);
 			for(int a = 0; a<robots.size(); a++){
 				System.out.println("-------" + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
 			}
-			allMoves.add("R#" + i + ";");
+			allMoves.add(";R#" + i + ";");
 		}
 		
 		for(Robot robot : robots){
