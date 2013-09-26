@@ -84,8 +84,6 @@ public class GameModel {
 	public void activateBoardElements() {
 		hejhej = 1;
 		for (Robot robot : robots) {
-			int oldX = robot.getX();
-			int oldY = robot.getY();
 			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
@@ -240,7 +238,7 @@ public class GameModel {
 	 * Size of oldPositions needs to be int[robots.size()][2]
 	 */
 	private void checkConveyorBeltCollides(int[][] oldPositions){
-//		List<Robot> moveIndexToBeRemoved = new ArrayList<Robot>();
+		List<Robot> moveIndexToBeRemoved = new ArrayList<Robot>();
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
@@ -258,10 +256,11 @@ public class GameModel {
 					boolean robotJMove = (oldPositions[j][0] != robots.get(j).getX() || 
 							oldPositions[j][1] != robots.get(j).getY());
 					// If both robots have moved to the same position by conveyorBelt, both should move back.
+					System.out.println("j " + robotJMove + " i " + robotIMove);
 					if(robotIMove && robotJMove){
 						robots.get(i).setX(oldPositions[i][0]);
-						robots.get(j).setY(oldPositions[i][1]);
-						robots.get(i).setX(oldPositions[j][0]);
+						robots.get(i).setY(oldPositions[i][1]);
+						robots.get(j).setX(oldPositions[j][0]);
 						robots.get(j).setY(oldPositions[j][1]);
 						
 						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
@@ -284,7 +283,7 @@ public class GameModel {
 			}
 		}
 		for(int i = 0; i<robots.size(); i++){
-			handleCollision(robots.get(i), oldPositions[i][0], oldPositions[i][1]);
+			canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1]);
 		}
 		
 		// Alters the last String to the correct syntax.
