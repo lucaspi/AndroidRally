@@ -57,14 +57,14 @@ public class GameModelTest {
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 8);
 		assertTrue(gm.getRobots().get(1).getX() == 0);
-		assertTrue(gm.getRobots().get(0).getY() == 9);
+		assertTrue(gm.getRobots().get(1).getY() == 9);
 		
 		gm.moveRobots();
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
-		assertTrue(gm.getRobots().get(0).getY() == 2);
-		assertTrue(gm.getRobots().get(1).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 3);
+		assertTrue(gm.getRobots().get(1).getX() == 0);
+		assertTrue(gm.getRobots().get(1).getY() == 4);
 	}
 	
 	@Test
@@ -107,14 +107,14 @@ public class GameModelTest {
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 8);
 		assertTrue(gm.getRobots().get(1).getX() == 0);
-		assertTrue(gm.getRobots().get(0).getY() == 9);
+		assertTrue(gm.getRobots().get(1).getY() == 9);
 		
 		gm.moveRobots();
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 8);
 		assertTrue(gm.getRobots().get(1).getX() == 0);
-		assertTrue(gm.getRobots().get(0).getY() == 9);
+		assertTrue(gm.getRobots().get(1).getY() == 9);
 	}
 
 }
