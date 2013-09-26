@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,10 +10,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * This view holds all the cards the player has to play with.
@@ -21,6 +32,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
  */
 public class DeckView extends Stage {
 
+	private final Texture buttonTexture;
+	
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
 	private List<CardView> chosenCards = new ArrayList<CardView>();
 	private int position;
@@ -28,7 +42,18 @@ public class DeckView extends Stage {
 	private Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
+	private final Table drawPanel; // The panel with [Draw cards]
+
+	public static final String EVENT_PLAY = "play";
+	public static final String EVENT_STEP = "step";
+	public static final String EVENT_SKIP = "skip";
+	public static final String EVENT_DRAW_CARDS = "drawCards";
 	
+	private int timerTick;
+	private final Timer timer;
+	
+	private final Label timerLabel;
+
 	/**
 	 * Creates a new default instance.
 	 */
@@ -36,7 +61,9 @@ public class DeckView extends Stage {
 		super();
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
+		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
+		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
 		cl = new CardListener(this);
 		
 		// Default camera
@@ -46,6 +73,7 @@ public class DeckView extends Stage {
 		cardCamera.update();
 		setCamera(cardCamera);
 		
+		// Set background image
 		Image deck = new Image(new TextureRegion(deckTexture, 0f, 0f, 1f, 1f));
 		deck.setPosition(0, 0);
 		deck.setSize(480, 320);
@@ -75,13 +103,139 @@ public class DeckView extends Stage {
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
 		
-		playPanel = buildPlayPanel(480, 120);
+		playPanel = buildPlayerPanel();		
+    	drawPanel = buildDrawCardPanel();	
+    	
+    	timer = new Timer();
+    	timer.stop();
+    	
+    	LabelStyle lStyle = new LabelStyle();
+    	lStyle.font = new BitmapFont();
+    	timerLabel = new Label("", lStyle);
+    	statusBar.add(timerLabel);
 	}
 	
-	private Table buildPlayPanel(int w, int h) {
-		Table table = new Table();
-		table.setSize(w, h);
-		return table;
+	/*
+	 * Creates the panel with the [Draw Cards] button.
+	 */
+	private Table buildDrawCardPanel() {
+		TextButtonStyle style = new TextButtonStyle();	  
+        style.up = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
+        style.down = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
+        style.font = new BitmapFont();
+		
+		int internalPadding = 50, externalPadding = 10;
+		Table drawPanel = new Table();
+    	drawPanel.setSize(480, 120);
+    	TextButton draw = new TextButton("Draw Cards", style);
+    	draw.pad(0, internalPadding, 0, internalPadding); // Internal padding
+    	drawPanel.add(draw).pad(externalPadding); // Border
+    	
+    	draw.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_DRAW_CARDS, 0, 1);
+    		}
+    	});
+    	return drawPanel;
+	}
+	
+	/*
+	 * Creates the panel with the [Play] [Step] [Skip] buttons.
+	 */
+	private Table buildPlayerPanel() {
+		TextButtonStyle style = new TextButtonStyle();	  
+        style.up = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
+        style.down = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
+        style.font = new BitmapFont();
+		
+		int internalPadding = 50, externalPadding = 10;
+		Table playPanel = new Table();
+		playPanel.setSize(480, 120);
+		TextButton play = new TextButton("Play", style);
+		play.pad(0, internalPadding, 0, internalPadding); // Internal padding
+    	playPanel.add(play).pad(externalPadding); // Border
+    	TextButton step = new TextButton("Step", style);
+    	step.pad(0, internalPadding, 0, internalPadding); // Internal padding
+    	playPanel.add(step).pad(externalPadding); // Border
+    	TextButton skip = new TextButton("Skip", style);
+    	skip.pad(0, internalPadding, 0, internalPadding); // Internal padding
+    	playPanel.add(skip).pad(externalPadding); // Border
+    	
+    	play.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_PLAY, 0, 1);
+    		}
+    	});
+    	step.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_STEP, 0, 1);
+    		}
+    	});
+    	skip.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_SKIP, 0, 1);
+    		}
+    	});
+    	return playPanel;
+	}
+		
+	/**
+	 * Sets the timer to the specified values.
+	 * The timer will then start.
+	 * @param h The number of hours.
+	 * @param m The number of minutes.
+	 * @param s The number of seconds.
+	 */
+	public void setTimerValue(int h, int m , int s) {
+		this.setTimer(s + m*60 + h * 3600 + 1);
+		// +1 To start the timer at the right time, and to stop it when reaching 0.
+	}
+	
+	/**
+	 * Sets the timer to count down the specified amount of seconds.
+	 * @param ticks The second to count down from.
+	 */
+	public void setTimer(int ticks) {
+		this.timerTick = ticks;
+		timer.clear();
+		// Tick every second.
+		timer.scheduleTask(new Timer.Task() {
+			@Override
+			public void run() {
+				timerTick--;
+				int h = timerTick / 3600;
+				int m = (timerTick / 60) % 60;
+				int s = timerTick % 60;
+				s = Math.max(s, 0);
+				timerLabel.setText(String.format("%02d", h) + 
+						":" + String.format("%02d", m) + 
+						":" + String.format("%02d", s));
+			}
+		}, 0, 1f, timerTick - 1);
+		// Stopping itself.
+		timer.scheduleTask(new Timer.Task() {
+			@Override
+			public void run() {
+				timer.stop();
+			}
+		}, timerTick);
+		timer.start();
+	}
+	
+	public void addListener(PropertyChangeListener listener) {
+		this.pcs.addPropertyChangeListener(listener);
+	}
+	
+	public void removeListener(PropertyChangeListener listener) {
+		this.pcs.removePropertyChangeListener(listener);
 	}
 
 	/**
@@ -105,8 +259,18 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	public void displayWaiting() {
+		lowerArea.clear();
+	}
+	
+	public void displayDrawCard() {
+		lowerArea.clear();
+		lowerArea.add(drawPanel);
+	}
+	
 	public void displayPlayOptions() {
-		
+		lowerArea.clear();
+		lowerArea.add(playPanel);
 	}
 	
 	public List<CardView> getChosenCards() {

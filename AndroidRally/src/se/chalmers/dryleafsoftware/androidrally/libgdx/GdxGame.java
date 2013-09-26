@@ -35,7 +35,7 @@ public class GdxGame implements ApplicationListener {
 		cardDeck = new DeckView();
 
 		gameController = new GameController(this);
-		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck, new GestureDetector(gameController));
+		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck);
 		Gdx.input.setInputProcessor(im);
 	}
 
