@@ -49,4 +49,11 @@ public class MultiAction extends GameAction {
 			a.action(robots);
 		}
 	}
+
+	@Override
+	public void cleanUp(List<RobotView> robots) {
+		for(SingleAction a : actions) {
+			a.cleanUp(robots);
+		}
+	}
 }
