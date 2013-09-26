@@ -32,9 +32,6 @@ public class GameBoard {
 		TILE_LASER = 7,
 		TILE_START = 8;
 	
-	public static final int WIDTH = 12;
-	public static final int HEIGHT = 16;
-	
 	/*
 	 * Hole = 1
 	 * CheckPoint = (nr)2
@@ -53,7 +50,7 @@ public class GameBoard {
 	 * 
 	 * Hole = 1
 	 * CheckPoint = (nr)2
-	 * ConveyorBelt = (GameBoard.staticfinal)3
+	 * ConveyorBelt = (nbrOfSteps)(GameBoard.staticfinal)3
 	 * Gear = 4 -> left, 14 -> right
 	 * Repair = 5
 	 * Wall = (GameBoard.staticFinal)6
@@ -79,6 +76,14 @@ public class GameBoard {
 	 */
 	public Tile getTile(int x, int y){
 		return tiles[x][y];
+	}
+	
+	public int getWidth(){
+		return tiles.length;
+	}
+	
+	public int getHeight(){
+		return tiles[0].length;
 	}
 	
 	/**

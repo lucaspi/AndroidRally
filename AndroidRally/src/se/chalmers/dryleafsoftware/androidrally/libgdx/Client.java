@@ -80,12 +80,13 @@ public class Client {
 	public RoundResult getRoundResult() {
 		// From server example: "0:10101;0:10102;1:10203"	
 //		model.dealCards();
-//		model.moveRobots();
+		model.moveRobots();
 		
 		RoundResult result = new RoundResult();	
-//		String indata = model.getAllMoves();
-//		String[] allActions = indata.split(";");
-		String[] allActions = indata1.split(";");// TODO: server input
+		String indata = model.getAllMoves();
+		String[] allActions = indata.split(";");
+//		String[] allActions = indata1.split(";");// TODO: server input
+
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
 			if(parallel.length >= 2) {	

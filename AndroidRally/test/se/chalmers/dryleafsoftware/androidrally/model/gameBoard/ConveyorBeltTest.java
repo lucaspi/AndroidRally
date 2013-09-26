@@ -1,69 +1,107 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Turn;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
+import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 public class ConveyorBeltTest {
 
-	/**
-	 * Testing 1 and 2 steps forward.
-	 */
 	@Test
-	public void testAction() {
-		ConveyorBelt conveyorBelt[] = new ConveyorBelt[]{ 
-				new ConveyorBelt(1, GameBoard.NORTH),
-				new ConveyorBelt(1, GameBoard.WEST),
-				new ConveyorBelt(1, GameBoard.SOUTH),
-				new ConveyorBelt(1, GameBoard.EAST),
-				new ConveyorBelt(2, GameBoard.NORTH),
-				new ConveyorBelt(2, GameBoard.WEST),
-				new ConveyorBelt(2, GameBoard.SOUTH),
-				new ConveyorBelt(2, GameBoard.EAST),};
+	public void testMoveOnConveyorBeltsInDifferentDirections() {
+		String[][] testMap = new String[][]{
+				{				"",						"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.EAST)+3},
+				{"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.EAST)+3},
+				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.NORTH)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
+		};
 		
-		Robot robot = new Robot(5, 5);
+		GameModel gm = new GameModel(2, testMap);
 		
-		conveyorBelt[0].action(robot);
-		assertTrue(robot.getX() == 5);
-		assertTrue(robot.getY() == 4);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		Card left = new Turn(80,TurnType.LEFT);
+		Card right = new Turn(90,TurnType.RIGHT);
 		
-		conveyorBelt[1].action(robot);
-		assertTrue(robot.getX() == 4);
-		assertTrue(robot.getY() == 4);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		List<Card> cardList1 = new ArrayList<Card>();
+		List<Card> cardList2 = new ArrayList<Card>();
 		
-		conveyorBelt[2].action(robot);
-		assertTrue(robot.getX() == 4);
-		assertTrue(robot.getY() == 5);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		for(int i = 0; i < 5; i++) {
+			cardList1.add(new Turn(i+1,TurnType.LEFT));
+			cardList2.add(new Turn(i+10,TurnType.RIGHT));
+		}
 		
-		conveyorBelt[3].action(robot);
-		assertTrue(robot.getX() == 5);
-		assertTrue(robot.getY() == 5);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		gm.getRobots().set(0, new Robot(1,2));
+		gm.getRobots().set(1, new Robot(1,1));
 		
-		conveyorBelt[4].action(robot);
-		assertTrue(robot.getX() == 5);
-		assertTrue(robot.getY() == 3);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		gm.getRobots().get(0).addCards(cardList1);
+		gm.getRobots().get(1).addCards(cardList2);
 		
-		conveyorBelt[5].action(robot);
-		assertTrue(robot.getX() == 3);
-		assertTrue(robot.getY() == 3);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		gm.getRobots().get(0).setChosenCards(gm.getRobots().get(0).getCards());
+		gm.getRobots().get(1).setChosenCards(gm.getRobots().get(1).getCards());
+	
 		
-		conveyorBelt[6].action(robot);
-		assertTrue(robot.getX() == 3);
-		assertTrue(robot.getY() == 5);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
-		
-		conveyorBelt[7].action(robot);
-		assertTrue(robot.getX() == 5);
-		assertTrue(robot.getY() == 5);
-		assertTrue(robot.getDirection() == GameBoard.NORTH);
+		assertTrue(gm.getRobots().get(0).getX() == 1);
+		assertTrue(gm.getRobots().get(0).getY() == 2);
+		assertTrue(gm.getRobots().get(1).getX() == 1);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
+		System.out.println(GameModel.hejhej);
+		gm.moveRobots();
+		System.out.println(GameModel.hejhej);
+		assertTrue(gm.getRobots().get(0).getX() == 1);
+		assertTrue(gm.getRobots().get(0).getY() == 1);
+		assertTrue(gm.getRobots().get(1).getX() == 2);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
+		assertTrue(gm.getRobots().get(0).getDirection() == GameBoard.WEST);
+		assertTrue(gm.getRobots().get(1).getDirection() == GameBoard.EAST);
 	}
-
+	
+	@Test
+	public void testActionWhenConvetyorBeltsAreTowardsEachOtherWithAGapBetween() {
+		String[][] testMap = new String[][]{
+				{				"",				"1"+String.valueOf(GameBoard.EAST)+3,				""						},
+				{"1"+String.valueOf(GameBoard.SOUTH)+3,			"",					"1"+String.valueOf(GameBoard.NORTH)+3},
+				{				"",				"1"+String.valueOf(GameBoard.WEST)+3,				""						}
+		};
+		
+		GameModel gm = new GameModel(2, testMap);
+		
+		Card left = new Turn(80,TurnType.LEFT);
+		Card right = new Turn(90,TurnType.RIGHT);
+		
+		List<Card> cardList1 = new ArrayList<Card>();
+		List<Card> cardList2 = new ArrayList<Card>();
+		
+		for(int i = 0; i < 5; i++) {
+			cardList1.add(left);
+			cardList2.add(right);
+		}
+		
+		gm.getRobots().set(0, new Robot(0,1));
+		gm.getRobots().set(1, new Robot(2,1));
+		
+		gm.getRobots().get(0).addCards(cardList1);
+		gm.getRobots().get(1).addCards(cardList2);
+		
+		gm.getRobots().get(0).setChosenCards(gm.getRobots().get(0).getCards());
+		gm.getRobots().get(1).setChosenCards(gm.getRobots().get(1).getCards());
+		
+		
+		assertTrue(gm.getRobots().get(0).getX() == 0);
+		assertTrue(gm.getRobots().get(0).getY() == 1);
+		assertTrue(gm.getRobots().get(1).getX() == 2);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
+		
+		gm.moveRobots();
+		
+		assertTrue(gm.getRobots().get(0).getX() == 0);
+		assertTrue(gm.getRobots().get(0).getY() == 1);
+		assertTrue(gm.getRobots().get(1).getX() == 2);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
+	}
 }

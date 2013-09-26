@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
@@ -37,7 +38,9 @@ public class Tile {
 	 * @param robot the robot which every action will affect.
 	 */
 	public void action(Robot robot){
+		GameModel.hejhej = 2;
 		if(boardElements != null){
+			GameModel.hejhej = 3;
 			for(BoardElement boardElement : boardElements){
 				boardElement.action(robot);
 			}
