@@ -27,7 +27,7 @@ public class Move extends Card {
 	 */
 	@Override
 	public void action(Robot robot) {
-		robot.move(1, robot.getDirection());
+		robot.move((distance/Math.abs(distance)), robot.getDirection());
 	}
 
 	public int getDistance() {
