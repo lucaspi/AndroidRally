@@ -5,8 +5,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import com.badlogic.gdx.utils.Timer;
+
+import android.os.Looper;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
@@ -15,7 +17,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
 	private Timer timer;
-	private TimerTask endOfRound;
+	private Timer.Task endOfRound;
 	private int hoursEachRound;
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
@@ -28,7 +30,7 @@ public class GameController implements PropertyChangeListener {
 		nbrOfRobotsDone = 0;
 		gameModel = new GameModel(nbrOfPlayers);
 		timer = new Timer();
-		endOfRound = new TimerTask() {
+		endOfRound = new Timer.Task() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
@@ -44,9 +46,19 @@ public class GameController implements PropertyChangeListener {
 		};
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			cardTimer[i] = new CardTimer(65000, 1000, i, this);
+			cardTimer[i] = new CardTimer(65, i, this);
 		}
 		hoursEachRound = 24;
+	}
+	
+	/**
+	 * DO NOT USE!!!!!!!!!!!!!!!!!!
+	 * TODO: remove
+	 * @return
+	 */
+	public GameModel getModel() {
+		// TODO: remove
+		return this.gameModel;
 	}
 
 	public void handleRemainingRobots() {
@@ -66,8 +78,8 @@ public class GameController implements PropertyChangeListener {
 	}
 
 	public void stopRoundTimer() {
-		timer.cancel();
-		timer.purge(); //FIXME If there are problems with the timer, this might be it
+		timer.stop();
+		timer.clear(); //FIXME If there are problems with the timer, this might be it
 	}
 
 	/**
@@ -77,7 +89,7 @@ public class GameController implements PropertyChangeListener {
 	 * @param robotID The index of the robot in the list of robots held by GameModel
 	 */
 	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
-		cardTimer[robotID].cancel();
+		cardTimer[robotID].stop();
 		List<Card> chosenCards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {

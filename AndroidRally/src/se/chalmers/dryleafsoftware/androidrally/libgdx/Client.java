@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
@@ -26,8 +28,8 @@ import com.badlogic.gdx.math.Vector2;
 public class Client {
 
 	// TODO: the client must somehow know which robotID the player has.
-	private final GameModel model;
-	private final int clientID;
+	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
+	private final int clientID, robotID;
 	
 //	String indata1 = "0:30906;0:20906";
 	// B = board element push
@@ -41,8 +43,9 @@ public class Client {
 	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
-		this.model = new GameModel(8);// TODO: remove
+		this.controller = new GameController(8); 
 		this.clientID = clientID;
+		this.robotID = 0;
 	}
 	
 	/**
@@ -50,7 +53,7 @@ public class Client {
 	 * @return A map of the board as a matrix of strings.
 	 */
 	public String[][] getMap() {
-		return model.getMap();// TODO: server output
+		return controller.getModel().getMap();// TODO: server output
 	}
 	
 	/**
@@ -60,15 +63,18 @@ public class Client {
 	 */
 	public boolean sendCard(List<CardView> cards) {
 		// Send example: ”12345:0:7:1:4:-1"
-		StringBuilder sb = new StringBuilder("" + clientID);
+		StringBuilder sb = new StringBuilder("" + robotID);
+		int[] temp = new int[5]; // TODO: remove
 		for(int i = 0; i < 5; i++) {
 			if(cards.size() > i) {
 				sb.append(":" + cards.get(i).getIndex());
+				temp[i] = cards.get(i).getIndex(); // TODO: remove
 			}else{
 				sb.append(":-1");
+				temp[i] = -1; // TODO: remove
 			}
 		}
-		// TODO: send to server
+		controller.setChosenCardsToRobot(temp, robotID); // TODO:
 		return true;
 	}
 	
@@ -80,10 +86,11 @@ public class Client {
 	public RoundResult getRoundResult() {
 		// From server example: "0:10101;0:10102;1:10203"	
 //		model.dealCards();
-		model.moveRobots();
+		controller.getModel().moveRobots();
 		
 		RoundResult result = new RoundResult();	
-		String indata = model.getAllMoves();
+		String indata = controller.getModel().getAllMoves();
+		System.out.println(indata);
 		String[] allActions = indata.split(";");
 //		String[] allActions = indata1.split(";");// TODO: server input
 
@@ -104,8 +111,15 @@ public class Client {
 					}
 					result.addAction(multiAction);
 				}
-			}else{
+			}else if(parallel[0].length() > 1){
 				result.addAction(createSingleAction(parallel[0]));
+			}else{
+				if(parallel[0].equals("B")) {
+					System.out.println("hej gå");
+					GameAction holder = new HolderAction(1);
+					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
+					result.addAction(holder);
+				}
 			}
 		}
 		return result;
@@ -129,12 +143,12 @@ public class Client {
 	 */
 	public List<CardView> getCards(Texture texture) {
 		// From server example: "410:420:480:660:780:840:190:200:90"
-		model.dealCards();// TODO: server input
+		controller.getModel().dealCards();// TODO: server input
 		List<CardView> cards = new ArrayList<CardView>();
 		
 		// TODO: change to robotID and input to string
-		for(int i = 0; i < model.getRobots().get(0).getCards().size(); i++) {
-			Card card = model.getRobots().get(0).getCards().get(i);
+		for(int i = 0; i < controller.getModel().getRobots().get(0).getCards().size(); i++) {
+			Card card = controller.getModel().getRobots().get(0).getCards().get(i);
 			int prio = card.getPriority();
 			int regX = 0;
 			if(prio <= 60) {
@@ -171,7 +185,7 @@ public class Client {
 		// From server example: "
 		// TODO: server input
 		List<RobotView> robots = new ArrayList<RobotView>();		
-		for(int i = 0; i < model.getRobots().size(); i++) {
+		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
