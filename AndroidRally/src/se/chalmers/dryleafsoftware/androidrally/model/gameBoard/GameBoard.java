@@ -152,7 +152,7 @@ public class GameBoard {
 						}else if(tile == TILE_REPAIR) {
 							tiles[x][y].addBoardElement(new Wrench(1));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
-							wall += tileData / 10;
+							setWallOnTile(tileData / 10, x, y);
 						}else if(tile == TILE_LASER){
 							lasers.add(new Laser(x, y, tileData / 10));
 						}else if(tile == TILE_START){
@@ -160,9 +160,34 @@ public class GameBoard {
 							startingPosition[tileData / 10 - 1][1] = y;
 						}
 					} // loop - elements
-					tiles[x][y].setWalls(wall);
 				} // if
 			} // loop - Y
 		} // loop - X
+	}
+	
+	private void setWallOnTile(int wall, int x, int y){
+		tiles[x][y].setWall(wall);
+		switch (wall){
+		case GameBoard.NORTH:
+			if(y>0){
+				tiles[x][y-1].setWall(GameBoard.SOUTH);
+			}
+			break;
+		case GameBoard.EAST:
+			if(x<getWidth()){
+				tiles[x+1][y].setWall(GameBoard.WEST);
+			}
+			break;
+		case GameBoard.SOUTH:
+			if(y<getHeight()){
+				tiles[x][y+1].setWall(GameBoard.NORTH);
+			}
+			break;
+		case GameBoard.WEST:
+			if(x>0){
+				tiles[x-1][y].setWall(GameBoard.EAST);	
+			}
+			break;
+		}
 	}
 }
