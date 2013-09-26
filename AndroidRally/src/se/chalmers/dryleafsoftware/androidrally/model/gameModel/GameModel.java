@@ -16,13 +16,13 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  *
  */
 public class GameModel {
-	
+	public static int hejhej = 0;
 	private GameBoard gameBoard;
 	private List<Robot> robots;
 	private Deck deck;
 	private List<String> allMoves = new ArrayList<String>();
 	
-	private String[][] testmap = new String[][] {
+	private static String[][] testmap = new String[][] {
 			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
 			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
@@ -44,8 +44,17 @@ public class GameModel {
 	 * @param nbrOfPlayers the number of players in the game including CPU:s
 	 */
 	public GameModel(int nbrOfPlayers) {
+		this(nbrOfPlayers, testmap);
+	}
+	
+	/**
+	 * Only for testing!!
+	 * @param nbrOfPlayers
+	 * @param testMap
+	 */
+	public GameModel(int nbrOfPlayers, String[][] map) {
 //		gameBoard = new GameBoard(12, 16, nbrOfPlayers);// TODO createGameBoard with proper data
-		gameBoard = new GameBoard(testmap);
+		gameBoard = new GameBoard(map);
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
 		for (int i = 0; i < nbrOfPlayers; i++) {
@@ -73,6 +82,7 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
+		hejhej = 1;
 		for (Robot robot : robots) {
 			int oldX = robot.getX();
 			int oldY = robot.getY();
@@ -89,14 +99,6 @@ public class GameModel {
 	 */
 	public String[][] getMap(){
 		return gameBoard.getMapAsString();
-	}
-	
-	/**
-	 * Only for testing!!
-	 * @param map a string map
-	 */
-	public void setMap(String[][] map) {
-		
 	}
 	
 	private boolean isRobotHit(int x, int y){
@@ -423,5 +425,9 @@ public class GameModel {
 	 */
 	public List<Robot> getRobots(){
 		return robots;
+	}
+	
+	public GameBoard getGameBoard() {
+		return gameBoard;
 	}
 }

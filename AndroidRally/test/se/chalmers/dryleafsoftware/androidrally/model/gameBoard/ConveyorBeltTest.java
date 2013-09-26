@@ -15,12 +15,15 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 public class ConveyorBeltTest {
 
-	/**
-	 * Testing 1 and 2 steps forward.
-	 */
 	@Test
-	public void testAction() {
-GameModel gm = new GameModel(2);
+	public void testMoveOnConveyorBeltsInDifferentDirections() {
+		String[][] testMap = new String[][]{
+				{				"",						"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.EAST)+3},
+				{"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.NORTH)+3},
+				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
+		};
+		
+		GameModel gm = new GameModel(2, testMap);
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
@@ -41,23 +44,15 @@ GameModel gm = new GameModel(2);
 		
 		gm.getRobots().get(0).setChosenCards(gm.getRobots().get(0).getCards());
 		gm.getRobots().get(1).setChosenCards(gm.getRobots().get(1).getCards());
-		
-		
-		String[][] testMap = new String[][]{
-				{				"",						"01"+String.valueOf(GameBoard.SOUTH)+3, "01"+String.valueOf(GameBoard.EAST)+3},
-				{"01"+String.valueOf(GameBoard.SOUTH)+3, "01"+String.valueOf(GameBoard.WEST)+3,	"01"+String.valueOf(GameBoard.NORTH)+3},
-				{"01"+String.valueOf(GameBoard.WEST)+3,  "01"+String.valueOf(GameBoard.WEST)+3,	"01"+String.valueOf(GameBoard.NORTH)+3}
-		};
-		
-		gm.setMap(testMap);
+	
 		
 		assertTrue(gm.getRobots().get(0).getX() == 1);
 		assertTrue(gm.getRobots().get(0).getY() == 2);
 		assertTrue(gm.getRobots().get(1).getX() == 1);
 		assertTrue(gm.getRobots().get(1).getY() == 1);
-		
+		System.out.println(GameModel.hejhej);
 		gm.moveRobots();
-		
+		System.out.println(GameModel.hejhej);
 		assertTrue(gm.getRobots().get(0).getX() == 1);
 		assertTrue(gm.getRobots().get(0).getY() == 1);
 		assertTrue(gm.getRobots().get(1).getX() == 2);
@@ -68,7 +63,13 @@ GameModel gm = new GameModel(2);
 	
 	@Test
 	public void testActionWhenConvetyorBeltsAreTowardsEachOtherWithAGapBetween() {
-		GameModel gm = new GameModel(2);
+		String[][] testMap = new String[][]{
+				{				"",				"1"+String.valueOf(GameBoard.EAST)+3,				""						},
+				{"1"+String.valueOf(GameBoard.SOUTH)+3,			"",					"1"+String.valueOf(GameBoard.NORTH)+3},
+				{				"",				"1"+String.valueOf(GameBoard.WEST)+3,				""						}
+		};
+		
+		GameModel gm = new GameModel(2, testMap);
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
@@ -90,14 +91,6 @@ GameModel gm = new GameModel(2);
 		gm.getRobots().get(0).setChosenCards(gm.getRobots().get(0).getCards());
 		gm.getRobots().get(1).setChosenCards(gm.getRobots().get(1).getCards());
 		
-		
-		String[][] testMap = new String[][]{
-				{				"",				"01"+String.valueOf(GameBoard.EAST)+3,				""						},
-				{"01"+String.valueOf(GameBoard.SOUTH)+3,			"",					"01"+String.valueOf(GameBoard.NORTH)+3},
-				{				"",				"01"+String.valueOf(GameBoard.WEST)+3,				""						}
-		};
-		
-		gm.setMap(testMap);
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 1);
