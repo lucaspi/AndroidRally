@@ -332,6 +332,7 @@ public class GameModel {
 		int[][] oldPosition = new int[robots.size()][2];
 		
 		for (int i = 0; i < 5; i++) { //loop all 5 cards
+			allMoves.add("R#" + i + ";");
 			for(int j = 0; j < robots.size(); j++){ //for all robots
 				for(int k = 0; k<robots.size(); k++){
 					oldPosition[k][0] = robots.get(k).getX();
@@ -366,9 +367,6 @@ public class GameModel {
 			}
 			allMoves.add("B#");
 			activateBoardElements();
-			for(int a = 0; a<robots.size(); a++){
-				System.out.println("........." + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
-			}
 			checkConveyorBeltCollides(oldPosition);
 
 			// Alters the last String to the correct syntax.
@@ -380,10 +378,6 @@ public class GameModel {
 			}
 			
 			allMoves.add(stringToBeChanged);
-			for(int a = 0; a<robots.size(); a++){
-				System.out.println("-------" + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
-			}
-			allMoves.add(";R#" + i + ";");
 		}
 		
 		for(Robot robot : robots){
