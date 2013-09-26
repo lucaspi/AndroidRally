@@ -90,6 +90,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
 		cardTimer[robotID].stop();
+		cardTimer[robotID].clear();
 		List<Card> chosenCards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {
@@ -132,7 +133,7 @@ public class GameController implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals("cardTimeOut")) {
-			setChosenCardsToRobot(new int[]{0,0,0,0,0}, (Integer)pce.getNewValue());
+			setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, (Integer)pce.getNewValue());
 		}
 	}
 

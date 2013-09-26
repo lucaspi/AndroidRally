@@ -75,6 +75,13 @@ public class Client {
 			}
 		}
 		controller.setChosenCardsToRobot(temp, robotID); // TODO:
+		
+		for(int i = 0; i < 8; i++) {
+			if(i != robotID) {
+				controller.setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, i); // TODO: remove
+			}
+		}
+		
 		return true;
 	}
 	
@@ -115,8 +122,7 @@ public class Client {
 				result.addAction(createSingleAction(parallel[0]));
 			}else{
 				if(parallel[0].equals("B")) {
-					System.out.println("hej gå");
-					GameAction holder = new HolderAction(1);
+					GameAction holder = new HolderAction(1000);
 					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
 					result.addAction(holder);
 				}
