@@ -123,13 +123,13 @@ public class GameModel {
 				return true;
 			}
 		}else if(direction == GameBoard.SOUTH){
-			if(y <= GameBoard.HEIGHT-1 && !gameBoard.getTile(x, y).getSouthWall() && 
-					(y<GameBoard.HEIGHT-1 && !gameBoard.getTile(x, y+1).getNorthWall())){
+			if(y <= gameBoard.getHeight()-1 && !gameBoard.getTile(x, y).getSouthWall() && 
+					(y<gameBoard.getHeight()-1 && !gameBoard.getTile(x, y+1).getNorthWall())){
 				return true;
 			}
 		}else if(direction == GameBoard.EAST){
-			if(x <= GameBoard.WIDTH-1 && !gameBoard.getTile(x, y).getEastWall() &&
-					(x<GameBoard.WIDTH-1 && !gameBoard.getTile(x+1, y).getWestWall())){
+			if(x <= gameBoard.getWidth()-1 && !gameBoard.getTile(x, y).getEastWall() &&
+					(x<gameBoard.getWidth()-1 && !gameBoard.getTile(x+1, y).getWestWall())){
 				return true;
 			}
 		}
@@ -303,8 +303,8 @@ public class GameModel {
 	 */
 	private boolean handleCollision(Robot robot, int oldX, int oldY){
 		boolean wallCollision = false;
-		System.out.println("index of robot " + robots.indexOf(robot));
-		System.out.println("rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
+//		System.out.println("index of robot " + robots.indexOf(robot));
+//		System.out.println("rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
 		
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
@@ -314,12 +314,12 @@ public class GameModel {
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
 					addMove(r);
-					System.out.println("2rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
+//					System.out.println("2rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
 
 					// Check if other Robot collides
-					if(handleCollision(r, robot.getX(), robot.getY())){
-						r.setX(r.getX() - (oldX - robot.getX()));
-						r.setY(r.getY() - (oldY - robot.getY()));
+					if(handleCollision(r, robot.getX(), robot.getY())){// true if r walks into a wall
+						robot.setX(robot.getX() + (oldX - robot.getX()));
+						robot.setY(robot.getY() + (oldY - robot.getY()));
 						allMoves.remove(allMoves.size()-1);// It is always the last move which should be reversed.
 						wallCollision = true;
 					}
@@ -348,8 +348,10 @@ public class GameModel {
 		
 		for (int i = 0; i < 5; i++) { //loop all 5 cards
 			for(int j = 0; j < robots.size(); j++){ //for all robots
-				oldPosition[j][0] = robots.get(j).getX();
-				oldPosition[j][1] = robots.get(j).getY();
+				for(int k = 0; k<robots.size(); k++){
+					oldPosition[k][0] = robots.get(k).getX();
+					oldPosition[k][1] = robots.get(k).getY();
+				}
 				int highestPriority = 0;
 				int indexOfHighestPriority = -1; //player index in array
 				for (int k = 0; k < currentCards.size(); k++) { //find highest card
@@ -366,7 +368,7 @@ public class GameModel {
 				currentCards.get(indexOfHighestPriority)[i]
 						.action(currentRobot);
 				addMove(currentRobot);
-				System.out.println("3rx " + currentRobot.getX() + ", ry " + currentRobot.getY() + ", ox " + oldPosition[indexOfHighestPriority][0] + ", oy " + oldPosition[indexOfHighestPriority][1]);
+				System.out.println(robots.indexOf(currentRobot) + " rx " + currentRobot.getX() + ", ry " + currentRobot.getY() + ", ox " + oldPosition[indexOfHighestPriority][0] + ", oy " + oldPosition[indexOfHighestPriority][1]);
 				handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
 						oldPosition[indexOfHighestPriority][1]);
 				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
@@ -379,7 +381,13 @@ public class GameModel {
 			}
 			allMoves.add("B#");
 			activateBoardElements();
+			for(int a = 0; a<robots.size(); a++){
+				System.out.println("........." + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
+			}
 			checkConveyorBeltCollides(oldPosition);
+			for(int a = 0; a<robots.size(); a++){
+				System.out.println("-------" + a + " rx " + robots.get(a).getX() + ", ry " + robots.get(a).getY() + ", ox " + oldPosition[a][0] + ", oy " + oldPosition[a][1]);
+			}
 			allMoves.add("R#" + i + ";");
 		}
 		

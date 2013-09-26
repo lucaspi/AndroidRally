@@ -81,6 +81,14 @@ public class GameBoard {
 		return tiles[x][y];
 	}
 	
+	public int getWidth(){
+		return tiles.length;
+	}
+	
+	public int getHeight(){
+		return tiles[0].length;
+	}
+	
 	/**
 	 * Returns a matrix containing all startingPositions for the map.
 	 * [i][0] will provide the x value for starting position i and [i][1]

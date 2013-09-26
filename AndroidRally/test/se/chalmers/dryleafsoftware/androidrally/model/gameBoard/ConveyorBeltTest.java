@@ -19,8 +19,8 @@ public class ConveyorBeltTest {
 	public void testMoveOnConveyorBeltsInDifferentDirections() {
 		String[][] testMap = new String[][]{
 				{				"",						"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.EAST)+3},
-				{"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.NORTH)+3},
-				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
+				{"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.EAST)+3},
+				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.NORTH)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
 		};
 		
 		GameModel gm = new GameModel(2, testMap);
@@ -32,8 +32,8 @@ public class ConveyorBeltTest {
 		List<Card> cardList2 = new ArrayList<Card>();
 		
 		for(int i = 0; i < 5; i++) {
-			cardList1.add(left);
-			cardList2.add(right);
+			cardList1.add(new Turn(i+1,TurnType.LEFT));
+			cardList2.add(new Turn(i+10,TurnType.RIGHT));
 		}
 		
 		gm.getRobots().set(0, new Robot(1,2));
