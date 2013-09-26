@@ -20,11 +20,17 @@ public class Move extends Card {
 	}
 	
 	/**
-	 * Moves the robot the number of step
+	 * Moves the robot 1 step.
+	 * <p>
+	 * Use the getDistance()-method to multiply with the factor
 	 * given in the constructor.
 	 */
 	@Override
 	public void action(Robot robot) {
-		robot.move(distance, robot.getDirection());
+		robot.move(1, robot.getDirection());
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 }
