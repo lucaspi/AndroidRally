@@ -88,18 +88,18 @@ public class GameModelTest {
 		
 		gm.moveRobots();
 		
-//		assertTrue(gm.getRobots().get(0).getX() == 0);
-//		assertTrue(gm.getRobots().get(0).getY() == 5);
-//		assertTrue(gm.getRobots().get(0).getDirection() == GameBoard.SOUTH);
-//		assertTrue(gm.getRobots().get(1).getX() == 9);
-//		assertTrue(gm.getRobots().get(1).getY() == 5);
-//		assertTrue(gm.getRobots().get(1).getDirection() == GameBoard.NORTH);
-//		assertTrue(gm.getRobots().get(2).getX() == 2);
-//		assertTrue(gm.getRobots().get(2).getY() == 3);
-//		assertTrue(gm.getRobots().get(2).getDirection() == GameBoard.WEST);
-//		assertTrue(gm.getRobots().get(3).getX() == 7);
-//		assertTrue(gm.getRobots().get(3).getY() == 7);
-//		assertTrue(gm.getRobots().get(3).getDirection() == GameBoard.EAST);
+		assertTrue(gm.getRobots().get(0).getX() == 0);
+		assertTrue(gm.getRobots().get(0).getY() == 5);
+		assertTrue(gm.getRobots().get(0).getDirection() == GameBoard.SOUTH);
+		assertTrue(gm.getRobots().get(1).getX() == 9);
+		assertTrue(gm.getRobots().get(1).getY() == 5);
+		assertTrue(gm.getRobots().get(1).getDirection() == GameBoard.NORTH);
+		assertTrue(gm.getRobots().get(2).getX() == 2);
+		assertTrue(gm.getRobots().get(2).getY() == 3);
+		assertTrue(gm.getRobots().get(2).getDirection() == GameBoard.WEST);
+		assertTrue(gm.getRobots().get(3).getX() == 7);
+		assertTrue(gm.getRobots().get(3).getY() == 7);
+		assertTrue(gm.getRobots().get(3).getDirection() == GameBoard.EAST);
 	}
 	
 	@Test
