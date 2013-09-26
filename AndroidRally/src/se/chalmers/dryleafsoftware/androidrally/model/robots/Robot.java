@@ -167,7 +167,7 @@ public class Robot {
 	}
 	
 	public String getXAsString(){
-		if(positionX > 10){
+		if(positionX >= 10){
 			return positionX + "";
 		}else{
 			return "0" + positionX;
@@ -175,7 +175,7 @@ public class Robot {
 	}
 	
 	public String getYAsString(){
-		if(positionY > 10){
+		if(positionY >= 10){
 			return positionY + "";
 		}else{
 			return "0" + positionY;

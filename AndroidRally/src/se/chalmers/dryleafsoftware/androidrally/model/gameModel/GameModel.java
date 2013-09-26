@@ -252,7 +252,6 @@ public class GameModel {
 					boolean robotJMove = (oldPositions[j][0] != robots.get(j).getX() || 
 							oldPositions[j][1] != robots.get(j).getY());
 					// If both robots have moved to the same position by conveyorBelt, both should move back.
-					System.out.println("j " + robotJMove + " i " + robotIMove);
 					if(robotIMove && robotJMove){
 						robots.get(i).setX(oldPositions[i][0]);
 						robots.get(i).setY(oldPositions[i][1]);
@@ -288,8 +287,6 @@ public class GameModel {
 	 */
 	private boolean handleCollision(Robot robot, int oldX, int oldY){
 		boolean wallCollision = false;
-//		System.out.println("index of robot " + robots.indexOf(robot));
-//		System.out.println("rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
 		
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
@@ -299,7 +296,6 @@ public class GameModel {
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
 					addMove(r);
-//					System.out.println("2rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
 
 					// Check if other Robot collides
 					if(handleCollision(r, robot.getX(), robot.getY())){// true if r walks into a wall
@@ -351,16 +347,24 @@ public class GameModel {
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
 
-				currentCards.get(indexOfHighestPriority)[i]
-						.action(currentRobot);
-				addMove(currentRobot);
-				System.out.println(robots.indexOf(currentRobot) + " rx " + currentRobot.getX() + ", ry " + currentRobot.getY() + ", ox " + oldPosition[indexOfHighestPriority][0] + ", oy " + oldPosition[indexOfHighestPriority][1]);
-				handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
-						oldPosition[indexOfHighestPriority][1]);
-				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
-						.instantAction(currentRobot);
-				checkIfRobotsOnMap();
-				deleteDeadRobots();
+				int numberOfSteps = 1;
+				if(currentCards.get(indexOfHighestPriority)[i] instanceof Move){
+					numberOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
+							).getDistance());
+				}
+				for(int k = 0; k<numberOfSteps; k++){
+					oldPosition[indexOfHighestPriority][0] = robots.get(indexOfHighestPriority).getX();
+					oldPosition[indexOfHighestPriority][1] = robots.get(indexOfHighestPriority).getY();
+					currentCards.get(indexOfHighestPriority)[i]
+							.action(currentRobot);
+					addMove(currentRobot);
+					handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
+							oldPosition[indexOfHighestPriority][1]);
+					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
+							.instantAction(currentRobot);
+					checkIfRobotsOnMap();
+					deleteDeadRobots();
+				}
 				
 				//Remove the card so it doesn't execute twice
 				currentCards.get(indexOfHighestPriority)[i] = null;

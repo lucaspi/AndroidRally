@@ -18,6 +18,91 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class GameModelTest {
 
 	@Test
+	public void testOneRobotWalksManySteps() {
+		String[][] testMap = new String[][]{
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+				{"","","","","","","","","",""},
+		};
+		GameModel gm = new GameModel(4,testMap);
+				
+		List<Card> cardList1 = new ArrayList<Card>();
+		List<Card> cardList2 = new ArrayList<Card>();
+		List<Card> cardList3 = new ArrayList<Card>();
+		List<Card> cardList4 = new ArrayList<Card>();
+		
+		cardList1.add(new Turn(100,TurnType.UTURN));
+		cardList1.add(new Move(110,3));
+		cardList1.add(new Move(120,1));
+		cardList1.add(new Move(130,2));
+		cardList1.add(new Move(140,-1));
+		
+		cardList2.add(new Move(200,2));
+		cardList2.add(new Move(210,3));
+		cardList2.add(new Move(220,1));
+		cardList2.add(new Move(230,-1));
+		cardList2.add(new Move(240,-1));
+		
+		cardList3.add(new Turn(300,TurnType.LEFT));
+		cardList3.add(new Move(310,1));
+		cardList3.add(new Move(320,2));
+		cardList3.add(new Move(330,3));
+		cardList3.add(new Move(340,-1));
+		
+		cardList4.add(new Turn(400,TurnType.RIGHT));
+		cardList4.add(new Move(410,1));
+		cardList4.add(new Move(420,2));
+		cardList4.add(new Move(430,3));
+		cardList4.add(new Move(440,-1));
+
+		
+		gm.getRobots().set(0, new Robot(0,0));
+		gm.getRobots().set(1, new Robot(9,9));
+		gm.getRobots().set(2, new Robot(7,3));
+		gm.getRobots().set(3, new Robot(2,7));
+		
+		gm.getRobots().get(0).addCards(cardList1);
+		gm.getRobots().get(1).addCards(cardList2);
+		gm.getRobots().get(2).addCards(cardList3);
+		gm.getRobots().get(3).addCards(cardList4);
+
+		for (int i = 0; i < 4; i++) {
+			gm.getRobots().get(i).setChosenCards(gm.getRobots().get(i).getCards());
+		}
+		
+		assertTrue(gm.getRobots().get(0).getX() == 0);
+		assertTrue(gm.getRobots().get(0).getY() == 0);
+		assertTrue(gm.getRobots().get(1).getX() == 9);
+		assertTrue(gm.getRobots().get(1).getY() == 9);
+		assertTrue(gm.getRobots().get(2).getX() == 7);
+		assertTrue(gm.getRobots().get(2).getY() == 3);
+		assertTrue(gm.getRobots().get(3).getX() == 2);
+		assertTrue(gm.getRobots().get(3).getY() == 7);
+		
+		gm.moveRobots();
+		
+//		assertTrue(gm.getRobots().get(0).getX() == 0);
+//		assertTrue(gm.getRobots().get(0).getY() == 5);
+//		assertTrue(gm.getRobots().get(0).getDirection() == GameBoard.SOUTH);
+//		assertTrue(gm.getRobots().get(1).getX() == 9);
+//		assertTrue(gm.getRobots().get(1).getY() == 5);
+//		assertTrue(gm.getRobots().get(1).getDirection() == GameBoard.NORTH);
+//		assertTrue(gm.getRobots().get(2).getX() == 2);
+//		assertTrue(gm.getRobots().get(2).getY() == 3);
+//		assertTrue(gm.getRobots().get(2).getDirection() == GameBoard.WEST);
+//		assertTrue(gm.getRobots().get(3).getX() == 7);
+//		assertTrue(gm.getRobots().get(3).getY() == 7);
+//		assertTrue(gm.getRobots().get(3).getDirection() == GameBoard.EAST);
+	}
+	
+	@Test
 	public void testOneRobotPushesAnotherRobot() {
 		String[][] testMap = new String[][]{
 				{"","","","","","","","","",""},
@@ -91,6 +176,7 @@ public class GameModelTest {
 		}
 		for(int i = 0; i < 4; i++) {
 			cardList2.add(new Move(i+10,1));
+
 		}
 		cardList2.add(new Move(20,2));
 
@@ -262,8 +348,8 @@ public class GameModelTest {
 		
 		gm.moveRobots();
 		
-		System.out.println("Upper Robot PosY: " + gm.getRobots().get(0).getY());
-		System.out.println("Lower Robot PosY: " + gm.getRobots().get(1).getY());
+//		System.out.println("Upper Robot PosY: " + gm.getRobots().get(0).getY());
+//		System.out.println("Lower Robot PosY: " + gm.getRobots().get(1).getY());
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 8);
