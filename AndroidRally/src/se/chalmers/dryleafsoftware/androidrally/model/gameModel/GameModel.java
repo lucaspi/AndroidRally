@@ -238,7 +238,7 @@ public class GameModel {
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
-				addConveyorBeltMove(robots.get(i));
+				addSimultaneousMove(robots.get(i));
 				nbrOfMovedRobots++;
 			}
 		}
@@ -295,7 +295,7 @@ public class GameModel {
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
-					addMove(r);
+					addSimultaneousMove(r);
 
 					// Check if other Robot collides
 					if(handleCollision(r, robot.getX(), robot.getY())){// true if r walks into a wall
@@ -328,7 +328,7 @@ public class GameModel {
 		int[][] oldPosition = new int[robots.size()][2];
 		
 		for (int i = 0; i < 5; i++) { //loop all 5 cards
-			allMoves.add("R#" + i + ";");
+			allMoves.add(";" + "R#" + i);
 			for(int j = 0; j < robots.size(); j++){ //for all robots
 				for(int k = 0; k<robots.size(); k++){
 					oldPosition[k][0] = robots.get(k).getX();
@@ -369,19 +369,19 @@ public class GameModel {
 				//Remove the card so it doesn't execute twice
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
-			allMoves.add("B#");
+			allMoves.add(";B");
 			activateBoardElements();
 			checkConveyorBeltCollides(oldPosition);
 
-			// Alters the last String to the correct syntax.
-			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
-			if(stringToBeChanged.equals("B#")){
-				stringToBeChanged = stringToBeChanged + ";";
-			}else{
-				stringToBeChanged = stringToBeChanged.replace('#', ';');
-			}
-			
-			allMoves.add(stringToBeChanged);
+//			// Alters the last String to the correct syntax.
+//			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
+//			if(stringToBeChanged.equals("B#")){
+//				stringToBeChanged = stringToBeChanged + ";";
+//			}else{
+//				stringToBeChanged = stringToBeChanged.replace('#', ';');
+//			}
+//			
+//			allMoves.add(stringToBeChanged);
 		}
 		
 		for(Robot robot : robots){
@@ -400,14 +400,18 @@ public class GameModel {
 		}
 	}
 	
-	private void addConveyorBeltMove(Robot robot){
-		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
-				robot.getXAsString() + robot.getYAsString() + "#");
+	private void addSimultaneousMove(Robot robot){
+//		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
+//				robot.getXAsString() + robot.getYAsString() + "#");
+		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection() + 
+				robot.getXAsString() + robot.getYAsString());
 	}
 	
 	private void addMove(Robot robot){
-		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
-				robot.getXAsString() + robot.getYAsString() + ";");
+//		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
+//				robot.getXAsString() + robot.getYAsString() + ";");
+		allMoves.add(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
+				robot.getXAsString() + robot.getYAsString() );
 	}
 	
 	/**
@@ -419,7 +423,10 @@ public class GameModel {
 		for(String string : allMoves){
 			sb.append(string);
 		}
-		return sb.toString();
+		// The first character will be a "split character" i.e. ; or #
+		String returnString = sb.substring(1);
+		System.out.println(returnString);
+		return returnString;
 	}
 	
 	/**
