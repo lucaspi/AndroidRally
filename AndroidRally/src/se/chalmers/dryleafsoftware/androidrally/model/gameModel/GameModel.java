@@ -164,13 +164,13 @@ public class GameModel {
 			}
 			
 		}else if(direction == GameBoard.EAST){
-			while(x < GameBoard.WIDTH && !robotIsHit){
+			while(x < gameBoard.getWidth() && !robotIsHit){
 				robotIsHit = isRobotHit(x, y);
 				noWall = canMove(x, y, direction);
 				x++;
 			}
 		}else if(direction == GameBoard.SOUTH){
-			while(y < GameBoard.HEIGHT && !robotIsHit){
+			while(y < gameBoard.getHeight() && !robotIsHit){
 				robotIsHit = isRobotHit(x, y);
 				noWall = canMove(x, y, direction);
 				y++;
@@ -266,7 +266,7 @@ public class GameModel {
 						
 						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
 						// for the code to work.
-						for(int k = 0; k<nbrOfMovedRobots; k++){
+						for(int k = 1; k<=nbrOfMovedRobots; k++){
 							if(allMoves.get(allMovesSize - k).contains(i + ":") || 
 									allMoves.get(allMovesSize - k).contains(j + ":")){
 								allMoves.remove(allMovesSize - k);
@@ -286,6 +286,7 @@ public class GameModel {
 		for(int i = 0; i<robots.size(); i++){
 			handleCollision(robots.get(i), oldPositions[i][0], oldPositions[i][1]);
 		}
+		
 		// Alters the last String to the correct syntax.
 		if(nbrOfMovedRobots > 0){
 			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
@@ -400,8 +401,8 @@ public class GameModel {
 	
 	private void checkIfRobotsOnMap(){
 		for(int i = 0; i<robots.size(); i++){
-			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= GameBoard.WIDTH || 
-					robots.get(i).getY() < 0 || robots.get(i).getY() >= GameBoard.HEIGHT){
+			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
+					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
 				robots.get(i).die();
 			}
 		}
