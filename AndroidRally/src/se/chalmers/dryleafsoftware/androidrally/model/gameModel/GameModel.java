@@ -314,11 +314,12 @@ public class GameModel {
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
 					addMove(r);
-					
+					System.out.println("2rx " + robot.getX() + ", ry " + robot.getY() + ", ox " + oldX + ", oy " + oldY);
+
 					// Check if other Robot collides
 					if(handleCollision(r, robot.getX(), robot.getY())){
-						r.setX(r.getX() + (oldX - robot.getX()));
-						r.setY(r.getY() + (oldY - robot.getY()));
+						r.setX(r.getX() - (oldX - robot.getX()));
+						r.setY(r.getY() - (oldY - robot.getY()));
 						allMoves.remove(allMoves.size()-1);// It is always the last move which should be reversed.
 						wallCollision = true;
 					}
@@ -365,6 +366,7 @@ public class GameModel {
 				currentCards.get(indexOfHighestPriority)[i]
 						.action(currentRobot);
 				addMove(currentRobot);
+				System.out.println("3rx " + currentRobot.getX() + ", ry " + currentRobot.getY() + ", ox " + oldPosition[indexOfHighestPriority][0] + ", oy " + oldPosition[indexOfHighestPriority][1]);
 				handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
 						oldPosition[indexOfHighestPriority][1]);
 				gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
