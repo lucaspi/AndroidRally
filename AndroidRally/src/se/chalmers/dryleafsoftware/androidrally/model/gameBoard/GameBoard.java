@@ -32,9 +32,6 @@ public class GameBoard {
 		TILE_LASER = 7,
 		TILE_START = 8;
 	
-	public static final int WIDTH = 12;
-	public static final int HEIGHT = 16;
-	
 	/*
 	 * Hole = 1
 	 * CheckPoint = (nr)2
