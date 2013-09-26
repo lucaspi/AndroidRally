@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /**
  * 
@@ -20,7 +21,6 @@ import com.badlogic.gdx.input.GestureDetector;
  */
 public class GdxGame implements ApplicationListener {
 
-	private OrthographicCamera boardCamera, cardCamera;
 	private Texture deckTexture;
 	private GameController gameController;
 	private BoardView gameBoard;
@@ -31,35 +31,12 @@ public class GdxGame implements ApplicationListener {
 	
 	@Override
 	public void create() {
-		// Turn off rendering loop to save battery
-		// Gdx.graphics.setContinuousRendering(false);
-
-		boardCamera = new OrthographicCamera(480, 800);
-		boardCamera.zoom = 1.0f;
-		boardCamera.position.set(240, 400, 0f);
-		boardCamera.update();
-
-		cardCamera = new OrthographicCamera(480, 800);
-		cardCamera.zoom = 1.0f;
-		cardCamera.position.set(240, 400, 0f);
-		cardCamera.update();
-
-		deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
-		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
-		gameBoard = new BoardView();
-		
+		gameBoard = new BoardView();		
 		cardDeck = new DeckView();
-		cardDeck.createDeck(deckTexture);
-
-		gameBoard.setCamera(boardCamera);
-		cardDeck.setCamera(cardCamera);
 
 		gameController = new GameController(this);
 		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck, new GestureDetector(20, 0.6f, 1.1f, 0.15f, gameController));
 		Gdx.input.setInputProcessor(im);
-				
-//		Gdx.graphics.requestRendering();
 	}
 
 	@Override
@@ -70,12 +47,15 @@ public class GdxGame implements ApplicationListener {
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		gameBoard.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		gameBoard.draw();
 		cardDeck.draw();
 		pcs.firePropertyChange(EVENT_UPDATE, 0, 1);
+		
+		Table.drawDebug(cardDeck);
+		Table.drawDebug(gameBoard);
 	}
 	
 	/**
@@ -104,14 +84,6 @@ public class GdxGame implements ApplicationListener {
 
 	@Override
 	public void resume() {
-	}
-
-	/**
-	 * Gives the camera used by the board.
-	 * @return The camera used by the board.
-	 */
-	public OrthographicCamera getBoardCamera() {
-		return this.boardCamera;
 	}
 	
 	public void addListener(PropertyChangeListener listener) {

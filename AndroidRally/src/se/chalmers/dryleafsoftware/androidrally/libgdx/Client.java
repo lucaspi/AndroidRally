@@ -34,7 +34,7 @@ public class Client {
 	// P = robot push 
 	// R#[card nbr] = indicates new card
 	String indata1 = "R#0;1:10906;1:00906;0:00509;B#0:10509#1:00905;R#1;0:10609;0:00609;0:00608;0:00607;B#0:00507" +
-				";B#1:00904#0:00506;R#2;0:00504;B#0:30504";
+				";P#1:00904#0:00506;R#2;0:00504;B#0:30504";
 	
 	/**
 	 * Creates a new client instance.
@@ -69,7 +69,6 @@ public class Client {
 			}
 		}
 		// TODO: send to server
-		System.out.println("Client sending card: " + sb.toString());
 		return true;
 	}
 	
@@ -80,7 +79,12 @@ public class Client {
 //	public List<GameAction> getRoundResult() {
 	public RoundResult getRoundResult() {
 		// From server example: "0:10101;0:10102;1:10203"	
+//		model.dealCards();
+//		model.moveRobots();
+		
 		RoundResult result = new RoundResult();	
+//		String indata = model.getAllMoves();
+//		String[] allActions = indata.split(";");
 		String[] allActions = indata1.split(";");// TODO: server input
 		for(String s : allActions) {
 			String[] parallel = s.split("#");

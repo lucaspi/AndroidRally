@@ -168,6 +168,22 @@ public class Robot {
 	public int getY(){
 		return positionY;
 	}
+	
+	public String getXAsString(){
+		if(positionX > 10){
+			return positionX + "";
+		}else{
+			return "0" + positionX;
+		}
+	}
+	
+	public String getYAsString(){
+		if(positionY > 10){
+			return positionY + "";
+		}else{
+			return "0" + positionY;
+		}
+	}
 
 	public void setX(int x){
 		positionX = x;
@@ -185,6 +201,7 @@ public class Robot {
 	}
 
 	public Card[] getChosenCards() {
+		fillEmptyCardRegisters();
 		return chosenCards;
 	}
 	
@@ -202,8 +219,7 @@ public class Robot {
 					this.chosenCards[i] = chosenCards.get(i);
 				}
 			}
-		}
-		fillEmptyCardRegisters();
+		}		
 	}
 	
 	private void fillEmptyCardRegisters(){

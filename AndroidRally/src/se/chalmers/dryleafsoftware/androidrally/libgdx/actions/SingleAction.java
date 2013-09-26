@@ -34,10 +34,9 @@ public class SingleAction extends GameAction {
 	public void action(List<RobotView> robots) {
 		start();
 		robots.get(getRobotID()).addAction(Actions.parallel(
-				Actions.moveTo(posX * 40,  800 - (posY+1) * 40, getDuration() / 1000f),
+				Actions.moveTo(posX * 40,  640 - (posY+1) * 40, getDuration() / 1000f),
 				Actions.rotateBy(getValidDir((int) robots.get(getRobotID()).getRotation(), -dir * 90),
 						getDuration() / 1000f)));
-		
 	}
 	
 	/**
@@ -50,5 +49,4 @@ public class SingleAction extends GameAction {
 		int result = target - current;
 		return Math.abs(result) > 180 ? (result % 360) - (int)Math.signum(result) * 360 : result;
 	}
-
 }
