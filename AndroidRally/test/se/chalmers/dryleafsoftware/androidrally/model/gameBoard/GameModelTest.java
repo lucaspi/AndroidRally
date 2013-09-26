@@ -91,6 +91,7 @@ public class GameModelTest {
 		}
 		for(int i = 0; i < 4; i++) {
 			cardList2.add(new Move(i+10,1));
+
 		}
 		cardList2.add(new Move(20,2));
 
@@ -110,6 +111,11 @@ public class GameModelTest {
 		assertTrue(gm.getRobots().get(1).getY() == 9);
 		
 		gm.moveRobots();
+		
+		System.out.println("0x " + gm.getRobots().get(0).getX());
+		System.out.println("0y " + gm.getRobots().get(0).getY());
+		System.out.println("1x " + gm.getRobots().get(1).getX());
+		System.out.println("1y " + gm.getRobots().get(1).getY());
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 2);
@@ -262,8 +268,8 @@ public class GameModelTest {
 		
 		gm.moveRobots();
 		
-		System.out.println("Upper Robot PosY: " + gm.getRobots().get(0).getY());
-		System.out.println("Lower Robot PosY: " + gm.getRobots().get(1).getY());
+//		System.out.println("Upper Robot PosY: " + gm.getRobots().get(0).getY());
+//		System.out.println("Lower Robot PosY: " + gm.getRobots().get(1).getY());
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
 		assertTrue(gm.getRobots().get(0).getY() == 8);
