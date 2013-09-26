@@ -107,7 +107,7 @@ public class DeckView extends Stage {
     	drawPanel = buildDrawCardPanel();	
     	
     	timer = new Timer();
-    	timer.stop();
+    	timer.start();
     	
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
@@ -220,14 +220,6 @@ public class DeckView extends Stage {
 						":" + String.format("%02d", s));
 			}
 		}, 0, 1f, timerTick - 1);
-		// Stopping itself.
-		timer.scheduleTask(new Timer.Task() {
-			@Override
-			public void run() {
-				timer.stop();
-			}
-		}, timerTick);
-		timer.start();
 	}
 	
 	public void addListener(PropertyChangeListener listener) {
