@@ -131,10 +131,15 @@ public class GameBoard {
 	*/
 	private void createBoard(String[][] map) {
 		tiles = new Tile[map.length][map[0].length];
+		//Tiles need to created first or nullPointException will occur during wall creations
+		for(int x = 0; x < map.length; x++) {
+			for(int y = 0; y < map[0].length; y++) {
+				tiles[x][y] = new Tile();
+			}
+		}
+		
 		for(int x = 0; x < map.length; x++) {
 			for(int y = 0; y < map[0].length; y++) {	
-				tiles[x][y] = new Tile();
-				int wall = 0;
 				// Add all the elements to the tile
 				if(!map[x][y].equals("")) {
 					for(String elementData : map[x][y].split(":")) {
