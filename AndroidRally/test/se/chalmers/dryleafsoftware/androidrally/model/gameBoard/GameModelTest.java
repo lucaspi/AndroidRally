@@ -356,18 +356,22 @@ public class GameModelTest {
 	
 	@Test
 	public void testRobotWalksOutsideMap(){
-		String[][] testMap = {{"",""},
-							  {"",""}};
+		String[][] testMap = {{"","",""},
+							  {"","",""}};
 		
 		GameModel gm = new GameModel(2,testMap);
-		gm.getRobots().set(0, new Robot(0,1));
-		gm.getRobots().set(1, new Robot(0,0));
+		gm.getRobots().set(0, new Robot(0,2));
+		gm.getRobots().set(1, new Robot(1,1));
+		gm.getRobots().get(1).move(1, GameBoard.WEST);
+		
 		
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
 		
 		cardList1.add(new Move(500,1));
-		for(int i = 0; i < 4; i++) {
+		cardList1.add(new Move(510,1));
+
+		for(int i = 0; i < 3; i++) {
 			cardList1.add(new Turn(i+10,TurnType.LEFT));
 		}
 		for(int i = 0; i < 5; i++) {
@@ -381,20 +385,26 @@ public class GameModelTest {
 		gm.getRobots().get(1).setChosenCards(cardList2);
 		
 		assertTrue(gm.getRobots().get(0).getX() == 0);
-		assertTrue(gm.getRobots().get(0).getY() == 1);
+		assertTrue(gm.getRobots().get(0).getY() == 2);
 		assertTrue(gm.getRobots().get(1).getX() == 0);
-		assertTrue(gm.getRobots().get(1).getY() == 0);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
 		assertTrue(gm.getRobots().get(0).getLife() == 3);
 		assertTrue(gm.getRobots().get(1).getLife() == 3);
 		
 		gm.moveRobots();
 		
-//		assertTrue(gm.getRobots().get(0).getX() == 0);
-//		assertTrue(gm.getRobots().get(0).getY() == 1);
-//		assertTrue(gm.getRobots().get(1).getX() == 0);
-//		assertTrue(gm.getRobots().get(1).getY() == 0);
-		System.out.println("Stod kvar: " + gm.getRobots().get(0).getLife());
-		System.out.println("Föll ner: " + gm.getRobots().get(1).getLife());
+
+		System.out.println("Knuffare x" + gm.getRobots().get(0).getX()); //TODO remove syso
+		System.out.println("Knuffare y" + gm.getRobots().get(0).getY());
+		System.out.println("Knuffad x" + gm.getRobots().get(1).getX());
+		System.out.println("Knuffad y" + gm.getRobots().get(1).getY());
+		System.out.println("Stod kvar life: " + gm.getRobots().get(0).getLife());
+		System.out.println("Föll ner life: " + gm.getRobots().get(1).getLife());
+		
+		assertTrue(gm.getRobots().get(0).getX() == 0);
+		assertTrue(gm.getRobots().get(0).getY() == 0);
+		assertTrue(gm.getRobots().get(1).getX() == 1);
+		assertTrue(gm.getRobots().get(1).getY() == 1);
 		assertTrue(gm.getRobots().get(0).getLife() == 3);
 		assertTrue(gm.getRobots().get(1).getLife() == 2);
 		
