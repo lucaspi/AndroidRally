@@ -12,8 +12,8 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
  * The "piece" that the player or CPU moves and plays the game with.
  */
 public class Robot {
-	private static final int STARTING_HEALTH = 9;
-	private static final int STARTING_LIFE = 3;
+	public static final int STARTING_HEALTH = 9;
+	public static final int STARTING_LIFE = 3;
 	
 	private int positionX;
 	private int positionY;

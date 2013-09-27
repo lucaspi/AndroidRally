@@ -95,18 +95,22 @@ public class Tile {
 	}
 	
 	/**
-	 * Add a board element to the tile.
+	 * Add a board element to the tile. ConveyorBelts will be first in the collection.
 	 * @param boardElement the board element to be added.
 	 */
 	public void addBoardElement(BoardElement boardElement){
 		if(boardElements == null){
 			boardElements = new ArrayList<BoardElement>();
-		}
+		}//ConveyorBelts should always be first
 		if (boardElement instanceof ConveyorBelt) {
 			boardElements.add(0, boardElement);
 		} else {
 			boardElements.add(boardElement);
 		}
+	}
+	
+	public List<BoardElement> getBoardElements(){
+		return boardElements;
 	}
 	
 	/**
