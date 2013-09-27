@@ -21,12 +21,27 @@ public class GameController implements PropertyChangeListener {
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
 	private int nbrOfRobotsAlive;
+	private String nbrOfPlayers;
+	private String mapAsString;
 
 
 	public GameController(int nbrOfPlayers) {
+		this.nbrOfPlayers = String.valueOf(nbrOfPlayers);
 		isRunRunning = false;
 		nbrOfRobotsDone = 0;
 		gameModel = new GameModel(nbrOfPlayers);
+		
+		String[][] map = this.gameModel.getMap();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < map[0].length; i++) {
+			sb.append("y");
+			for (int j = 0; j < map.length; j++) {
+				sb.append("x");
+				sb.append(map[j][i]);
+			}
+		}
+		mapAsString = sb.toString();
+		
 		timer = new Timer();
 		endOfRound = new Timer.Task() {
 			/* Method that is executing if the round time is out or
@@ -72,7 +87,7 @@ public class GameController implements PropertyChangeListener {
 	 * 24 hours as default.
 	 */
 	public void startRoundTimer() {
-		timer.schedule(endOfRound, hoursEachRound * 3600000);
+		Timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 
 	public void stopRoundTimer() {
@@ -165,6 +180,19 @@ public class GameController implements PropertyChangeListener {
 		}
 		nbrOfRobotsDone = 0;
 	}
+	
+	public String getMap() {
+		return mapAsString;
+	}
+	
+	public String getNbrOfPlayers() {
+		return nbrOfPlayers;
+	}
+	
+	public String getRoundResults() {
+		return this.gameModel.getAllMoves();
+	}
+	
 //TODO game end how?
 
 }
