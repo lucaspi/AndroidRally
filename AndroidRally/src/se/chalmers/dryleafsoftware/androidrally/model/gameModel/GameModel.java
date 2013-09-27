@@ -482,6 +482,8 @@ public class GameModel {
 					if(!tileOccupied && i>=0 && i<gameBoard.getWidth() && j>=0 && j<gameBoard.getHeight()){
 						robot.setX(i);
 						robot.setY(j);
+						allMoves.remove(allMoves.size()-1);
+						addMove(robot);
 						return;
 					}
 				}
