@@ -6,8 +6,13 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Deck;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.BoardElement;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.CheckPoint;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.ConveyorBelt;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Gears;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Wrench;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
@@ -53,7 +58,6 @@ public class GameModel {
 	 * @param testMap
 	 */
 	public GameModel(int nbrOfPlayers, String[][] map) {
-//		gameBoard = new GameBoard(12, 16, nbrOfPlayers);// TODO createGameBoard with proper data
 		gameBoard = new GameBoard(map);
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
@@ -82,12 +86,69 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
-		hejhej = 1;
-		for (Robot robot : robots) {
-			gameBoard.getTile(robot.getX(), robot.getY()).action(robot);
+
+	    int maxTravelDistance = 0;
+	    for(int i = 0; i< robots.size(); i++){
+	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+	    		  robots.get(i).getX()).getBoardElements();
+	    	if(boardElements.get(0) instanceof ConveyorBelt){
+	    		if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
+	    			maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
+	    		}
+      		}
+	    }
+	    for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
-		
+	    
+	    int[][] oldPositions = new int[robots.size()][2];
+	    for(int i = 0; i<maxTravelDistance; i++){
+	    	for(int j = 0; j< robots.size(); j++){
+	    		allMoves.add(";B" + (maxTravelDistance-i));
+	    		oldPositions[j][0] = robots.get(j).getX();
+	    		oldPositions[j][1] = robots.get(j).getY();
+	    		List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
+	    				robots.get(j).getX()).getBoardElements();
+	    		if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
+	    			if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
+	    				boardElements.get(0).action(robots.get(j));
+	    				addMove(robots.get(j));
+	    				gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
+	    			}
+	    		}
+	    	}
+	    	checkConveyorBeltCollides(oldPositions);
+		    checkIfRobotsOnMap();
+	    }
+	    allMoves.add(";B4");
+	    for(int i = 0; i<robots.size(); i++){
+	    	for(BoardElement boardelement : gameBoard.getTile(robots.get(i).getX(), 
+	    			robots.get(i).getX()).getBoardElements()){
+	    		if(boardelement instanceof Gears){
+	    			boardelement.action(robots.get(i));
+	    			addMove(robots.get(i));
+	    		}
+	    	}
+	    }
+	    fireAllLasers();
+	    deleteDeadRobots();
+	    
+	    for(int i = 0; i<robots.size(); i++){
+	    	for(BoardElement boardelement : gameBoard.getTile(robots.get(i).getX(), 
+	    			robots.get(i).getX()).getBoardElements()){
+	    		if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
+	    			boardelement.action(robots.get(i));
+	    		}
+	    	}
+	    }
+	    addDamageToAllMoves();
+	}
+	
+	private void addDamageToAllMoves(){
+		allMoves.add(";B5");
+		for(int i = 0; i<robots.size(); i++){
+			allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+		}
 	}
 	
 	/**
@@ -234,7 +295,6 @@ public class GameModel {
 	 * Size of oldPositions needs to be int[robots.size()][2]
 	 */
 	private void checkConveyorBeltCollides(int[][] oldPositions){
-		List<Robot> moveIndexToBeRemoved = new ArrayList<Robot>();
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
@@ -369,19 +429,8 @@ public class GameModel {
 				//Remove the card so it doesn't execute twice
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
-			allMoves.add(";B");
 			activateBoardElements();
 			checkConveyorBeltCollides(oldPosition);
-
-//			// Alters the last String to the correct syntax.
-//			String stringToBeChanged = allMoves.remove(allMoves.size()-1);
-//			if(stringToBeChanged.equals("B#")){
-//				stringToBeChanged = stringToBeChanged + ";";
-//			}else{
-//				stringToBeChanged = stringToBeChanged.replace('#', ';');
-//			}
-//			
-//			allMoves.add(stringToBeChanged);
 		}
 		
 		for(Robot robot : robots){
@@ -401,15 +450,11 @@ public class GameModel {
 	}
 	
 	private void addSimultaneousMove(Robot robot){
-//		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
-//				robot.getXAsString() + robot.getYAsString() + "#");
 		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString());
 	}
 	
 	private void addMove(Robot robot){
-//		allMoves.add(robots.indexOf(robot) + ":" + robot.getDirection() + 
-//				robot.getXAsString() + robot.getYAsString() + ";");
 		allMoves.add(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString() );
 	}

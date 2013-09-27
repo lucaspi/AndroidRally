@@ -3,27 +3,25 @@ package se.chalmers.dryleafsoftware.androidrally.controller;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import android.os.CountDownTimer;
+import com.badlogic.gdx.utils.Timer;
 
-public class CardTimer extends CountDownTimer {
-	private int robotID;
-	private PropertyChangeSupport pcs;
+public class CardTimer extends Timer {
 	
-	public CardTimer(long millisInFuture, long countDownInterval, int robotID, PropertyChangeListener pcl) {
-		super(millisInFuture, countDownInterval);
+	private final int robotID;
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	
+	public CardTimer(long secondsInFuture, int robotID, PropertyChangeListener pcl) {
+		super();
 		this.robotID = robotID;
-		pcs = new PropertyChangeSupport(this);
 		pcs.addPropertyChangeListener(pcl);
+		schedule(new Timer.Task() {
+			@Override
+			public void run() {
+				pcs.firePropertyChange("cardTimeOut", -1, CardTimer.this.robotID);
+				stop();
+				clear();
+			}
+		}, secondsInFuture);
+		start();
 	}
-
-	@Override
-	public void onFinish() {
-		pcs.firePropertyChange("cardTimeOut", -1, robotID);
-	}
-
-	@Override
-	public void onTick(long millisUntilFinished) {
-		//No extension
-	}
-
 }

@@ -10,17 +10,16 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * This is the client-side controller which handles the game's logic.
+ * This is the client-side controller which handles the logic of the view classes.
  * 
  * @author
  *
  */
-public class GameController implements GestureListener, PropertyChangeListener {
+public class GameController implements PropertyChangeListener {
 
 	private final GdxGame game;
 	private final Client client;
@@ -30,8 +29,25 @@ public class GameController implements GestureListener, PropertyChangeListener {
 	private RoundResult result;
 	
 	private final Texture boardTexture, cardTexture;
+	private long runTimerStamp = TimeUtils.millis() +  20*1000;
 	
-//	private 
+	private final Timer timer;
+	
+	/*
+	 * Time to choose cards.
+	 */
+	private static final int CARDTIME = 10;
+	
+	/*
+	 *  Stages for specifying which stage the game is currently in:
+	 *  WAITING: Nothing needs to update.
+	 *  ACTIONS: Showing the actions of the last round.
+	 *  	- STEP_ACTION: Waits for user input when done showing one card's actions.
+	 *  	- PLAY_ACTION: Do not wait for user input, plays all card's action in sequence.
+	 *  	- SKIP_ACTION: Skips to the outcome.
+	 */	
+	private static enum Stage { WAITING, STEP_ACTIONS, PLAY_ACTIONS, SKIP_ACTIONS };
+	private Stage currentStage = Stage.WAITING; 
 
 	/**
 	 * Creates a new instance which will control the specified game.
@@ -42,6 +58,7 @@ public class GameController implements GestureListener, PropertyChangeListener {
 		this.client = new Client(1);
 		this.deckView = game.getDeckView();
 		game.addListener(this);
+		deckView.addListener(this);
 		
 		// Only load the textures once.
 		boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
@@ -54,35 +71,77 @@ public class GameController implements GestureListener, PropertyChangeListener {
 		for(RobotView player : client.getRobots(boardTexture, game.getBoardView().getDocksPositions())) {
 			game.getBoardView().addRobot(player);
 		}		
+		
+		deckView.displayDrawCard();
+		
+		timer = new Timer();
+		timer.start();
+		waitForNextRound(20);
+	}
 	
-		this.deckView.setDeckCards(client.getCards(cardTexture));
-				
-		Timer timer = new Timer();
-		timer.scheduleTask(new Timer.Task() {			
-			@Override
-			public void run() {
-				System.out.println("Sending cards");
-				client.sendCard(deckView.getChosenCards());
-			}
-		}, 3);
+	/*
+	 * Adds a timer task which will run after the specified seconds.
+	 */
+	private void waitForNextRound(int s) {
+		// TODO: remove this task, as this is only for testing.
+		runTimerStamp = TimeUtils.millis() +  s * 1000;
 		timer.scheduleTask(new Timer.Task() {			
 			@Override
 			public void run() {
 				System.out.println("Getting actions");
-				result = client.getRoundResult();
-				actions = result.getNextResult();
+				deckView.displayPlayOptions();
+				result = client.getRoundResult();		
+				waitForNextRound(120);
+
 			}
-		}, 4);
-		timer.start();
+		}, (int)(runTimerStamp - TimeUtils.millis()) / 1000);	
+		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000);
 	}
-	
-	public RoundResult getRoundResults() {
-		return result;
-	}
-	
+
+	/**
+	 * The main update loop.
+	 */
 	private void update() {
-		if(actions != null && !actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+		switch(currentStage) {
+		case STEP_ACTIONS:
+		case PLAY_ACTIONS:		
+			updateActions();
+			break;
+		case SKIP_ACTIONS:
+			skipActions();
+			break;
+		default:
+			// Do nothing...
+		}
+	}
+	
+	/*
+	 * Skips all actions
+	 */
+	private void skipActions() {
+		while(true) {
+			for(GameAction a : actions) {
+				a.cleanUp(game.getBoardView().getRobots());
+			}
+			if(result.hasNext()) {
+				actions = result.getNextResult();
+			}else{
+				break;
+			}
+		}
+		currentStage = Stage.WAITING;
+		deckView.displayDrawCard();
+	}
+	
+	/*
+	 * Updates the actions.
+	 */
+	private void updateActions() {
+		// Remove and continue if last action complete.
+		// TODO: make the code look better!
+		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
+				actions.get(0).cleanUp(game.getBoardView().getRobots());
 				actions.remove(0);
 			}
 			if(!actions.isEmpty()) {
@@ -95,59 +154,49 @@ public class GameController implements GestureListener, PropertyChangeListener {
 			}else{
 				game.getBoardView().setAnimationElement(false);
 			}
-		}else if(actions != null && actions.isEmpty()){
-			if(result.hasNext()) {
-				System.out.println("Next round!");
+		}
+		// Get next list of actions
+		else if(actions.isEmpty()) {
+			// If no more: wait
+			if(!result.hasNext()) {
+				currentStage = Stage.WAITING;
+				deckView.displayDrawCard();
+			}
+			// Otherwise, if playing, get the next list.
+			else if(currentStage.equals(Stage.PLAY_ACTIONS)) {
 				actions = result.getNextResult();
 			}
 		}
 	}
 
 	@Override
-	public boolean tap(float arg0, float arg1, int arg2, int arg3) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(float arg0, float arg1, int arg2, int arg3) {
-		return false;
-	}
-
-	@Override
-	public boolean longPress(float arg0, float arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean pan(float arg0, float arg1, float arg2, float arg3) {
-		return false;
-	}
-
-	@Override
-	public boolean fling(float arg0, float arg1, int arg2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean zoom(float arg0, float arg1) {
-		return false;
-	}
-
-	@Override
-	public boolean pinch(Vector2 arg0, Vector2 arg1, Vector2 arg2, Vector2 arg3) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void checkCameraBounds() {
-	}
-
-	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		if(event.getPropertyName().equals(GdxGame.EVENT_UPDATE)) {
+			// Called from the LibGDX game instance.
 			update();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_PLAY)) {
+			currentStage = Stage.PLAY_ACTIONS;
+			actions = result.getNextResult();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP)) {
+			currentStage = Stage.STEP_ACTIONS;
+			actions = result.getNextResult();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_SKIP)) {
+			currentStage = Stage.SKIP_ACTIONS;
+			actions = result.getNextResult();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
+			// Displays the cards and waits for the timer task.
+			this.deckView.setDeckCards(client.getCards(cardTexture));
+			this.deckView.setTimerValue(0, 0, CARDTIME);
+			timer.scheduleTask(new Timer.Task() {			
+				@Override
+				public void run() {
+					System.out.println("Sending cards");
+					client.sendCard(deckView.getChosenCards());
+					deckView.displayWaiting();
+					currentStage = Stage.WAITING;
+					deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000);
+				}
+			}, CARDTIME);
 		}
 	}
 }
