@@ -50,9 +50,7 @@ public class ConveyorBeltTest {
 		assertTrue(gm.getRobots().get(0).getY() == 2);
 		assertTrue(gm.getRobots().get(1).getX() == 1);
 		assertTrue(gm.getRobots().get(1).getY() == 1);
-		System.out.println(GameModel.hejhej);
 		gm.moveRobots();
-		System.out.println(GameModel.hejhej);
 		assertTrue(gm.getRobots().get(0).getX() == 1);
 		assertTrue(gm.getRobots().get(0).getY() == 1);
 		assertTrue(gm.getRobots().get(1).getX() == 2);

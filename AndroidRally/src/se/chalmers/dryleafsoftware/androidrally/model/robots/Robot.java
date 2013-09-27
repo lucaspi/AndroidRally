@@ -121,13 +121,11 @@ public class Robot {
 	
 	/**
 	 * Called when damage is higher than starting health.
-	 * Decreases life with 1 and sets the robot's position
-	 * to the last visited spawnpoint.
+	 * Decreases life with 1 and set damage to 0.
 	 */
 	public void die(){
 		life--;
-		positionX = spawnPointX;
-		positionY = spawnPointY;
+		damage = 0;
 	}
 	
 	/**
@@ -137,6 +135,22 @@ public class Robot {
 	public void newSpawnPoint(){
 		spawnPointX = positionX;
 		spawnPointY = positionY;
+	}
+	
+	/**
+	 * Return the current spawn position on the x-axis.
+	 * @return the current spawn position on the x-axis.
+	 */
+	public int getSpawnPointX(){
+		return spawnPointX;
+	}
+	
+	/**
+	 * Return the current spawn position on the y-axis.
+	 * @return the current spawn position on the y-axis.
+	 */
+	public int getSpawnPointY(){
+		return spawnPointY;
 	}
 	
 	/**
