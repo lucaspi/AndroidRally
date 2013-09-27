@@ -28,14 +28,7 @@ public class Client {
 	// TODO: the client must somehow know which robotID the player has.
 	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
 	private final int clientID, robotID;
-	
-//	String indata1 = "0:30906;0:20906";
-	// B = board element push
-	// P = robot push 
-	// R#[card nbr] = indicates new card
-	String indata1 = "R#0;1:10906;1:00906;0:00509;B#0:10509#1:00905;R#1;0:10609;0:00609;0:00608;0:00607;B#0:00507" +
-				";P#1:00904#0:00506;R#2;0:00504;B#0:30504";
-	
+		
 	/**
 	 * Creates a new client instance.
 	 * @param clientID The ID number of the player.
@@ -72,8 +65,7 @@ public class Client {
 				temp[i] = -1; // TODO: remove
 			}
 		}
-		controller.setChosenCardsToRobot(temp, robotID); // TODO:
-		
+		controller.setChosenCardsToRobot(temp, robotID); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
 				controller.setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, i); // TODO: remove
@@ -95,7 +87,6 @@ public class Client {
 		
 		RoundResult result = new RoundResult();	
 		String indata = controller.getModel().getAllMoves();
-		System.out.println(indata);
 		String[] allActions = indata.split(";");
 //		String[] allActions = indata1.split(";");// TODO: server input
 
@@ -106,23 +97,22 @@ public class Client {
 					result.newPhase();
 				}else{
 					MultiAction multiAction = new MultiAction();
-					for(int i = 1; i < parallel.length; i++) {
+					// Start at 0 if all actions, start at 1 if ID char at start (B#action#action)
+					for(int i = parallel[0].length() > 1 ? 0 : 1; i < parallel.length; i++) {
 						multiAction.add(createSingleAction(parallel[i]));
 					}				
 					if(parallel[0].equals("B")) { // Conveyer belt
 						multiAction.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
-					}else if(parallel[0].equals("P")) { // Robot push
-						multiAction.setMoveRound(GameAction.PHASE_PUSHED);
 					}
 					result.addAction(multiAction);
 				}
-			}else if(parallel[0].length() > 1){
-				result.addAction(createSingleAction(parallel[0]));
 			}else{
 				if(parallel[0].equals("B")) {
 					GameAction holder = new HolderAction(1000);
 					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
 					result.addAction(holder);
+				}else{
+					result.addAction(createSingleAction(parallel[0]));
 				}
 			}
 		}

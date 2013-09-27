@@ -11,7 +11,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * This is the client-side controller which handles the logic of the view classes.
@@ -28,16 +27,14 @@ public class GameController implements PropertyChangeListener {
 	private List<GameAction> actions;
 	private RoundResult result;
 	
+	// Time to choose cards.
+	private static final int CARDTIME = 40;
+	// Time between rounds.
+	private static final int ROUNDTIME = 120;
+	
 	private final Texture boardTexture, cardTexture;
-	private long runTimerStamp = TimeUtils.millis() +  20*1000;
-	
-	private final Timer timer;
-	
-	/*
-	 * Time to choose cards.
-	 */
-	private static final int CARDTIME = 10;
-	
+	private long runTimerStamp = TimeUtils.millis() +  ROUNDTIME*1000;
+			
 	/*
 	 *  Stages for specifying which stage the game is currently in:
 	 *  WAITING: Nothing needs to update.
@@ -46,7 +43,7 @@ public class GameController implements PropertyChangeListener {
 	 *  	- PLAY_ACTION: Do not wait for user input, plays all card's action in sequence.
 	 *  	- SKIP_ACTION: Skips to the outcome.
 	 */	
-	private static enum Stage { WAITING, STEP_ACTIONS, PLAY_ACTIONS, SKIP_ACTIONS };
+	private static enum Stage { WAITING, STEP_ACTIONS, PLAY_ACTIONS, SKIP_ACTIONS, CHOOSING_CARDS };
 	private Stage currentStage = Stage.WAITING; 
 
 	/**
@@ -73,29 +70,7 @@ public class GameController implements PropertyChangeListener {
 		}		
 		
 		deckView.displayDrawCard();
-		
-		timer = new Timer();
-		timer.start();
-		waitForNextRound(20);
-	}
-	
-	/*
-	 * Adds a timer task which will run after the specified seconds.
-	 */
-	private void waitForNextRound(int s) {
-		// TODO: remove this task, as this is only for testing.
-		runTimerStamp = TimeUtils.millis() +  s * 1000;
-		timer.scheduleTask(new Timer.Task() {			
-			@Override
-			public void run() {
-				System.out.println("Getting actions");
-				deckView.displayPlayOptions();
-				result = client.getRoundResult();		
-				waitForNextRound(120);
-
-			}
-		}, (int)(runTimerStamp - TimeUtils.millis()) / 1000);	
-		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000);
+		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
 	}
 
 	/**
@@ -185,18 +160,23 @@ public class GameController implements PropertyChangeListener {
 			actions = result.getNextResult();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			// Displays the cards and waits for the timer task.
-			this.deckView.setDeckCards(client.getCards(cardTexture));
-			this.deckView.setTimerValue(0, 0, CARDTIME);
-			timer.scheduleTask(new Timer.Task() {			
-				@Override
-				public void run() {
-					System.out.println("Sending cards");
-					client.sendCard(deckView.getChosenCards());
-					deckView.displayWaiting();
-					currentStage = Stage.WAITING;
-					deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000);
-				}
-			}, CARDTIME);
+			deckView.setDeckCards(client.getCards(cardTexture));
+			deckView.setTimer(CARDTIME + 1, DeckView.TIMER_CARDS);
+			currentStage = Stage.CHOOSING_CARDS;
+		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)
+				&& currentStage.equals(Stage.CHOOSING_CARDS)) {
+			System.out.println("Sending cards");
+			client.sendCard(deckView.getChosenCards());
+			deckView.displayWaiting();
+			currentStage = Stage.WAITING;
+			deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
+		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
+				&& currentStage.equals(Stage.WAITING)) {
+			runTimerStamp = TimeUtils.millis() +  ROUNDTIME*1000;
+			System.out.println("Getting actions");
+			deckView.displayPlayOptions();
+			result = client.getRoundResult();		
+			deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
 		}
 	}
 }
