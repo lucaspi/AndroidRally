@@ -85,9 +85,7 @@ public class Robot {
 		List<Card> returnCards= new ArrayList<Card>();
 		
 		returnCards.addAll(cards);
-		for(Card card : chosenCards){
-			returnCards.remove(card);
-		}
+		
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
 			chosenCards[i] = null;
