@@ -355,7 +355,7 @@ public class GameModelTest {
 	}
 	
 	@Test
-	public void testRobotWalksOutsideMap(){
+	public void testRobotPushesAnotherRobotOutsideMap(){
 		String[][] testMap = {{"","",""},
 							  {"","",""}};
 		
@@ -411,7 +411,7 @@ public class GameModelTest {
 	}
 	
 	@Test
-	public void testRobotPushesAnotherRobotOutsideMap() {
+	public void testRobotWalksOutsideMap() {
 		
 	}
 }
