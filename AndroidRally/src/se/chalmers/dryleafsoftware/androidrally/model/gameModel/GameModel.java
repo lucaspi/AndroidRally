@@ -91,11 +91,13 @@ public class GameModel {
 	    for(int i = 0; i< robots.size(); i++){
 	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 	    		  robots.get(i).getX()).getBoardElements();
-	    	if(boardElements.get(0) instanceof ConveyorBelt){
-	    		if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
-	    			maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
-	    		}
-      		}
+	    	if(boardElements != null && boardElements.size() > 0){
+	    		if(boardElements.get(0) instanceof ConveyorBelt){
+		    		if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
+		    			maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
+		    		}
+	      		}
+	    	}
 	    }
 	    for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
@@ -109,35 +111,44 @@ public class GameModel {
 	    		oldPositions[j][1] = robots.get(j).getY();
 	    		List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
 	    				robots.get(j).getX()).getBoardElements();
-	    		if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
-	    			if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
-	    				boardElements.get(0).action(robots.get(j));
-	    				addMove(robots.get(j));
-	    				gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
-	    			}
-	    		}
+		    	if(boardElements != null && boardElements.size() > 0){
+		    		if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
+		    			if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
+		    				boardElements.get(0).action(robots.get(j));
+		    				addMove(robots.get(j));
+		    				gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
+		    			}
+		    		}
+		    	}
 	    	}
 	    	checkConveyorBeltCollides(oldPositions);
 		    checkIfRobotsOnMap();
 	    }
 	    allMoves.add(";B4");
 	    for(int i = 0; i<robots.size(); i++){
-	    	for(BoardElement boardelement : gameBoard.getTile(robots.get(i).getX(), 
-	    			robots.get(i).getX()).getBoardElements()){
-	    		if(boardelement instanceof Gears){
-	    			boardelement.action(robots.get(i));
-	    			addMove(robots.get(i));
-	    		}
+	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+    				robots.get(i).getX()).getBoardElements();
+	    	if(boardElements != null && boardElements.size() > 0){
+	    		for(BoardElement boardelement : boardElements){
+		    		if(boardelement instanceof Gears){
+		    			boardelement.action(robots.get(i));
+		    			addMove(robots.get(i));
+		    		}
+		    	}
 	    	}
+	    	
 	    }
 	    fireAllLasers();
 	    deleteDeadRobots();
 	    
 	    for(int i = 0; i<robots.size(); i++){
-	    	for(BoardElement boardelement : gameBoard.getTile(robots.get(i).getX(), 
-	    			robots.get(i).getX()).getBoardElements()){
-	    		if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
-	    			boardelement.action(robots.get(i));
+	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+    				robots.get(i).getX()).getBoardElements();
+	    	if(boardElements != null && boardElements.size() > 0){
+	    		for(BoardElement boardelement : boardElements){
+	    			if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
+		    			boardelement.action(robots.get(i));
+		    		}
 	    		}
 	    	}
 	    }
@@ -195,13 +206,13 @@ public class GameModel {
 	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
 	 */
 	private boolean canMove(int x, int y, int oldX, int oldY){
-		if(y < oldY){
+		if(y > oldY){
 			return canMove(oldX,oldY,GameBoard.NORTH);
-		}else if(x > oldX ){
-			return canMove(oldX,oldY,GameBoard.EAST);
-		}else if(y > oldY ){
-			return canMove(oldX,oldY,GameBoard.SOUTH);
 		}else if(x < oldX ){
+			return canMove(oldX,oldY,GameBoard.EAST);
+		}else if(y < oldY ){
+			return canMove(oldX,oldY,GameBoard.SOUTH);
+		}else if(x > oldX ){
 			return canMove(oldX,oldY,GameBoard.WEST);
 		}
 		// This should only happen if the robot is standing still.
