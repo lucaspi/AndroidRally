@@ -5,8 +5,6 @@ import java.beans.PropertyChangeSupport;
 
 import com.badlogic.gdx.utils.Timer;
 
-import android.os.CountDownTimer;
-
 public class CardTimer extends Timer {
 	
 	private final int robotID;

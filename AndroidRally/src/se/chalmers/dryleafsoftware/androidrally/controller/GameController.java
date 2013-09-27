@@ -8,8 +8,6 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Timer;
 
-import android.os.Looper;
-
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;

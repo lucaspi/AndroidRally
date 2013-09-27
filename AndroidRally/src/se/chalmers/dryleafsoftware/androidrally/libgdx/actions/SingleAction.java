@@ -39,6 +39,13 @@ public class SingleAction extends GameAction {
 						getDuration() / 1000f)));
 	}
 	
+	@Override
+	public void cleanUp(List<RobotView> robots) {
+		System.out.println("Cleanup");
+		robots.get(getRobotID()).setPosition(posX * 40,  640 - (posY+1) * 40);
+		robots.get(getRobotID()).setRotation(-dir * 90);
+	}
+	
 	/**
 	 * Calculates the shortest rotation required to rotate to the target direction.
 	 * @param current The current direction.

@@ -76,13 +76,23 @@ public class GameController implements PropertyChangeListener {
 		
 		timer = new Timer();
 		timer.start();
+		waitForNextRound(20);
+	}
+	
+	/*
+	 * Adds a timer task which will run after the specified seconds.
+	 */
+	private void waitForNextRound(int s) {
 		// TODO: remove this task, as this is only for testing.
+		runTimerStamp = TimeUtils.millis() +  s * 1000;
 		timer.scheduleTask(new Timer.Task() {			
 			@Override
 			public void run() {
 				System.out.println("Getting actions");
 				deckView.displayPlayOptions();
-				result = client.getRoundResult();					
+				result = client.getRoundResult();		
+				waitForNextRound(120);
+
 			}
 		}, (int)(runTimerStamp - TimeUtils.millis()) / 1000);	
 		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000);
@@ -94,8 +104,11 @@ public class GameController implements PropertyChangeListener {
 	private void update() {
 		switch(currentStage) {
 		case STEP_ACTIONS:
-		case PLAY_ACTIONS:
+		case PLAY_ACTIONS:		
 			updateActions();
+			break;
+		case SKIP_ACTIONS:
+			skipActions();
 			break;
 		default:
 			// Do nothing...
@@ -103,12 +116,32 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	/*
+	 * Skips all actions
+	 */
+	private void skipActions() {
+		while(true) {
+			for(GameAction a : actions) {
+				a.cleanUp(game.getBoardView().getRobots());
+			}
+			if(result.hasNext()) {
+				actions = result.getNextResult();
+			}else{
+				break;
+			}
+		}
+		currentStage = Stage.WAITING;
+		deckView.displayDrawCard();
+	}
+	
+	/*
 	 * Updates the actions.
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
+		// TODO: make the code look better!
 		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
+				actions.get(0).cleanUp(game.getBoardView().getRobots());
 				actions.remove(0);
 			}
 			if(!actions.isEmpty()) {
@@ -142,15 +175,14 @@ public class GameController implements PropertyChangeListener {
 			// Called from the LibGDX game instance.
 			update();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_PLAY)) {
-			// TODO: should play thought all actions.
 			currentStage = Stage.PLAY_ACTIONS;
 			actions = result.getNextResult();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP)) {
-			// Displays the next set of actions.
 			currentStage = Stage.STEP_ACTIONS;
 			actions = result.getNextResult();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_SKIP)) {
-			// TODO: should skip through all actions.
+			currentStage = Stage.SKIP_ACTIONS;
+			actions = result.getNextResult();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			// Displays the cards and waits for the timer task.
 			this.deckView.setDeckCards(client.getCards(cardTexture));

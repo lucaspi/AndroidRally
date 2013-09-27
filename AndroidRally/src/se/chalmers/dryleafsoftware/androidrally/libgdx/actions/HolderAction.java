@@ -25,4 +25,9 @@ public class HolderAction extends GameAction {
 		start();
 	}
 
+	@Override
+	public void cleanUp(List<RobotView> robots) {
+		// Do nothing
+	}
+
 }

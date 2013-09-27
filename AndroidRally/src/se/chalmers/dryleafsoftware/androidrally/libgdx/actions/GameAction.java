@@ -111,4 +111,6 @@ public abstract class GameAction {
 	 * @param robots A list of all the robots.
 	 */
 	public abstract void action(List<RobotView> robots);
+	
+	public abstract void cleanUp(List<RobotView> robots);
 }
