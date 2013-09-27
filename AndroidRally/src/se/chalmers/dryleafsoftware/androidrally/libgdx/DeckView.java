@@ -38,7 +38,7 @@ public class DeckView extends Stage {
 	private List<CardView> deckCards = new ArrayList<CardView>();
 	private List<CardView> chosenCards = new ArrayList<CardView>();
 	private int position;
-	private CardListener cl;
+	private final CardListener cl;
 	private Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
@@ -48,6 +48,8 @@ public class DeckView extends Stage {
 	public static final String EVENT_STEP = "step";
 	public static final String EVENT_SKIP = "skip";
 	public static final String EVENT_DRAW_CARDS = "drawCards";
+	public static final String TIMER_CARDS = "timerCards";
+	public static final String TIMER_ROUND = "timerRound";
 	
 	private int timerTick;
 	private final Timer timer;
@@ -103,12 +105,44 @@ public class DeckView extends Stage {
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
 		
+		// TODO: Remove this dummy button!
+		TextButtonStyle style = new TextButtonStyle();	  
+        style.up = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
+        style.down = new TextureRegionDrawable(
+        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
+        style.font = new BitmapFont();
+        TextButton dummy = new TextButton("Force round", style);
+        statusBar.add(dummy); // Border
+        dummy.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+    		}
+    	});
+        TextButton dummy2 = new TextButton("Force cards", style);
+        statusBar.add(dummy2); // Border
+        dummy2.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+    		}
+    	});
+		
 		playPanel = buildPlayerPanel();		
-    	drawPanel = buildDrawCardPanel();	
-    	
-    	timer = new Timer();
-    	timer.start();
-    	
+		drawPanel = buildDrawCardPanel();	
+
+		timer = new Timer();
+		timer.start();
+		// Tick every second.
+		timer.scheduleTask(new Timer.Task() {
+			@Override
+			public void run() {
+				timerTick--;
+				setTimerLabel(timerTick);
+			}
+		}, 0, 1f);
+
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
     	timerLabel = new Label("", lStyle);
@@ -186,46 +220,52 @@ public class DeckView extends Stage {
     	});
     	return playPanel;
 	}
-		
+	
+	private void setTimerLabel(int ticks) {
+		int h = timerTick / 3600;
+		int m = (timerTick / 60) % 60;
+		int s = timerTick % 60;
+		s = Math.max(s, 0);
+		timerLabel.setText(String.format("%02d", h) + 
+				":" + String.format("%02d", m) + 
+				":" + String.format("%02d", s));
+	}
+	
 	/**
-	 * Sets the timer to the specified values.
-	 * The timer will then start.
-	 * @param h The number of hours.
-	 * @param m The number of minutes.
-	 * @param s The number of seconds.
+	 * Gives the current seconds left in the timer.
+	 * @return The current number of seconds left in the timer.
 	 */
-	public void setTimerValue(int h, int m , int s) {
-		this.setTimer(s + m*60 + h * 3600 + 1);
-		// +1 To start the timer at the right time, and to stop it when reaching 0.
+	public int getTimerSeconds() {
+		return this.timerTick;
 	}
 	
 	/**
 	 * Sets the timer to count down the specified amount of seconds.
-	 * @param ticks The second to count down from.
+	 * @param seconds The seconds to count down.
 	 */
-	public void setTimer(int ticks) {
-		this.timerTick = ticks;
-		timer.clear();
-		// Tick every second.
+	public void setTimer(int seconds, final String event) {
+		this.timerTick = seconds;	
 		timer.scheduleTask(new Timer.Task() {
 			@Override
 			public void run() {
-				timerTick--;
-				int h = timerTick / 3600;
-				int m = (timerTick / 60) % 60;
-				int s = timerTick % 60;
-				s = Math.max(s, 0);
-				timerLabel.setText(String.format("%02d", h) + 
-						":" + String.format("%02d", m) + 
-						":" + String.format("%02d", s));
+				pcs.firePropertyChange(event, 0, 1);
 			}
-		}, 0, 1f, timerTick - 1);
+		}, seconds);
+		setTimerLabel(timerTick);
 	}
 	
+	/**
+	 * Adds the specified listener.
+	 * @param listener The listener to add.
+	 */
 	public void addListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
 	}
 	
+	/**
+	 * Removes the specified listener.
+	 * @param listener The listener to remove.
+	 */
 	public void removeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 	}
@@ -251,17 +291,27 @@ public class DeckView extends Stage {
 		for (CardView cv : deckCards) {
 			cv.addListener(cl);
 		}
+		chosenCards.clear();
 	}
 	
+	/**
+	 * Displays the panel which should be visible while waiting for round results.
+	 */
 	public void displayWaiting() {
 		lowerArea.clear();
 	}
 	
+	/**
+	 * Displays the panel which should be visible after viewing the round results.
+	 */
 	public void displayDrawCard() {
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
 	
+	/**
+	 * DIsplays the panel which should be visible when viewing the round results.
+	 */
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);

@@ -41,7 +41,6 @@ public class SingleAction extends GameAction {
 	
 	@Override
 	public void cleanUp(List<RobotView> robots) {
-		System.out.println("Cleanup");
 		robots.get(getRobotID()).setPosition(posX * 40,  640 - (posY+1) * 40);
 		robots.get(getRobotID()).setRotation(-dir * 90);
 	}
