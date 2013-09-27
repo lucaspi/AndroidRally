@@ -79,44 +79,38 @@ public class Client {
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-//	public List<GameAction> getRoundResult() {
 	public RoundResult getRoundResult() {
-		// From server example: "0:10101;0:10102;1:10203"	
-//		model.dealCards();
 		controller.getModel().moveRobots();
 		
 		RoundResult result = new RoundResult();	
 		String indata = controller.getModel().getAllMoves();
 		String[] allActions = indata.split(";");
-//		String[] allActions = indata1.split(";");// TODO: server input
 
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
-			if(parallel.length >= 2) {	
-				if(parallel[0].equals("R")) { // New phase
-					result.newPhase();
+			if(parallel[0].equals("R")) {
+				result.newPhase();
+			}else if(parallel[0].substring(0, 1).equals("B")) {
+				GameAction holder = new HolderAction(1000);
+				int phase = Integer.parseInt(parallel[0].substring(1));	
+				if(phase < 10) {
+					holder.setMoveRound(phase);
 				}else{
-					MultiAction multiAction = new MultiAction();
-					// Start at 0 if all actions, start at 1 if ID char at start (B#action#action)
-					for(int i = parallel[0].length() > 1 ? 0 : 1; i < parallel.length; i++) {
-						multiAction.add(createSingleAction(parallel[i]));
-					}				
-					if(parallel[0].equals("B")) { // Conveyer belt
-						multiAction.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
-					}
-					result.addAction(multiAction);
-				}
-			}else{
-				if(parallel[0].equals("B")) {
-					GameAction holder = new HolderAction(1000);
 					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
-					result.addAction(holder);
-				}else{
-					result.addAction(createSingleAction(parallel[0]));
+					holder.setSubRound(phase % 10);
 				}
+				result.addAction(holder);
+			}else if(parallel.length > 1){
+				MultiAction a = new MultiAction();
+				for(int i = 0; i < parallel.length; i++) {
+					a.add(createSingleAction(parallel[i]));
+				}	
+				result.addAction(a);
+			}else{
+				result.addAction(createSingleAction(parallel[0]));
 			}
 		}
-		return result;
+		return result;	
 	}
 	
 	/*
@@ -137,7 +131,7 @@ public class Client {
 	 */
 	public List<CardView> getCards(Texture texture) {
 		// From server example: "410:420:480:660:780:840:190:200:90"
-		controller.getModel().dealCards();// TODO: server input
+		controller.getModel().dealCards(); // TODO: server input
 		List<CardView> cards = new ArrayList<CardView>();
 		
 		// TODO: change to robotID and input to string

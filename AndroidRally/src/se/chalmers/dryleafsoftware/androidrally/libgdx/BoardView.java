@@ -246,10 +246,15 @@ public class BoardView extends Stage {
 	 * Set to turn on/off all the animation on the board.
 	 * @param enabled Set to turn on/off all the animation on the board.
 	 */
-	public void setAnimationElement(boolean enabled) {
+	public void setAnimationElement(boolean enabled, int subPhase) {
 		if(isAnimated != enabled) {
 			for(AnimatedImage a : animated) {
-				a.setEnabled(enabled);
+				//a.setEnabled(enabled);
+				if(enabled) {
+					a.enable(subPhase);
+				}else{
+					a.disable();
+				}
 			}
 			isAnimated = enabled;
 		}

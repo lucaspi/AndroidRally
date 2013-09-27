@@ -24,6 +24,7 @@ public class GearsView extends AnimatedImage {
 			texture.flip(true, false);
 			direction *= -1;
 		}
+		this.setPhaseMask(4);
 	}
 	
 	@Override

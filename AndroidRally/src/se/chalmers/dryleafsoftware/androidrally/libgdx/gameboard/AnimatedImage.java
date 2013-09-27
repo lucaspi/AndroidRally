@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public abstract class AnimatedImage extends Image {
 
 	private boolean enabled = false;
+	private int[] phaseMask = new int[]{0};
 	
 	/**
 	 * Creates a new instance which will use the specified texture when rendering.
@@ -25,8 +26,25 @@ public abstract class AnimatedImage extends Image {
 	 * Set to turn on/off the animation on this image.
 	 * @param enabled Set to turn on/off the animation on this image.
 	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void enable(int subPhase) {
+		for(int i = 0; i < phaseMask.length; i++) {
+			if(subPhase == phaseMask[i]) {
+				this.enabled = true;
+				break;
+			}
+		}
+	}
+	
+	public void disable() {
+		this.enabled = false;
+	}
+	
+	protected void setPhaseMask(int[] mask) {
+		this.phaseMask = mask;
+	}
+	
+	protected void setPhaseMask(int i) {
+		this.phaseMask = new int[]{i};
 	}
 	
 	/**

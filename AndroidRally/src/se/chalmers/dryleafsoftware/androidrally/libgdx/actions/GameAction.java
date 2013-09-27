@@ -17,7 +17,8 @@ public abstract class GameAction {
 	private final int robotID;
 	private int duration;
 	private long started;
-	private int moveRound = PHASE_MOVE;
+	private int phaseRound = PHASE_MOVE;
+	private int subPhase = 1;
 	
 	/**
 	 * When the robot is moving. (Default)
@@ -31,6 +32,10 @@ public abstract class GameAction {
 	 * When another robot is forcing the robot to move.
 	 */
 	public static final int PHASE_PUSHED = 2;
+	
+	public static final int PHASE_BOARD_ELEMENT_GEARS = 4;
+	
+	public static final int PHASE_LASER = 5;
 	
 	/**
 	 * Creates a new instance which will work against the robot with the specified ID.
@@ -47,7 +52,7 @@ public abstract class GameAction {
 	 * @param moveRound An integer specifying what phase this action belongs to.
 	 */
 	public void setMoveRound(int moveRound) {
-		this.moveRound = moveRound;
+		this.phaseRound = moveRound;
 	}
 	
 	/**
@@ -55,7 +60,15 @@ public abstract class GameAction {
 	 * @return An integer specifying what phase this action belongs to.
 	 */
 	public int getPhase() {
-		return this.moveRound;
+		return this.phaseRound;
+	}
+	
+	public void setSubRound(int subRound) {
+		this.subPhase = subRound;
+	}
+	
+	public int getSubPhase() {
+		return this.subPhase;
 	}
 	
 	/**
