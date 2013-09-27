@@ -106,8 +106,8 @@ public class GameModel {
 
 	    int[][] oldPositions = new int[robots.size()][2];
 	    for(int i = 0; i<maxTravelDistance; i++){
+    		allMoves.add(";B" + (maxTravelDistance-i));
 	    	for(int j = 0; j< robots.size(); j++){
-	    		allMoves.add(";B" + (maxTravelDistance-i));
 	    		oldPositions[j][0] = robots.get(j).getX();
 	    		oldPositions[j][1] = robots.get(j).getY();
 	    		List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
