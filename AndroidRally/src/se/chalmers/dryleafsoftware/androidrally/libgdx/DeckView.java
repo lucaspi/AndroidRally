@@ -38,7 +38,7 @@ public class DeckView extends Stage {
 	private List<CardView> deckCards = new ArrayList<CardView>();
 	private List<CardView> chosenCards = new ArrayList<CardView>();
 	private int position;
-	private CardListener cl;
+	private final CardListener cl;
 	private Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
@@ -232,24 +232,40 @@ public class DeckView extends Stage {
 	}
 	
 	/**
-	 * Sets the timer to count down the specified amount of seconds.
-	 * @param ticks The second to count down from.
+	 * Gives the current seconds left in the timer.
+	 * @return The current number of seconds left in the timer.
 	 */
-	public void setTimer(int ticks, final String event) {
-		this.timerTick = ticks;	
+	public int getTimerSeconds() {
+		return this.timerTick;
+	}
+	
+	/**
+	 * Sets the timer to count down the specified amount of seconds.
+	 * @param seconds The seconds to count down.
+	 */
+	public void setTimer(int seconds, final String event) {
+		this.timerTick = seconds;	
 		timer.scheduleTask(new Timer.Task() {
 			@Override
 			public void run() {
 				pcs.firePropertyChange(event, 0, 1);
 			}
-		}, ticks);
+		}, seconds);
 		setTimerLabel(timerTick);
 	}
 	
+	/**
+	 * Adds the specified listener.
+	 * @param listener The listener to add.
+	 */
 	public void addListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
 	}
 	
+	/**
+	 * Removes the specified listener.
+	 * @param listener The listener to remove.
+	 */
 	public void removeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 	}
@@ -278,15 +294,24 @@ public class DeckView extends Stage {
 		chosenCards.clear();
 	}
 	
+	/**
+	 * Displays the panel which should be visible while waiting for round results.
+	 */
 	public void displayWaiting() {
 		lowerArea.clear();
 	}
 	
+	/**
+	 * Displays the panel which should be visible after viewing the round results.
+	 */
 	public void displayDrawCard() {
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
 	
+	/**
+	 * DIsplays the panel which should be visible when viewing the round results.
+	 */
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);
