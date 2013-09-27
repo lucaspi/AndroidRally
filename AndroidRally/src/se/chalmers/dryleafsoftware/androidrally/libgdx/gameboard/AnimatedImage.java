@@ -30,11 +30,9 @@ public abstract class AnimatedImage extends Image {
 		for(int i = 0; i < phaseMask.length; i++) {
 			if(subPhase == phaseMask[i]) {
 				this.enabled = true;
-				System.out.println("Jepp");
 				break;
 			}
 		}
-		System.out.println("nope, " + phaseMask[0] + "," + subPhase);
 	}
 	
 	public void disable() {
