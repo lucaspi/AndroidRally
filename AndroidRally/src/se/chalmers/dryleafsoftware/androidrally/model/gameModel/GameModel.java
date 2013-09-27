@@ -195,13 +195,13 @@ public class GameModel {
 	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
 	 */
 	private boolean canMove(int x, int y, int oldX, int oldY){
-		if(y > oldY){
+		if(y < oldY){
 			return canMove(oldX,oldY,GameBoard.NORTH);
-		}else if(x < oldX ){
-			return canMove(oldX,oldY,GameBoard.EAST);
-		}else if(y < oldY ){
-			return canMove(oldX,oldY,GameBoard.SOUTH);
 		}else if(x > oldX ){
+			return canMove(oldX,oldY,GameBoard.EAST);
+		}else if(y > oldY ){
+			return canMove(oldX,oldY,GameBoard.SOUTH);
+		}else if(x < oldX ){
 			return canMove(oldX,oldY,GameBoard.WEST);
 		}
 		// This should only happen if the robot is standing still.
