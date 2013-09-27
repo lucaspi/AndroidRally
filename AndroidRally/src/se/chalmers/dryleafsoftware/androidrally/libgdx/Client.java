@@ -85,6 +85,8 @@ public class Client {
 		RoundResult result = new RoundResult();	
 		String indata = controller.getModel().getAllMoves();
 		String[] allActions = indata.split(";");
+		
+		System.out.println(indata);
 
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
