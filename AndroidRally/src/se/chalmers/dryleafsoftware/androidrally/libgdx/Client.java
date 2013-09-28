@@ -44,7 +44,12 @@ public class Client {
 	 * @return A map of the board as a matrix of strings.
 	 */
 	public String[][] getMap() {
-		return controller.getModel().getMap();// TODO: server output
+		String[] mapY = controller.getMap().substring(1).split("y");
+		String[][] map = new String[mapY.length][];
+		for(int i = 0; i < map.length; i++) {
+			map[i] = mapY[i].substring(1).split("x", 64);
+		}
+		return map;// TODO: server output
 	}
 	
 	/**
@@ -98,7 +103,7 @@ public class Client {
 				if(phase < 10) {
 					holder.setMoveRound(phase);
 				}else{
-					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT);
+					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
 					holder.setSubRound(phase % 10);
 				}
 				result.addAction(holder);

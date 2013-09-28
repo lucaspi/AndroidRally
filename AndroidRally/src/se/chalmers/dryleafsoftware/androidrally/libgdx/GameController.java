@@ -121,16 +121,16 @@ public class GameController implements PropertyChangeListener {
 			}
 			if(!actions.isEmpty()) {
 				actions.get(0).action(game.getBoardView().getRobots());
-				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, (GameAction.PHASE_BOARD_ELEMENT * 10 
+				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_CONVEYER) {
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate((GameAction.PHASE_BOARD_ELEMENT_CONVEYER * 10 
 							+ actions.get(0).getSubPhase()));
 				}else if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_GEARS) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, 4);
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate(4);
 				}else if(actions.get(0).getPhase() == GameAction.PHASE_LASER) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, 5);
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate(5);
 				}
 			}
 		}

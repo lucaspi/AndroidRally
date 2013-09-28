@@ -120,7 +120,7 @@ public class DeckView extends Stage {
     			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
     		}
     	});
-        TextButton dummy2 = new TextButton("Force cards", style);
+        TextButton dummy2 = new TextButton("Send cards", style);
         statusBar.add(dummy2); // Border
         dummy2.addListener(new ClickListener() {
     		@Override
@@ -392,8 +392,12 @@ public class DeckView extends Stage {
 	 * @return
 	 */
 	public int getCardDeckWidth() {
-		return this.deckCards.size()
-				* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
+		if(this.deckCards.isEmpty()) {
+			return 0;
+		}else{
+			return this.deckCards.size()
+					* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
+		}
 	}
 
 	/**

@@ -23,28 +23,41 @@ public abstract class AnimatedImage extends Image {
 	}
 	
 	/**
-	 * Set to turn on/off the animation on this image.
-	 * @param enabled Set to turn on/off the animation on this image.
+	 * Will enable the animation if the image is specified for that phase.
+	 * @param phase The current phase.
 	 */
-	public void enable(int subPhase) {
+	public void enable(int phase) {
 		for(int i = 0; i < phaseMask.length; i++) {
-			if(subPhase == phaseMask[i]) {
+			if(phase == phaseMask[i]) {
 				this.enabled = true;
 				break;
 			}
 		}
 	}
 	
+	/**
+	 * Stops the animation.
+	 */
 	public void disable() {
 		this.enabled = false;
 	}
 	
-	protected void setPhaseMask(int[] mask) {
+	/**
+	 * Sets for which phases this image will animate.
+	 * @param mask An array of phases.
+	 */
+	public void setPhaseMask(int[] mask) {
 		this.phaseMask = mask;
 	}
 	
-	protected void setPhaseMask(int i) {
-		this.phaseMask = new int[]{i};
+	/**
+	 * Sets for which phase this image will animate.
+	 * This is the same as calling <code>setPhaseMask(int[] mask)</code> with an
+	 * array of length 1.
+	 * @param phase The phase.
+	 */
+	public void setPhaseMask(int phase) {
+		this.phaseMask = new int[]{phase};
 	}
 	
 	/**

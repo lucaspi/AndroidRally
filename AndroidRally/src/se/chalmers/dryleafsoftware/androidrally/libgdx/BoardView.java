@@ -38,7 +38,6 @@ public class BoardView extends Stage {
 	private List<RobotView> robots = new ArrayList<RobotView>();
 	private List<AnimatedImage> animated = new ArrayList<AnimatedImage>();
 	private Vector2[] docks = new Vector2[8];
-	private boolean isAnimated = false;
 	private final Group container; 
 	private final Table scrollContainer;
 	private final ScrollPane pane;
@@ -241,22 +240,23 @@ public class BoardView extends Stage {
 			container.addActor(i);
 		}
 	}
-	
+
 	/**
-	 * Set to turn on/off all the animation on the board.
-	 * @param enabled Set to turn on/off all the animation on the board.
+	 * Starts the animations of the items connected with the specified phase.
+	 * @param subPhase The phase to animate.
 	 */
-	public void setAnimationElement(boolean enabled, int subPhase) {
-		if(isAnimated != enabled) {
-			for(AnimatedImage a : animated) {
-				//a.setEnabled(enabled);
-				if(enabled) {
-					a.enable(subPhase);
-				}else{
-					a.disable();
-				}
-			}
-			isAnimated = enabled;
+	public void setAnimate(int subPhase) {
+		for(AnimatedImage a : animated) {
+			a.enable(subPhase);
+		}
+	}
+
+	/**
+	 * Stops all animations.
+	 */
+	public void stopAnimations() {
+		for(AnimatedImage a : animated) {
+			a.disable();
 		}
 	}
 	
