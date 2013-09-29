@@ -43,13 +43,8 @@ public class Client {
 	 * Returns the map of the board as a matrix of strings.
 	 * @return A map of the board as a matrix of strings.
 	 */
-	public String[][] getMap() {
-		String[] mapY = controller.getMap().substring(1).split("y");
-		String[][] map = new String[mapY.length][];
-		for(int i = 0; i < map.length; i++) {
-			map[i] = mapY[i].substring(1).split("x", 64);
-		}
-		return map;// TODO: server output
+	public String getMap() {
+		return controller.getMap();
 	}
 	
 	/**
