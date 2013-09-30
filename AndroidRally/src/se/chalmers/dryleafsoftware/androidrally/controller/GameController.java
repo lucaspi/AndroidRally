@@ -157,10 +157,25 @@ public class GameController implements PropertyChangeListener {
 	/**
 	 * Get the cards of a specific robot.
 	 * @param robotID the index of the robot in the GameModel's robot list.
-	 * @return the robot's cards (not chosen cards)
+	 * @return the robot's cards represented as a string (not chosen cards).
 	 */
-	public List<Card> getCards(int robotID) {
-		return gameModel.getRobots().get(robotID).getCards(); 
+	public String getCards(int robotID) {
+		List<Card> cards = gameModel.getRobots().get(robotID).getCards();
+		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
+		StringBuilder sb = new StringBuilder();
+		int lowestIndexOfLockedCard = 0;
+		for(Card card : cards){
+			for(int i = lowestIndexOfLockedCard; i<chosenCards.length; i++){
+				if(card == chosenCards[i]){
+					sb.append("L" + i + ";" + chosenCards[i].getPriority() + ":");
+					lowestIndexOfLockedCard = Math.min(lowestIndexOfLockedCard, i);
+				}else{
+					sb.append(card.getPriority() + ":");
+				}
+			}
+			
+		}
+		return sb.toString(); 
 	}
 
 	/**
