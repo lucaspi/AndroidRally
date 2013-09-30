@@ -23,7 +23,7 @@ public class ConveyorBeltTest {
 				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.NORTH)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
 		};
 		
-		GameModel gm = new GameModel(2, testMap);
+		GameModel gm = new GameModel(null, 2, testMap);
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
@@ -67,7 +67,7 @@ public class ConveyorBeltTest {
 				{				"",				"1"+String.valueOf(GameBoard.WEST)+3,				""						}
 		};
 		
-		GameModel gm = new GameModel(2, testMap);
+		GameModel gm = new GameModel(null, 2, testMap);
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);

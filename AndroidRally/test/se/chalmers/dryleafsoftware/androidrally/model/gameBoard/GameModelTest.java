@@ -31,7 +31,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(4,testMap);
+		GameModel gm = new GameModel(null, 4,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -116,7 +116,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -166,7 +166,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -217,7 +217,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -267,7 +267,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -318,7 +318,7 @@ public class GameModelTest {
 				{"","","","","","","","","",""},
 				{"","","","","","","","","",""},
 		};
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -359,7 +359,7 @@ public class GameModelTest {
 		String[][] testMap = {{"","",""},
 				{"","",""}};
 
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 		gm.getRobots().set(0, new Robot(0,2));
 		gm.getRobots().set(1, new Robot(1,1));
 		gm.getRobots().get(1).move(1, GameBoard.WEST);
@@ -415,7 +415,7 @@ public class GameModelTest {
 		String[][] testMap = {{"","",""},
 							  {"","",""}};
 
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(null, 2,testMap);
 		gm.getRobots().set(0, new Robot(0,1));
 		gm.getRobots().set(1, new Robot(1,1));
 		gm.getRobots().get(0).move(1, GameBoard.NORTH);
