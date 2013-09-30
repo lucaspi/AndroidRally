@@ -42,6 +42,7 @@ public class GameController implements PropertyChangeListener {
 	 *  	- STEP_ACTION: Waits for user input when done showing one card's actions.
 	 *  	- PLAY_ACTION: Do not wait for user input, plays all card's action in sequence.
 	 *  	- SKIP_ACTION: Skips to the outcome.
+	 *  CHOOSING_CARDS : Waiting for timer to reach zero or player to send cards.
 	 */	
 	private static enum Stage { WAITING, STEP_ACTIONS, PLAY_ACTIONS, SKIP_ACTIONS, CHOOSING_CARDS };
 	private Stage currentStage = Stage.WAITING; 
@@ -121,16 +122,16 @@ public class GameController implements PropertyChangeListener {
 			}
 			if(!actions.isEmpty()) {
 				actions.get(0).action(game.getBoardView().getRobots());
-				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, (GameAction.PHASE_BOARD_ELEMENT * 10 
+				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_CONVEYER) {
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate((GameAction.PHASE_BOARD_ELEMENT_CONVEYER * 10 
 							+ actions.get(0).getSubPhase()));
 				}else if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_GEARS) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, 4);
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate(4);
 				}else if(actions.get(0).getPhase() == GameAction.PHASE_LASER) {
-					game.getBoardView().setAnimationElement(false, 0);
-					game.getBoardView().setAnimationElement(true, 5);
+					game.getBoardView().stopAnimations();
+					game.getBoardView().setAnimate(5);
 				}
 			}
 		}
@@ -150,6 +151,8 @@ public class GameController implements PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
+		// TODO: clean this method.
+		
 		if(event.getPropertyName().equals(GdxGame.EVENT_UPDATE)) {
 			// Called from the LibGDX game instance.
 			update();

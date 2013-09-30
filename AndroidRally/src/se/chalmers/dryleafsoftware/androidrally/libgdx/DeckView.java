@@ -44,16 +44,33 @@ public class DeckView extends Stage {
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
 
+	/**
+	 * Specifying that the game should start.
+	 */
 	public static final String EVENT_PLAY = "play";
+	/**
+	 * Specifying that the next register's set of actions should display.
+	 */
 	public static final String EVENT_STEP = "step";
+	/**
+	 * Specifying that all the actions should be skipped.
+	 */
 	public static final String EVENT_SKIP = "skip";
+	/**
+	 * Specifying that the player should be given new cards.
+	 */
 	public static final String EVENT_DRAW_CARDS = "drawCards";
+	/**
+	 * Specifying that the player has looked at its cards long enough.
+	 */
 	public static final String TIMER_CARDS = "timerCards";
+	/**
+	 * Specifying that the round has ended.
+	 */
 	public static final String TIMER_ROUND = "timerRound";
 	
 	private int timerTick;
-	private final Timer timer;
-	
+	private final Timer timer;	
 	private final Label timerLabel;
 
 	/**
@@ -120,7 +137,7 @@ public class DeckView extends Stage {
     			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
     		}
     	});
-        TextButton dummy2 = new TextButton("Force cards", style);
+        TextButton dummy2 = new TextButton("Send cards", style);
         statusBar.add(dummy2); // Border
         dummy2.addListener(new ClickListener() {
     		@Override
@@ -221,6 +238,10 @@ public class DeckView extends Stage {
     	return playPanel;
 	}
 	
+	/*
+	 * Sets the label of the timer to display the specified number of seconds
+	 * as [hh:mm:ss].
+	 */
 	private void setTimerLabel(int ticks) {
 		int h = timerTick / 3600;
 		int m = (timerTick / 60) % 60;
@@ -242,6 +263,7 @@ public class DeckView extends Stage {
 	/**
 	 * Sets the timer to count down the specified amount of seconds.
 	 * @param seconds The seconds to count down.
+	 * @param event The event to fire when the timer reach zero.
 	 */
 	public void setTimer(int seconds, final String event) {
 		this.timerTick = seconds;	
@@ -392,8 +414,12 @@ public class DeckView extends Stage {
 	 * @return
 	 */
 	public int getCardDeckWidth() {
-		return this.deckCards.size()
-				* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
+		if(this.deckCards.isEmpty()) {
+			return 0;
+		}else{
+			return this.deckCards.size()
+					* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
+		}
 	}
 
 	/**

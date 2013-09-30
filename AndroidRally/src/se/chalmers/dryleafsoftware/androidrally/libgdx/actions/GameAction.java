@@ -25,16 +25,20 @@ public abstract class GameAction {
 	 */
 	public static final int PHASE_MOVE = 0;
 	/**
-	 * When a board element is forcing the robot to move.
+	 * When a conveyer belt is moving.
 	 */
-	public static final int PHASE_BOARD_ELEMENT = 1;
+	public static final int PHASE_BOARD_ELEMENT_CONVEYER = 1;
 	/**
 	 * When another robot is forcing the robot to move.
 	 */
 	public static final int PHASE_PUSHED = 2;
-	
+	/**
+	 * When the gears are moving.
+	 */
 	public static final int PHASE_BOARD_ELEMENT_GEARS = 4;
-	
+	/**
+	 * When all the lasers on the boards is firing.
+	 */
 	public static final int PHASE_LASER = 5;
 	
 	/**
@@ -63,10 +67,18 @@ public abstract class GameAction {
 		return this.phaseRound;
 	}
 	
+	/**
+	 * Sets the subphase of the action. This should be set if the phase has several steps.
+	 * @param subRound The sub phase of the action.
+	 */
 	public void setSubRound(int subRound) {
 		this.subPhase = subRound;
 	}
 	
+	/**
+	 * Gives the subphase of the action.
+	 * @return The subphase of the action.
+	 */
 	public int getSubPhase() {
 		return this.subPhase;
 	}
@@ -125,5 +137,9 @@ public abstract class GameAction {
 	 */
 	public abstract void action(List<RobotView> robots);
 	
+	/**
+	 * Skips the animation and simply places the robot.
+	 * @param robots A list of all the robots.
+	 */
 	public abstract void cleanUp(List<RobotView> robots);
 }

@@ -35,6 +35,7 @@ public class GdxGame implements ApplicationListener {
 		cardDeck = new DeckView();
 
 		gameController = new GameController(this);
+		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(gameBoard, cardDeck);
 		Gdx.input.setInputProcessor(im);
 	}
@@ -86,10 +87,20 @@ public class GdxGame implements ApplicationListener {
 	public void resume() {
 	}
 	
+	/**
+	 * Adds the specified listener.
+	 * 
+	 * @param listener The listener to add
+	 */
 	public void addListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
 	}
 	
+	/**
+	 * Removes the specified listener
+	 * 
+	 * @param listener The listener to remove
+	 */
 	public void removeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 	}
