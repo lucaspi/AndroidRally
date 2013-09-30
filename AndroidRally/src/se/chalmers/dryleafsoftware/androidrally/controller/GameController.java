@@ -110,7 +110,11 @@ public class GameController implements PropertyChangeListener {
 			if (indexOfChosenCard[i] == -1) {
 				chosenCards.add(null);
 			} else {
-				chosenCards.add(robot.getCards().get(indexOfChosenCard[i]));
+				if (!chosenCards.contains(robot.getCards().get(indexOfChosenCard[i]))) {
+					chosenCards.add(robot.getCards().get(indexOfChosenCard[i]));
+				} else {
+					chosenCards.add(null);
+				}
 			}
 		}
 		robot.setChosenCards(chosenCards);
