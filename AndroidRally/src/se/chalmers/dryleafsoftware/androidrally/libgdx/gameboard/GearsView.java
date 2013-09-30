@@ -1,8 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * This will render a gear, a board element which rotates robots.
@@ -10,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
  * @author 
  *
  */
-public class GearsView extends Image {
+public class GearsView extends AnimatedImage {
 
-	private int rotSpeed = -3;
+	private int direction = -1;
 	
 	/**
 	 * Creates a new gear which will rotate in the specified direction.
@@ -24,8 +22,9 @@ public class GearsView extends Image {
 		this.setOrigin(getWidth()/2, getHeight()/2);
 		if(!clockWise) {
 			texture.flip(true, false);
-			rotSpeed *= -1;
+			direction *= -1;
 		}
+		this.setPhaseMask(4);
 	}
 	
 	@Override
@@ -33,10 +32,9 @@ public class GearsView extends Image {
 		super.setSize(width, height);
 		this.setOrigin(getWidth()/2, getHeight()/2);
 	}
-	
+
 	@Override
-	public void draw(SpriteBatch spriteBatch, float f) {	
-		this.rotate(rotSpeed);
-		super.draw(spriteBatch, f);
+	public void animate(float timeDelta) {
+		this.rotate(90 * timeDelta * direction);
 	}
 }

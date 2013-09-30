@@ -12,8 +12,8 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
  * The "piece" that the player or CPU moves and plays the game with.
  */
 public class Robot {
-	private static final int STARTING_HEALTH = 9;
-	private static final int STARTING_LIFE = 3;
+	public static final int STARTING_HEALTH = 9;
+	public static final int STARTING_LIFE = 3;
 	
 	private int positionX;
 	private int positionY;
@@ -51,9 +51,6 @@ public class Robot {
 		}else if(direction == GameBoard.WEST){
 			this.positionX -= distance;
 		}
-		if(positionX<0 || positionX > GameBoard.WIDTH || positionY<0 || positionY > GameBoard.HEIGHT){
-			die();
-		}
 	}
 	
 	/**
@@ -88,9 +85,7 @@ public class Robot {
 		List<Card> returnCards= new ArrayList<Card>();
 		
 		returnCards.addAll(cards);
-		for(Card card : chosenCards){
-			returnCards.remove(card);
-		}
+		
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
 			chosenCards[i] = null;
@@ -116,7 +111,10 @@ public class Robot {
 	 * @param damage the amount of damage
 	 */
 	public void damage(int damage){
-		this.damage += damage;
+		// TODO
+		// There exists a bug in how robots receive damage at the moment, the line below
+		// will cause a player not to receive damage -> receive a full amount of cards.
+//		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
 		}
@@ -124,13 +122,11 @@ public class Robot {
 	
 	/**
 	 * Called when damage is higher than starting health.
-	 * Decreases life with 1 and sets the robot's position
-	 * to the last visited spawnpoint.
+	 * Decreases life with 1 and set damage to 0.
 	 */
 	public void die(){
 		life--;
-		positionX = spawnPointX;
-		positionY = spawnPointY;
+		damage = 0;
 	}
 	
 	/**
@@ -140,6 +136,22 @@ public class Robot {
 	public void newSpawnPoint(){
 		spawnPointX = positionX;
 		spawnPointY = positionY;
+	}
+	
+	/**
+	 * Return the current spawn position on the x-axis.
+	 * @return the current spawn position on the x-axis.
+	 */
+	public int getSpawnPointX(){
+		return spawnPointX;
+	}
+	
+	/**
+	 * Return the current spawn position on the y-axis.
+	 * @return the current spawn position on the y-axis.
+	 */
+	public int getSpawnPointY(){
+		return spawnPointY;
 	}
 	
 	/**
@@ -168,6 +180,22 @@ public class Robot {
 	public int getY(){
 		return positionY;
 	}
+	
+	public String getXAsString(){
+		if(positionX >= 10){
+			return positionX + "";
+		}else{
+			return "0" + positionX;
+		}
+	}
+	
+	public String getYAsString(){
+		if(positionY >= 10){
+			return positionY + "";
+		}else{
+			return "0" + positionY;
+		}
+	}
 
 	public void setX(int x){
 		positionX = x;
@@ -185,6 +213,7 @@ public class Robot {
 	}
 
 	public Card[] getChosenCards() {
+		fillEmptyCardRegisters();
 		return chosenCards;
 	}
 	
@@ -192,18 +221,15 @@ public class Robot {
 	 * Sets which of the drawn cards that is supposed to be the chosen cards.
 	 * Fills the empty registers with cards from the drawn cards if the amount of cards
 	 * is not enough. If the chosen cards is not part of the drawn cards all registers
-	 * will recieve randomized cards from the drawn cards.
+	 * will receive randomized cards from the drawn cards.
 	 * @param chosenCards the cards from the robots card list that the player/CPU has chosen
 	 */
 	public void setChosenCards(List<Card> chosenCards){
-		if(this.cards.containsAll(chosenCards)){
-			for(int i = 0; i<5; i++){
-				if(this.chosenCards[i] == null){
-					this.chosenCards[i] = chosenCards.get(i);
-				}
+		for(int i = 0; i<5; i++){
+			if(this.chosenCards[i] == null){
+				this.chosenCards[i] = chosenCards.get(i);
 			}
 		}
-		fillEmptyCardRegisters();
 	}
 	
 	private void fillEmptyCardRegisters(){

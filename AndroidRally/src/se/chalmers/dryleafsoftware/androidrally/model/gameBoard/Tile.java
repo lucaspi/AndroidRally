@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.badlogic.gdx.Game;
+
+import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
@@ -13,11 +16,10 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  *
  */
 public class Tile {
-	public static int WALL_NONE = 0;
-	public static int WALL_NORTH = 1;
-	public static int WALL_EAST = 2;
-	public static int WALL_SOUTH = 4;
-	public static int WALL_WEST = 8;
+	public static int WALL_NORTH = GameBoard.NORTH;
+	public static int WALL_EAST = GameBoard.EAST;
+	public static int WALL_SOUTH = GameBoard.SOUTH;
+	public static int WALL_WEST = GameBoard.WEST;
 	
 	private boolean wallNorth = false;
 	private boolean wallEast = false;
@@ -37,7 +39,9 @@ public class Tile {
 	 * @param robot the robot which every action will affect.
 	 */
 	public void action(Robot robot){
+		GameModel.hejhej = 2;
 		if(boardElements != null){
+			GameModel.hejhej = 3;
 			for(BoardElement boardElement : boardElements){
 				boardElement.action(robot);
 			}
@@ -91,13 +95,13 @@ public class Tile {
 	}
 	
 	/**
-	 * Add a board element to the tile.
+	 * Add a board element to the tile. ConveyorBelts will be first in the collection.
 	 * @param boardElement the board element to be added.
 	 */
 	public void addBoardElement(BoardElement boardElement){
 		if(boardElements == null){
 			boardElements = new ArrayList<BoardElement>();
-		}
+		}//ConveyorBelts should always be first
 		if (boardElement instanceof ConveyorBelt) {
 			boardElements.add(0, boardElement);
 		} else {
@@ -105,78 +109,27 @@ public class Tile {
 		}
 	}
 	
+	public List<BoardElement> getBoardElements(){
+		return boardElements;
+	}
+	
 	/**
 	 * Set which walls should exist on the tile.
-	 * @param walls use constants provided in class.
+	 * @param wall use constants provided in GameBoard.
 	 */
-	public void setWalls(int walls){
-		wallNorth = false;
-		wallEast = false;
-		wallSouth = false;
-		wallWest = false;
-		
-		switch(walls){
-		case 1:
+	public void setWall(int wall){		
+		switch(wall){
+		case GameBoard.NORTH:
 			wallNorth = true;
 			break;
-		case 2:
+		case GameBoard.EAST:
 			wallEast = true;
 			break;
-		case 3:
-			wallNorth = true;
-			wallEast = true;
-			break;
-		case 4:
+		case GameBoard.SOUTH:
 			wallSouth = true;
 			break;
-		case 5:
-			wallSouth = true;
-			wallNorth = true;
-			break;
-		case 6:
-			wallSouth = true;
-			wallEast = true;
-			break;
-		case 7:
-			wallSouth = true;
-			wallEast = true;
-			wallNorth = true;
-			break;
-		case 8:
+		case GameBoard.WEST:
 			wallWest = true;
-			break;
-		case 9:
-			wallWest = true;
-			wallNorth = true;
-			break;
-		case 10:
-			wallWest = true;
-			wallEast = true;
-			break;
-		case 11:
-			wallWest = true;
-			wallEast = true;
-			wallNorth = true;
-			break;
-		case 12:
-			wallWest = true;
-			wallSouth = true;
-			break;
-		case 13:
-			wallWest = true;
-			wallSouth = true;
-			wallNorth = true;
-			break;
-		case 14:
-			wallWest = true;
-			wallSouth = true;
-			wallEast = true;
-			break;
-		case 15:
-			wallWest = true;
-			wallSouth = true;
-			wallEast = true;
-			wallNorth = true;
 			break;
 		}
 	}

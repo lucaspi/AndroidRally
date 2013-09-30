@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MoveAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RotationAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
-import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -26,18 +26,19 @@ import com.badlogic.gdx.math.Vector2;
 public class Client {
 
 	// TODO: the client must somehow know which robotID the player has.
-	private final GameModel model;
-	private final int clientID;
-	
-	private String indata = "0:10101;0:1;0:10102;0:1;1:10203";
-	
+	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
+	private final int clientID, robotID;
+	// TODO: load the clientID from the user's phone's data.
+	// TODO: save the clientID when assigned one from the server.
+		
 	/**
 	 * Creates a new client instance.
 	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
-		this.model = new GameModel(8);// TODO: remove
+		this.controller = new GameController(8); 
 		this.clientID = clientID;
+		this.robotID = 0;
 	}
 	
 	/**
@@ -45,28 +46,39 @@ public class Client {
 	 * @return A map of the board as a matrix of strings.
 	 */
 	public String[][] getMap() {
-		return model.getMap();// TODO: server output
+		String[] mapY = controller.getMap().substring(1).split("y");
+		String[][] map = new String[mapY.length][];
+		for(int i = 0; i < map.length; i++) {
+			map[i] = mapY[i].substring(1).split("x", 64);
+		}
+		return map;// TODO: server output
 	}
 	
 	/**
-	 * Sends the cards to the server. Note that the list MUST contain five cards.
+	 * Sends the cards to the server. Note: This list should not contain more then five!
 	 * @param cards The cards to send.
 	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
 	public boolean sendCard(List<CardView> cards) {
-		// Send example: ”0:7:1:4:-1"
-		if(cards.size() != 5) {
-			return false;
-		}
-		StringBuilder sb = new StringBuilder(clientID);
-		for(int i = 0; i < cards.size(); i++) {
-			if(cards.get(i) == null) {
-				sb.append(":0");
-			}else{
+		// Send example: ”12345:0:7:1:4:-1"
+		StringBuilder sb = new StringBuilder("" + robotID);
+		int[] temp = new int[5]; // TODO: remove
+		for(int i = 0; i < 5; i++) {
+			if(cards.size() > i) {
 				sb.append(":" + cards.get(i).getIndex());
+				temp[i] = cards.get(i).getIndex(); // TODO: remove
+			}else{
+				sb.append(":-1");
+				temp[i] = -1; // TODO: remove
 			}
 		}
-		// TODO: send to server
+		controller.setChosenCardsToRobot(temp, robotID); // TODO: server
+		for(int i = 0; i < 8; i++) {
+			if(i != robotID) {
+				controller.setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, i); // TODO: remove
+			}
+		}
+		
 		return true;
 	}
 	
@@ -74,22 +86,52 @@ public class Client {
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public List<GameAction> getRoundResult() {
-		// From server example: "0:10101;0:1;0:10102;0:1;1:10203"
-		List<GameAction> actions = new ArrayList<GameAction>();
+	public RoundResult getRoundResult() {
+		controller.getModel().moveRobots();
 		
-		String[] allActions = indata.split(";");// TODO: server input
+		RoundResult result = new RoundResult();	
+		String indata = controller.getModel().getAllMoves();
+		String[] allActions = indata.split(";");
+		
+		System.out.println(indata);
+
 		for(String s : allActions) {
-			String[] singleAction = s.split(":");
-			int player = Integer.parseInt(singleAction[0]);
-			int data = Integer.parseInt(singleAction[1]);
-			if(data / 10000 == 1) {	// Pos
-				actions.add(new MoveAction(player, (data % 10000) / 100, data % 100));
-			}else {	// Dir
-				actions.add(new RotationAction(player, data));
+			String[] parallel = s.split("#");
+			if(parallel[0].equals("R")) {
+				result.newPhase();
+			}else if(parallel[0].substring(0, 1).equals("B")) {
+				GameAction holder = new HolderAction(1000);
+				int phase = Integer.parseInt(parallel[0].substring(1));	
+				if(phase < 10) {
+					holder.setMoveRound(phase);
+				}else{
+					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
+					holder.setSubRound(phase % 10);
+				}
+				result.addAction(holder);
+			}else if(parallel.length > 1){
+				MultiAction a = new MultiAction();
+				for(int i = 0; i < parallel.length; i++) {
+					a.add(createSingleAction(parallel[i]));
+				}	
+				result.addAction(a);
+			}else{
+				result.addAction(createSingleAction(parallel[0]));
 			}
 		}
-		return actions;
+		return result;	
+	}
+	
+	/*
+	 * Creates a new action by reading the string provided.
+	 */
+	private SingleAction createSingleAction(String indata) {
+		String[] data = indata.split(":");
+		return new SingleAction(
+				Integer.parseInt(data[0]), 
+				Integer.parseInt(data[1].substring(0, 1)),
+				Integer.parseInt(data[1].substring(1, 3)),
+				Integer.parseInt(data[1].substring(3, 5)));
 	}
 	
 	/**
@@ -98,12 +140,12 @@ public class Client {
 	 */
 	public List<CardView> getCards(Texture texture) {
 		// From server example: "410:420:480:660:780:840:190:200:90"
-		model.dealCards();// TODO: server input
+		controller.getModel().dealCards(); // TODO: server input
 		List<CardView> cards = new ArrayList<CardView>();
 		
 		// TODO: change to robotID and input to string
-		for(int i = 0; i < model.getRobots().get(0).getCards().size(); i++) {
-			Card card = model.getRobots().get(0).getCards().get(i);
+		for(int i = 0; i < controller.getModel().getRobots().get(0).getCards().size(); i++) {
+			Card card = controller.getModel().getRobots().get(0).getCards().get(i);
 			int prio = card.getPriority();
 			int regX = 0;
 			if(prio <= 60) {
@@ -140,7 +182,7 @@ public class Client {
 		// From server example: "
 		// TODO: server input
 		List<RobotView> robots = new ArrayList<RobotView>();		
-		for(int i = 0; i < model.getRobots().size(); i++) {
+		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);

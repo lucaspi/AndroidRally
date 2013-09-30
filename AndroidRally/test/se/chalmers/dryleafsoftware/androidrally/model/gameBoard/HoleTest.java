@@ -21,8 +21,8 @@ public class HoleTest {
 		
 		hole.instantAction(robot);
 		assertTrue(robot.getLife() == 2);
-		assertTrue(robot.getX() == 5);
-		assertTrue(robot.getY() == 5);
+		assertTrue(robot.getX() == -1);
+		assertTrue(robot.getY() == -1);
 	}
 
 }
