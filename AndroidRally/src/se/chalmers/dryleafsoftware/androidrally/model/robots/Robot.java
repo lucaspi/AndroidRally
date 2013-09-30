@@ -111,7 +111,10 @@ public class Robot {
 	 * @param damage the amount of damage
 	 */
 	public void damage(int damage){
-		this.damage += damage;
+		// TODO
+		// There exists a bug in how robots receive damage at the moment, the line below
+		// will cause a player not to receive damage -> receive a full amount of cards.
+//		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
 		}
@@ -218,17 +221,15 @@ public class Robot {
 	 * Sets which of the drawn cards that is supposed to be the chosen cards.
 	 * Fills the empty registers with cards from the drawn cards if the amount of cards
 	 * is not enough. If the chosen cards is not part of the drawn cards all registers
-	 * will recieve randomized cards from the drawn cards.
+	 * will receive randomized cards from the drawn cards.
 	 * @param chosenCards the cards from the robots card list that the player/CPU has chosen
 	 */
 	public void setChosenCards(List<Card> chosenCards){
-		if(this.cards.containsAll(chosenCards)){
-			for(int i = 0; i<5; i++){
-				if(this.chosenCards[i] == null){
-					this.chosenCards[i] = chosenCards.get(i);
-				}
+		for(int i = 0; i<5; i++){
+			if(this.chosenCards[i] == null){
+				this.chosenCards[i] = chosenCards.get(i);
 			}
-		}		
+		}
 	}
 	
 	private void fillEmptyCardRegisters(){

@@ -28,6 +28,8 @@ public class Client {
 	// TODO: the client must somehow know which robotID the player has.
 	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
 	private final int clientID, robotID;
+	// TODO: load the clientID from the user's phone's data.
+	// TODO: save the clientID when assigned one from the server.
 		
 	/**
 	 * Creates a new client instance.
