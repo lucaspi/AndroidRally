@@ -54,21 +54,21 @@ public class SaveFile {
 	/**
 	 * Saves the card info to a .txt file
 	 */
-	public void cardsToFile(List<Robot> robots){
-		//TODO real file directory
-				File f = new File("cards.txt");
-				PrintWriter pw;
-				
-				if(f.exists()){
-					pw = new PrintWriter("cards.txt");
-					pw.print(this.cardsToString(robots));
-					pw.close();
-				}else{
-					f.mkdirs();
-					f.createNewFile();
-					pw = new PrintWriter("cards.txt");
-					pw.print(this.cardsToString(robots));
-					pw.close();
-				}
-	}
+//	public void cardsToFile(List<Robot> robots){
+//		//TODO real file directory
+//				File f = new File("cards.txt");
+//				PrintWriter pw;
+//				
+//				if(f.exists()){
+//					pw = new PrintWriter("cards.txt");
+//					pw.print(this.cardsToString(robots));
+//					pw.close();
+//				}else{
+//					f.mkdirs();
+//					f.createNewFile();
+//					pw = new PrintWriter("cards.txt");
+//					pw.print(this.cardsToString(robots));
+//					pw.close();
+//				}
+//	}s
 }
