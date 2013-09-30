@@ -109,12 +109,17 @@ public class GameController implements PropertyChangeListener {
 		for (int i = 0; i < 5; i++) {
 			if (indexOfChosenCard[i] == -1) {
 				chosenCards.add(null);
+				if(robotID == 0)
+					System.out.println("Getting: " + indexOfChosenCard[i]);
 			} else {
 				if (!chosenCards.contains(robot.getCards().get(indexOfChosenCard[i]))) {
-					chosenCards.add(robot.getCards().get(indexOfChosenCard[i]));
+					chosenCards.add(robot.getCards().get(indexOfChosenCard[i]));					
 				} else {
 					chosenCards.add(null);
 				}
+				if(robotID == 0)
+					System.out.println("Getting: " + indexOfChosenCard[i] + ", "
+						+ robot.getCards().get(indexOfChosenCard[i]).getPriority());
 			}
 		}
 		robot.setChosenCards(chosenCards);
@@ -161,20 +166,20 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public String getCards(int robotID) {
 		List<Card> cards = gameModel.getRobots().get(robotID).getCards();
+		// TODO: getChosenCards() fyller alla register!
 		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
 		StringBuilder sb = new StringBuilder();
-		int lowestIndexOfLockedCard = 0;
-		for(Card card : cards){
-			for(int i = lowestIndexOfLockedCard; i<chosenCards.length; i++){
-				if(card == chosenCards[i]){
-					sb.append("L" + i + ";" + chosenCards[i].getPriority() + ":");
-					lowestIndexOfLockedCard = Math.min(lowestIndexOfLockedCard, i);
-				}else{
-					sb.append(card.getPriority() + ":");
+		
+		for(Card c : cards) {
+			for(int i = 0; i < chosenCards.length; i++) {
+				if(chosenCards[i] == c) {
+					sb.append("L" + i + ";");
+					break;
 				}
 			}
-			
+			sb.append(c.getPriority() + ":");
 		}
+		System.out.println("Sending to client: " + sb.toString());
 		return sb.toString(); 
 	}
 

@@ -59,19 +59,28 @@ public class Client {
 	 * @param cards The cards to send.
 	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
-	public boolean sendCard(List<CardView> cards) {
+	public boolean sendCard(CardView[] cards) {
 		// Send example: ”12345:0:7:1:4:-1"
 		StringBuilder sb = new StringBuilder("" + robotID);
 		int[] temp = new int[5]; // TODO: remove
 		for(int i = 0; i < 5; i++) {
-			if(cards.size() > i) {
-				sb.append(":" + cards.get(i).getIndex());
-				temp[i] = cards.get(i).getIndex(); // TODO: remove
+			if(cards[i] == null) {
+				temp[i] = -1;
 			}else{
-				sb.append(":-1");
-				temp[i] = -1; // TODO: remove
+				temp[i] = cards[i].getIndex();
+			}
+			sb.append(":" + temp[i]);
+		}
+
+		System.out.println("Sending: " + sb.toString());
+		for(int i = 0; i < cards.length; i++) {
+			if(cards[i] != null) {
+				System.out.println("Sending card " + temp[i] + ", " + cards[i].getPriority());
+			}else{
+				System.out.println("Sending card " + temp[i]);
 			}
 		}
+		
 		controller.setChosenCardsToRobot(temp, robotID); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
@@ -138,15 +147,19 @@ public class Client {
 	 * Gives the client's cards.
 	 * @return A list of the client's cards.
 	 */
-	public List<CardView> getCards(Texture texture) {
+	public void loadCards(Texture texture, DeckView deck) {
 		// From server example: "410:420:480:660:780:840:190:200:90"
 		controller.getModel().dealCards(); // TODO: server input
 		List<CardView> cards = new ArrayList<CardView>();
-		
-		// TODO: change to robotID and input to string
-		for(int i = 0; i < controller.getModel().getRobots().get(0).getCards().size(); i++) {
-			Card card = controller.getModel().getRobots().get(0).getCards().get(i);
-			int prio = card.getPriority();
+		deck.clearChosen();
+				
+		String indata =  "410:420:480:660:780:840:190:L3;200:L4;90:";
+//		String indata = controller.getCards(robotID);
+		int i = 0;
+		for(String card : indata.split(":")) {
+			String[] data = card.split(";");
+			
+			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
 			int regX = 0;
 			if(prio <= 60) {
 				regX = 0;	// UTURN
@@ -162,14 +175,22 @@ public class Client {
 				regX = 320;	// Move 2
 			}else if(prio <= 840) {
 				regX = 384;	// Move 3
-			}				
+			}	
+
 			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
-				card.getPriority(), i);
+					prio, i);
 			cv.setSize(78, 110);
-			cards.add(cv);
+			
+			if(data.length == 2) {
+				int lockPos = Integer.parseInt(data[0].substring(1));
+				deck.setLockedCard(cv, lockPos);
+			}else{
+				cards.add(cv);
+			}			
+			i++;
 		}
 		Collections.sort(cards);
-		return cards;
+		deck.setDeckCards(cards);
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
@@ -36,7 +38,7 @@ public class DeckView extends Stage {
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
-	private List<CardView> chosenCards = new ArrayList<CardView>();
+	private final Register[] registers;
 	private int position;
 	private final CardListener cl;
 	private Table container;
@@ -82,7 +84,7 @@ public class DeckView extends Stage {
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
 		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
+				
 		cl = new CardListener(this);
 		
 		// Default camera
@@ -114,6 +116,7 @@ public class DeckView extends Stage {
 		upperArea.debug();
 		upperArea.setSize(480, 120);
 		upperArea.setPosition(0, 120);
+		upperArea.setLayoutEnabled(false);
 		container.add(upperArea);
 		
 		statusBar = new Table();
@@ -121,6 +124,16 @@ public class DeckView extends Stage {
 		statusBar.setSize(480, 80);
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
+		
+		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
+		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		registers = new Register[5];
+		for(int i = 0; i < 5; i++) {
+			registers[i] = new Register(compTexture, i);
+			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
+			upperArea.add(registers[i]);
+			
+		}
 		
 		// TODO: Remove this dummy button!
 		TextButtonStyle style = new TextButtonStyle();	  
@@ -312,8 +325,8 @@ public class DeckView extends Stage {
 		}
 		for (CardView cv : deckCards) {
 			cv.addListener(cl);
+			cv.addListener(cardListener);
 		}
-		chosenCards.clear();
 	}
 	
 	/**
@@ -321,12 +334,20 @@ public class DeckView extends Stage {
 	 */
 	public void displayWaiting() {
 		lowerArea.clear();
+		for(Register r : registers) {
+			if(r.getCard() != null) {
+				r.removeListener(cardListener);
+			}
+		}
 	}
 	
 	/**
 	 * Displays the panel which should be visible after viewing the round results.
 	 */
 	public void displayDrawCard() {
+		for(Register r : registers) {
+			r.clear();
+		}
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
@@ -337,6 +358,11 @@ public class DeckView extends Stage {
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);
+		for(Register r : registers) {
+			if(r.getCard() != null) {
+				r.removeListener(cardListener);
+			}
+		}
 	}
 	
 	/**
@@ -344,28 +370,20 @@ public class DeckView extends Stage {
 	 * 
 	 * @return
 	 */
-	public List<CardView> getChosenCards() {
-		return this.chosenCards;
+	public CardView[] getChosenCards() {
+		CardView[] cards = new CardView[registers.length];
+		for(int i = 0; i < registers.length; i++) {
+			cards[i] = registers[i].getCard();
+		}
+		return cards;
 	}
 
 	/**
 	 * Rerenders all the player's card at their correct positions.
 	 */
 	public void updateCards() {
-		updateChosenCards();
+//		updateChosenCards();
 		updateDeckCards();
-	}
-
-	/**
-	 * Rerenders all the cards added to the register.
-	 */
-	public void updateChosenCards() {
-		for (int i = 0; i < this.chosenCards.size(); i++) {
-			CardView cv = this.chosenCards.get(i);
-			cv.setPosition(
-					240 - this.getChosenCardDeckWidth() / 2
-							+ (cv.getWidth() + 10) * i, cv.getHeight() + 10);
-		}
 	}
 
 	/**
@@ -421,91 +439,54 @@ public class DeckView extends Stage {
 					* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
 		}
 	}
-
-	/**
-	 * Returns the total width it takes to render the cards added to the
-	 * register
-	 * 
-	 * @return
-	 */
-	public int getChosenCardDeckWidth() {
-		if (this.chosenCards.size() != 0) {
-			return this.chosenCards.size()
-					* ((int) this.chosenCards.get(0).getWidth() + 10) - 10;
-		} else {
-			return 0;
+	
+	public void clearChosen() {
+		for(Register r : registers) {
+			r.clear();
+			r.setLocked(false);
 		}
 	}
-
-	/**
-	 * Moves a card to either the chosen cards or deck cards when it is tapped
-	 * 
-	 * @param card
-	 *            The card that was tapped
-	 */
-	public void moveCard(CardView card) {
-		if (chosenCards.remove(card)) {
-			deckCards.add(card);
-		} else if (chosenCards.size() < 5) {
-			if (deckCards.remove(card)) {
-				chosenCards.add(card);
+	
+	public void setLockedCard(CardView cv, int index) {
+		registers[index].setCard(cv);
+		registers[index].setLocked(true);
+	}
+	
+	private void choseCard(CardView card) {
+		for(int i = 0; i < registers.length; i++) {
+			if(registers[i].isEmpty()) {
+				registers[i].setCard(card);
+				deckCards.remove(card);
+				break;
 			}
 		}
-		updateCards();
 	}
-
-	/**
-	 * Places a card at the correct place when dragged in place
-	 * 
-	 * @param card
-	 *            The card to be placed
-	 * @param x
-	 *            The x coordinate of the card
-	 * @param y
-	 *            The y coordinate of the card
-	 * @return
-	 */
-	public void placeCardAtPosition(CardView card) {
-		System.out.println(card.getX() + " " + card.getY());
-		if (card.getY() > 90 && card.getY() < 240) {
-			if (chosenCards.size() == 0) {
-				moveCard(card);
-				return;
-			} else if (card.getX() > chosenCards.get(chosenCards.size()-1).getX()) {
-				if (chosenCards.size() < 5 && deckCards.remove(card)) {
-					chosenCards.add(chosenCards.size(), card);
-					updateCards();
-					return;
-				} else if (chosenCards.remove(card)) {
-					chosenCards.add(chosenCards.size(), card);
-					updateCards();
-					return;
-				}
-			} else if (chosenCards.size() <= 5) {
-				for (int i = 0; i < chosenCards.size(); i++) {
-					if (card.getX() < chosenCards.get(i).getX()) {
-						if (chosenCards.size() < 5 && deckCards.remove(card)) {
-							chosenCards.add(i, card);
-							updateCards();
-							return;
-						} else if (chosenCards.contains(card) && chosenCards.indexOf(card) < i && chosenCards.remove(card)) {
-							chosenCards.add(i-1, card);
-							updateCards();
-							return;
-						} else if (chosenCards.remove(card)) {
-							chosenCards.add(i, card);
-							updateCards();
-							return;
-						}
-					}
-				}
-			}
-		} else if (card.getY() < 90) {
-			if (chosenCards.remove(card)) {
+	
+	public void unChoseCard(CardView card) {
+		for(int i = 0; i < registers.length; i++) {
+			if(registers[i].getCard() == card) {
+				registers[i].clear();
+				lowerArea.add(card);
 				deckCards.add(card);
+				break;
 			}
 		}
-		updateCards();
 	}
-
+	
+	private final ActorGestureListener cardListener = new ActorGestureListener() {
+		
+		@Override
+		public void tap(InputEvent event, float x, float y, int count, int button) {
+			Actor pressed = getTouchDownTarget();
+			if(pressed instanceof CardView) {
+				CardView card = (CardView)pressed;
+				if(deckCards.contains(card)) {
+					choseCard(card);
+				}else{
+					unChoseCard(card);
+				}
+			}
+			updateCards();
+		}
+	};
 }
