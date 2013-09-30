@@ -1,17 +1,16 @@
 package se.chalmers.dryleafsoftware.androidrally.sharred;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
-
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-
+/**
+ * This class helps with the loading of a map.
+ * 
+ * @author 
+ *
+ */
 public abstract class MapBuilder {
 
+	/**
+	 * ID numbers for all the implemented board elements.
+	 */
 	public static final int 
 	TILE_HOLE = 1,
 	TILE_CHECKPOINT = 2,
@@ -21,7 +20,21 @@ public abstract class MapBuilder {
 	TILE_WALL = 6,
 	TILE_LASER = 7,
 	TILE_START = 8;
+	
+	/**
+	 * The different directions.
+	 */
+	// NOTE: Do not change their values as they are only there to help and are often hard coded!
+	public static final int 
+	DIR_NORTH = 0,
+	DIR_EAST = 1,
+	DIR_SOUTH = 2,
+	DIR_WEST = 3;
 
+	/**
+	 * Creates a new instance which will load the map provided.
+	 * @param indata The map to load supplied as a String.
+	 */
 	public MapBuilder(String indata) {
 		String[] mapY = indata.substring(1).split("y");
 		String[][] map = new String[mapY.length][];
@@ -45,7 +58,6 @@ public abstract class MapBuilder {
 
 						// Create the boardelement
 						int tile = tileData % 10;
-						// TODO : Switch
 						switch(tile) {
 						case TILE_HOLE:
 							buildHole(x, y);
@@ -79,23 +91,74 @@ public abstract class MapBuilder {
 	}
 	
 	/**
-	 * 
-	 * @param x
-	 * @param y 
+	 * Creates a new piece of factory floor.
+	 * @param x The X-coordinate of the floor.
+	 * @param y The Y-coordinate of the floor.
 	 */
 	public abstract void buildFactoryFloor(int x, int y);
 	/**
-	 * 
-	 * @param x
-	 * @param y
+	 * Creates a new piece of dock floor.
+	 * @param x The X-coordinate of the floor.
+	 * @param y The Y-coordinate of the floor.
 	 */
 	public abstract void buildDockFloor(int x, int y);
+	/**
+	 * Creates a new hole.
+	 * @param x The X-coordinate of the hole.
+	 * @param y The Y-coordinate of the hole.
+	 */
 	public abstract void buildHole(int x, int y);
+	/**
+	 * Creates a new rotating gear.
+	 * @param x The X-coordinate of the gear.
+	 * @param y The Y-coordinate of the gear.
+	 * @param cw Is <code>true</code> if the gear should rotate clockwise.
+	 */
 	public abstract void buildGear(int x, int y, boolean cw);
+	/**
+	 * Creates a new conveyer belt.
+	 * @param x The X-coordinate of the conveyer belt.
+	 * @param y The Y-coordinate of the conveyer belt.
+	 * @param speed The speed of the conveyer belt.
+	 * @param dir The direction of the conveyer belt.
+	 */
 	public abstract void buildConveyerBelt(int x, int y, int speed, int dir);
+	/**
+	 * Creates a new checkpoint.
+	 * @param x The X-coordinate of the checkpoint.
+	 * @param y The Y-coordinate of the checkpoint.
+	 * @param nbr The number of the checkpoint [1,8].
+	 */
 	public abstract void buildCheckPoint(int x, int y, int nbr);
+	/**
+	 * Creates a new repair.
+	 * @param x The X-coordinate.
+	 * @param y The Y-coordinate.
+	 */
 	public abstract void buildRepair(int x, int y);
+	/**
+	 * Creates a new starting point.
+	 * @param x The X-coordinate.
+	 * @param y The Y-coordinate.
+	 * @param nbr The number of the starting point [1,8].
+	 */
 	public abstract void buildStartDock(int x, int y, int nbr);
+	/**
+	 * Creates a new wall.
+	 * @param x The X-coordinate of the wall.
+	 * @param y The Y-coordinate of the wall.
+	 * @param dir The direction of the wall. Note: As walls are placed between tiles,
+	 * the wall will be placed directly <code>dir</code> of the tile with the specified
+	 * coordinates.
+	 */
 	public abstract void buildWall(int x, int y, int dir);
+	/**
+	 * Creates a new laser.
+	 * @param x The X-coordinate of the laser.
+	 * @param y The Y-coordinate of the laser.
+	 * @param dir The direction of the laser. Note: If the laser is to shot 
+	 * to the north, then the specified direction should be south and vice versa. Same
+	 * for west - east. This is due to walls and lasers both being placed between tiles.
+	 */
 	public abstract void buildLaser(int x, int y, int dir);
 }
