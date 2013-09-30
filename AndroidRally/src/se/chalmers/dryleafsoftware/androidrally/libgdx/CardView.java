@@ -56,6 +56,11 @@ public class CardView extends Image implements Comparable<CardView> {
 				getY() + getHeight() - 5);
 	}
 
+	/**
+	 * Compares two cards by their priority. A positive integer is returned if the card compared to has the higher priority.
+	 * 
+	 * @return The difference between the cards priorities
+	 */
 	@Override
 	public int compareTo(CardView that) {
 		return that.getPriority() - this.getPriority();

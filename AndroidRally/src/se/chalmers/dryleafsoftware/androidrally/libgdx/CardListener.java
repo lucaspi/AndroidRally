@@ -27,6 +27,9 @@ public class CardListener extends ActorGestureListener {
 		this.deckView = deck;
 	}
 
+	/**
+	 * Tells the deckview to move the tapped card
+	 */
 	@Override
 	public void tap(InputEvent event, float x, float y, int count, int button) {
 		if (touchedCard == null) {
@@ -34,6 +37,9 @@ public class CardListener extends ActorGestureListener {
 		}
 	}
 
+	/**
+	 * Scrolls the deck cards or moves a card if one is long pressed
+	 */
 	@Override
 	public void pan(InputEvent event, float x, float y, float deltaX,
 			float deltaY) {
@@ -44,6 +50,9 @@ public class CardListener extends ActorGestureListener {
 		}
 	}
 
+	/**
+	 * Gets the card being touched as the active card
+	 */
 	@Override
 	public boolean longPress(Actor actor, float x, float y) {
 		touchedCard = (CardView) actor;
@@ -51,6 +60,9 @@ public class CardListener extends ActorGestureListener {
 		return false;
 	}
 
+	/**
+	 * If a card has been long pressed, this method tells deckview to place it where it was dropped and deletes the temporary card
+	 */
 	@Override
 	public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 		if (touchedCard != null) {
@@ -60,6 +72,7 @@ public class CardListener extends ActorGestureListener {
 	}
 
 	/**
+	 * Converts the input coordinates from the screen to the equivalent coordinates of the camera
 	 * 
 	 * @param card
 	 * @param x
