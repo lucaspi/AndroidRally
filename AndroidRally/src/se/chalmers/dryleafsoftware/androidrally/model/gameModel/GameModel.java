@@ -117,7 +117,7 @@ public class GameModel {
 		for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
-		checkRobotsStatus();
+		if(checkRobotsStatus())return;
 
 		int[][] oldPositions = new int[robots.size()][2];
 		for(int i = 0; i<maxTravelDistance; i++){
@@ -132,14 +132,14 @@ public class GameModel {
 						if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
 							boardElements.get(0).action(robots.get(j));
 							addMove(robots.get(j));
-							checkRobotsStatus();
+							if(checkRobotsStatus())return;;
 							gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
 						}
 					}
 				}
 			}
 			checkConveyorBeltCollides(oldPositions);
-			checkRobotsStatus();
+			if(checkRobotsStatus())return;;
 		}
 		if(maxTravelDistance == 0){// if no robot stands on a conveyorBelt, ";B1" still
 			// is required for conveyorBelts to move in the GUI.
@@ -424,7 +424,7 @@ public class GameModel {
 					addMove(currentRobot);
 					handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
 							oldPosition[indexOfHighestPriority][1]);
-					checkRobotsStatus();
+					if(checkRobotsStatus())return;;
 					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
 					.instantAction(currentRobot);
 					if(checkRobotsStatus())return;
