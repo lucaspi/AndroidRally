@@ -45,13 +45,8 @@ public class Client {
 	 * Returns the map of the board as a matrix of strings.
 	 * @return A map of the board as a matrix of strings.
 	 */
-	public String[][] getMap() {
-		String[] mapY = controller.getMap().substring(1).split("y");
-		String[][] map = new String[mapY.length][];
-		for(int i = 0; i < map.length; i++) {
-			map[i] = mapY[i].substring(1).split("x", 64);
-		}
-		return map;// TODO: server output
+	public String getMap() {
+		return controller.getMap();
 	}
 	
 	/**
@@ -70,17 +65,7 @@ public class Client {
 				temp[i] = cards[i].getIndex();
 			}
 			sb.append(":" + temp[i]);
-		}
-
-		System.out.println("Sending: " + sb.toString());
-		for(int i = 0; i < cards.length; i++) {
-			if(cards[i] != null) {
-				System.out.println("Sending card " + temp[i] + ", " + cards[i].getPriority());
-			}else{
-				System.out.println("Sending card " + temp[i]);
-			}
-		}
-		
+		}		
 		controller.setChosenCardsToRobot(temp, robotID); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
@@ -102,8 +87,6 @@ public class Client {
 		String indata = controller.getModel().getAllMoves();
 		String[] allActions = indata.split(";");
 		
-		System.out.println(indata);
-
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
 			if(parallel[0].equals("R")) {
@@ -153,8 +136,7 @@ public class Client {
 		List<CardView> cards = new ArrayList<CardView>();
 		deck.clearChosen();
 				
-		String indata =  "410:420:480:660:780:840:190:L3;200:L4;90:";
-//		String indata = controller.getCards(robotID);
+		String indata = controller.getCards(robotID);
 		int i = 0;
 		for(String card : indata.split(":")) {
 			String[] data = card.split(";");

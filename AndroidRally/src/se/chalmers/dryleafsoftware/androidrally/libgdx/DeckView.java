@@ -474,7 +474,6 @@ public class DeckView extends Stage {
 	}
 	
 	private final ActorGestureListener cardListener = new ActorGestureListener() {
-		
 		@Override
 		public void tap(InputEvent event, float x, float y, int count, int button) {
 			Actor pressed = getTouchDownTarget();

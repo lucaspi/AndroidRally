@@ -173,7 +173,6 @@ public class GameController implements PropertyChangeListener {
 			currentStage = Stage.CHOOSING_CARDS;
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)
 				&& currentStage.equals(Stage.CHOOSING_CARDS)) {
-			System.out.println("Sending cards");
 			client.sendCard(deckView.getChosenCards());
 			deckView.displayWaiting();
 			currentStage = Stage.WAITING;
@@ -181,7 +180,6 @@ public class GameController implements PropertyChangeListener {
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
 			runTimerStamp = TimeUtils.millis() +  ROUNDTIME*1000;
-			System.out.println("Getting actions");
 			deckView.displayPlayOptions();
 			result = client.getRoundResult();		
 			deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
