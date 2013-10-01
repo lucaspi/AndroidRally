@@ -166,7 +166,6 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public String getCards(int robotID) {
 		List<Card> cards = gameModel.getRobots().get(robotID).getCards();
-		// TODO: getChosenCards() fyller alla register!
 		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
 		StringBuilder sb = new StringBuilder();
 		
@@ -181,6 +180,10 @@ public class GameController implements PropertyChangeListener {
 		}
 		System.out.println("Sending to client: " + sb.toString());
 		return sb.toString(); 
+	}
+	
+	public Card[] getChosenCards(int robotID){
+		return gameModel.getRobots().get(robotID).getChosenCards();
 	}
 
 	/**

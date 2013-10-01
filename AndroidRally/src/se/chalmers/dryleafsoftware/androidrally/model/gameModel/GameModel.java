@@ -86,7 +86,6 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
-		// TODO bara 4 kort i alla omgångar != 1.
 	    int maxTravelDistance = 0;
 	    for(int i = 0; i< robots.size(); i++){
 	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
@@ -106,7 +105,7 @@ public class GameModel {
 
 	    int[][] oldPositions = new int[robots.size()][2];
 	    for(int i = 0; i<maxTravelDistance; i++){
-    		allMoves.add(";B" + (maxTravelDistance-i));
+    		allMoves.add(";B1" + (maxTravelDistance-i));
 	    	for(int j = 0; j< robots.size(); j++){
 	    		oldPositions[j][0] = robots.get(j).getX();
 	    		oldPositions[j][1] = robots.get(j).getY();
@@ -116,7 +115,7 @@ public class GameModel {
 		    		if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
 		    			if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
 		    				boardElements.get(0).action(robots.get(j));
-		    				addMove(robots.get(j));
+		    				addSimultaneousMove(robots.get(j));
 							checkIfRobotsOnMap();
 		    				gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
 		    			}
@@ -128,7 +127,7 @@ public class GameModel {
 	    }
 	    if(maxTravelDistance == 0){// if no robot stands on a conveyorBelt, ";B1" still
 	    	// is required for conveyorBelts to move in the GUI.
-    		allMoves.add(";B1");
+    		allMoves.add(";B10");
 	    }
 	    allMoves.add(";B4");
 	    for(int i = 0; i<robots.size(); i++){
@@ -138,7 +137,7 @@ public class GameModel {
 	    		for(BoardElement boardelement : boardElements){
 		    		if(boardelement instanceof Gears){
 		    			boardelement.action(robots.get(i));
-		    			addMove(robots.get(i));
+		    			addSimultaneousMove(robots.get(i));
 		    		}
 		    	}
 	    	}
