@@ -53,7 +53,7 @@ public class GameController implements PropertyChangeListener {
 				handleRemainingRobots();
 				gameModel.moveRobots();
 				//If the game is over a new round will not be started.
-				if (gameModel.isGameOver()) {
+				if (!gameModel.isGameOver()) {
 					newRound();
 				}
 				isRunRunning = false;
