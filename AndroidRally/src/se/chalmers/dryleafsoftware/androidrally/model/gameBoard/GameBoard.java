@@ -11,7 +11,7 @@ import java.util.List;
 public class GameBoard {
 	private Tile[][] tiles = null;
 	private List<Laser> lasers;
-	private String[][] mapAsString;
+	private String map;
 	/*
 	 * Max 8 players.
 	 */
@@ -61,9 +61,9 @@ public class GameBoard {
 	 *
 	 * @param map the String[][] which will be converted to a gameBoard.
 	 */
-	public GameBoard(String[][] map) {
+	public GameBoard(String map) {
 		createBoard(map);
-		mapAsString = map;
+		this.map = map;
 		lasers = new ArrayList<Laser>();
 		
 	}
@@ -120,8 +120,8 @@ public class GameBoard {
 	 * 
 	 * @return a String[][] representation of the map.
 	 */
-	public String[][] getMapAsString(){
-		return mapAsString;
+	public String getMapAsString(){
+		return map;
 	}
 		
 	
@@ -129,7 +129,13 @@ public class GameBoard {
 	* Builds the board using the specified map data.
 	* @param map An array of integers mapping the map's layout.
 	*/
-	private void createBoard(String[][] map) {
+	private void createBoard(String indata) {
+		String[] mapY = indata.substring(1).split("y");
+		String[][] map = new String[mapY.length][];
+		for(int i = 0; i < map.length; i++) {
+			map[i] = mapY[i].substring(1).split("x", 64);
+		}
+		
 		tiles = new Tile[map.length][map[0].length];
 		//Tiles need to created first or nullPointException will occur during wall creations
 		for(int x = 0; x < map.length; x++) {

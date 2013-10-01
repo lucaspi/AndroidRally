@@ -27,21 +27,7 @@ public class GameModel {
 	private Deck deck;
 	private List<String> allMoves = new ArrayList<String>();
 	
-	private static String[][] testmap = new String[][] {
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
-			{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
-			{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
-			{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
-			{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
-			{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
-			{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
-			{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-			{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
-			{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-	};
-	
+	private static final String testMap = "yxxxxxxxxxxxx5xxx36xyxxxxxxxxxx12xxxxx78:16xyxxxxxxxxxxxxx06xx58:16xyxxxxxxxx32xx22xx4xxx38xyxxxxxxxx1xxxxx06xx16xyxxxxxxxx103x103x103x103x103xxx18:16xyxxxxxxxx203x203x203x203x203xxx28:16xyxxxxxxxx1xxxxx06xxxyxxxxxxxxxxxx14xxx48:16xyxxxxxxxxxxxxx06xx68:16xyxxxxxxxxxxxxxxx88xyxxxxxxxxxxxx5xxxx";
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.
@@ -49,7 +35,7 @@ public class GameModel {
 	 * @param nbrOfPlayers the number of players in the game including CPU:s
 	 */
 	public GameModel(int nbrOfPlayers) {
-		this(nbrOfPlayers, testmap);
+		this(nbrOfPlayers, testMap);
 	}
 	
 	/**
@@ -57,7 +43,7 @@ public class GameModel {
 	 * @param nbrOfPlayers
 	 * @param testMap
 	 */
-	public GameModel(int nbrOfPlayers, String[][] map) {
+	public GameModel(int nbrOfPlayers, String map) {
 		gameBoard = new GameBoard(map);
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
@@ -173,7 +159,7 @@ public class GameModel {
 	 * a tile with it's boardelements.
 	 * @return the map as a String[][]
 	 */
-	public String[][] getMap(){
+	public String getMap(){
 		return gameBoard.getMapAsString();
 	}
 	

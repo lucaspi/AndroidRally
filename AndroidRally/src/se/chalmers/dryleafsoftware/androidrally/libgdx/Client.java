@@ -87,6 +87,8 @@ public class Client {
 		String indata = controller.getModel().getAllMoves();
 		String[] allActions = indata.split(";");
 		
+		System.out.println(indata);
+		
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
 			if(parallel[0].equals("R")) {
