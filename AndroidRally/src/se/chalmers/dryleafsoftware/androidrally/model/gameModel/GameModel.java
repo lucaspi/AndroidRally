@@ -301,7 +301,6 @@ public class GameModel {
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
-				addSimultaneousMove(robots.get(i));
 				nbrOfMovedRobots++;
 			}
 		}
