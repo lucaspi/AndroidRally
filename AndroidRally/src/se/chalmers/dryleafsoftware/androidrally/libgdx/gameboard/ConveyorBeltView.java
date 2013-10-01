@@ -26,7 +26,8 @@ public class ConveyorBeltView extends AnimatedImage {
 		this.texture = texture;
 		this.setOrigin(getWidth()/2, getHeight()/2);
 		this.rotate(-degree);
-		this.speedMulti = speedMulti;
+//		this.speedMulti = speedMulti;
+		this.speedMulti = 1;
 		int[] mask = new int[speedMulti];
 		for(int i = 0; i < mask.length; i++) {
 			mask[i] = 10 + i + 1;
