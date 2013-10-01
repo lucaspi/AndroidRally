@@ -462,7 +462,7 @@ public class GameModel {
 	}
 
 	/**
-	 * 
+	 * Check if a player has won.
 	 * @return true if a robot has won, else false
 	 */
 	private boolean robotHasReachedLastCheckPoint() {
