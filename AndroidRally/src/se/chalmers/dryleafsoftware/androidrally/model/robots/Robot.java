@@ -213,7 +213,6 @@ public class Robot {
 	}
 
 	public Card[] getChosenCards() {
-		fillEmptyCardRegisters();
 		return chosenCards;
 	}
 	
@@ -232,7 +231,7 @@ public class Robot {
 		}
 	}
 	
-	private void fillEmptyCardRegisters(){
+	public void fillEmptyCardRegisters(){
 		Random random = new Random();
 		List<Card> tempCards = new ArrayList<Card>();
 		tempCards.addAll(cards);

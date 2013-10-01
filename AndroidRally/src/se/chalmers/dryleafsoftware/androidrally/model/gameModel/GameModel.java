@@ -399,6 +399,7 @@ public class GameModel {
 		allMoves.clear();
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
+			robots.get(i).fillEmptyCardRegisters();
 			Card[] chosenCards = robots.get(i).getChosenCards();
 				currentCards.add(chosenCards);
 		}
