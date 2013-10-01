@@ -9,6 +9,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltVie
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
+import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 
 import com.badlogic.gdx.Gdx;
@@ -41,20 +42,7 @@ public class BoardView extends Stage {
 	private final Group container; 
 	private final Table scrollContainer;
 	private final ScrollPane pane;
-		
-	/*
-	 * Used when loading the map from data values.
-	 */
-	private static final int 
-			TILE_HOLE = 1,
-			TILE_CHECKPOINT = 2,
-			TILE_CONVEYORBELT = 3,
-			TILE_GEARS = 4,
-			TILE_REPAIR = 5,
-			TILE_WALL = 6,
-			TILE_LASER = 7,
-			TILE_START = 8;
-	
+			
 	/**
 	 * Creates a new instance of BoardView.
 	 */
@@ -144,97 +132,93 @@ public class BoardView extends Stage {
 	 * @param map An array of strings describing the map's layout.
 	 * NOTE: The bottom four rows of the map array will always be created as the dock area.
 	 */
-	public void createBoard(Texture texture, String[][] map) {
-		Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
+	public void createBoard(final Texture texture, String map) {
+		final Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
 		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
 
 		// To be added on top of all the other objects
-		List<Image> overlay = new ArrayList<Image>();
+		final List<Image> overlay = new ArrayList<Image>();
 
-		for(int y = 0; y < map[0].length; y++) {	
-			for(int x = 0; x < map.length; x++) {
-				// Create the floor
-				Image floor = null;
-				if(y < map[0].length - 4) {
-					floor = new Image(new TextureRegion(texture, 0, 0, 64, 64));
-				}else{
-					floor = new Image(new TextureRegion(texture, 64, 0, 64, 64));
-				}
-				// Add the floor
+		new MapBuilder(map) {
+			@Override
+			public void buildFactoryFloor(int x, int y) {
+				Image floor = new Image(new TextureRegion(texture, 0, 0, 64, 64));
 				floor.setSize(40, 40);
 				floor.setPosition(40 * x, 640 - 40 * (y+1));
 				container.addActor(floor);
-
-				// Add all the elements to the tile
-				if(!map[x][y].equals("")) {
-					for(String elementData : map[x][y].split(":")) {
-						int tileData = Integer.parseInt(elementData);
-
-						// Create the boardelement
-						int tile = tileData % 10;
-						Image i = null;
-						// TODO : Switch
-						switch(tile) {
-						case TILE_HOLE:
-							i = new Image(new TextureRegion(texture, 128, 0, 64, 64));
-							break;
-						case TILE_GEARS:
-							AnimatedImage gear = new GearsView(new TextureRegion(texture, 320, 0, 64, 64), 
-									tileData / 10 == 0 ? false : true);
-							animated.add(gear);
-							i = gear;			
-							break;
-						case TILE_CONVEYORBELT:
-							AnimatedImage belt = new ConveyorBeltView(new TextureRegion(
-									conveyerTexture, 64 * (tileData/100 - 1), 0, 64, 64), 
-									((tileData / 10) % 10) * 90, tileData / 100);
-							animated.add(belt);
-							i = belt;	
-							break;
-						case TILE_CHECKPOINT:
-							i = new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), 
-									(tileData / 10));
-							break;
-						case TILE_REPAIR:
-							i = new Image(new TextureRegion(texture, 256, 0, 64, 64));
-							break;
-						case TILE_START:
-							i = new DockView(new TextureRegion(
-									texture, 0, 128, 64, 64), tileData / 10);
-							docks[tileData/10 - 1] = new Vector2(40 * x, 640 - 40 * (y+1));
-							break;
-						case TILE_WALL:
-						case TILE_LASER:
-							int rotation = tileData / 10;
-							Image overlayImage;
-							if(tile == TILE_WALL) {
-								overlayImage = new Image(
-										new TextureRegion(texture, 384, 0, 64, 64));
-							}else{
-								overlayImage = new Image(
-										new TextureRegion(texture, 448, 0, 64, 64));
-							}
-							// Sets the objects position and size.
-							overlayImage.setSize(40, 40);
-							overlayImage.setPosition(40 * x - 20, 640 - 40 * (y+1));
-							overlayImage.setOrigin(overlayImage.getWidth()/2 + 20, 
-									overlayImage.getHeight()/2);
-							overlayImage.rotate(-(1 + rotation) * 90);
-							overlay.add(overlayImage);		
-							break;
-						}
-						// Add the element if created and assign it the right size and position.
-						if(i != null) {
-							i.setSize(40, 40);
-							i.setPosition(40 * x, 640 - 40 * (y+1));
-							container.addActor(i);
-						}
-					} // loop - elements
-				} // if
-			} // loop - X
-		} // loop - Y
+			}
+			@Override
+			public void buildDockFloor(int x, int y) {
+				Image floor = new Image(new TextureRegion(texture, 64, 0, 64, 64));
+				floor.setSize(40, 40);
+				floor.setPosition(40 * x, 640 - 40 * (y+1));
+				container.addActor(floor);
+			}
+			@Override
+			public void buildHole(int x, int y) {
+				container.addActor(setCommonValues(
+						new Image(new TextureRegion(texture, 128, 0, 64, 64)), x, y));
+			}
+			@Override
+			public void buildGear(int x, int y, boolean cw) {
+				animated.add((AnimatedImage)setCommonValues(
+						new GearsView(new TextureRegion(texture, 320, 0, 64, 64), cw), x, y));
+			}
+			@Override
+			public void buildConveyerBelt(int x, int y, int speed, int dir) {
+				animated.add((AnimatedImage)setCommonValues(
+						new ConveyorBeltView(new TextureRegion(
+								conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
+								dir * 90, speed), x, y));
+			}
+			@Override
+			public void buildCheckPoint(int x, int y, int nbr) {
+				container.addActor(setCommonValues(
+						new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), nbr), x, y));
+			}
+			@Override
+			public void buildRepair(int x, int y) {
+				container.addActor(setCommonValues(
+						new Image(new TextureRegion(texture, 256, 0, 64, 64)), x, y));
+						
+			}
+			@Override
+			public void buildStartDock(int x, int y, int nbr) {
+				container.addActor(setCommonValues(
+						new DockView(new TextureRegion(
+								texture, 0, 128, 64, 64), nbr), x, y));
+				docks[nbr - 1] = new Vector2(40 * x, 640 - 40 * (y+1));
+			}
+			@Override
+			public void buildWall(int x, int y, int dir) {
+				overlay.add(setCommonOverlayValues(
+						new Image(new TextureRegion(texture, 384, 0, 64, 64)), x, y, dir));
+			}
+			@Override
+			public void buildLaser(int x, int y, int dir) {
+				overlay.add(setCommonOverlayValues(
+						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
+			}
+			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
+				overlayImage.setSize(40, 40);
+				overlayImage.setPosition(40 * x - 20, 640 - 40 * (y+1));
+				overlayImage.setOrigin(overlayImage.getWidth()/2 + 20, 
+						overlayImage.getHeight()/2);
+				overlayImage.rotate(-(dir) * 90);
+				return overlayImage;	
+			}
+			private Image setCommonValues(Image i, int x, int y) {
+				i.setSize(40, 40);
+				i.setPosition(40 * x, 640 - 40 * (y+1));
+				return i;
+			}
+		};
 				
+		for(AnimatedImage i : animated) {
+			container.addActor(i);
+		}
+		
 		//Add walls (added last to be on top of everything else)
 		for(Image i : overlay) {
 			container.addActor(i);
