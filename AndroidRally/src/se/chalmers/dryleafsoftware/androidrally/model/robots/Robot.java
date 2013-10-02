@@ -114,7 +114,7 @@ public class Robot {
 		// TODO
 		// There exists a bug in how robots receive damage at the moment, the line below
 		// will cause a player not to receive damage -> receive a full amount of cards.
-//		this.damage += damage;
+		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
 		}

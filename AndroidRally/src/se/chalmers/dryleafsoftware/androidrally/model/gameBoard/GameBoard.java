@@ -12,6 +12,7 @@ public class GameBoard {
 	private Tile[][] tiles = null;
 	private List<Laser> lasers;
 	private String map;
+	private int longestConveyorBelt = 0;
 	/*
 	 * Max 8 players.
 	 */
@@ -157,6 +158,7 @@ public class GameBoard {
 						}else if(tile == TILE_GEARS) {
 							tiles[x][y].addBoardElement(new Gears(!(tileData / 10 == 0)));
 						}else if(tile == TILE_CONVEYORBELT) {
+							longestConveyorBelt = Math.max(longestConveyorBelt, tileData / 100);
 							tiles[x][y].addBoardElement(new ConveyorBelt(tileData / 100, ((tileData / 10)%10)));
 						}else if(tile == TILE_CHECKPOINT) {
 							tiles[x][y].addBoardElement(new CheckPoint(tileData / 10));
@@ -200,5 +202,10 @@ public class GameBoard {
 			}
 			break;
 		}
+	}
+	
+	public int getMaxConveyorBeltDistance(){
+		return longestConveyorBelt;
+		
 	}
 }
