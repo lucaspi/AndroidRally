@@ -104,7 +104,7 @@ public class GameController implements PropertyChangeListener {
 		cardTimer[robotID].clear();
 		List<Card> cards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
-		for (int i = 0; i < 5; i++) {
+		for (int i = 1; i <= 5; i++) {
 			if (Integer.parseInt(cardStrings[i]) == -1) {
 				cards.add(null);
 			} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
