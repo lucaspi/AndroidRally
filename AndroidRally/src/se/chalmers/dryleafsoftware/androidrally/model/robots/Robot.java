@@ -26,6 +26,8 @@ public class Robot {
 	private int spawnPointY;
 	private int checkpoint;
 	private boolean sentCards;
+	private boolean isDead;
+	private boolean hasLost;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -34,6 +36,8 @@ public class Robot {
 		cards = new ArrayList<Card>();
 		chosenCards = new Card[5];
 		checkpoint = 0;
+		setDead(false);
+		setHasLost(false);
 	}
 	
 	/**
@@ -127,6 +131,10 @@ public class Robot {
 	public void die(){
 		life--;
 		damage = 0;
+		setDead(true);
+		if (life == 0) {
+			setHasLost(true);
+		}
 	}
 	
 	/**
@@ -152,6 +160,15 @@ public class Robot {
 	 */
 	public int getSpawnPointY(){
 		return spawnPointY;
+	}
+	
+	/**
+	 * Sets the robot on the spawn point. Sets isDead to false.
+	 */
+	public void respawn() {
+		setX(spawnPointX);
+		setY(spawnPointY);
+		setDead(false);
 	}
 	
 	/**
@@ -257,5 +274,21 @@ public class Robot {
 
 	public void setSentCards(boolean sentCards) {
 		this.sentCards = sentCards;
+	}
+
+	public boolean isDead() {
+		return isDead;
+	}
+
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+	}
+	
+	public boolean hasLost() {
+		return hasLost;
+	}
+
+	public void setHasLost(boolean hasLost) {
+		this.hasLost = hasLost;
 	}
 }

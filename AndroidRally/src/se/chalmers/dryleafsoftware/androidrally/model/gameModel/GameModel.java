@@ -123,6 +123,9 @@ public class GameModel {
 		for(int i = 0; i<maxTravelDistance; i++){
 			allMoves.add(";B" + (maxTravelDistance-i));
 			for(int j = 0; j< robots.size(); j++){
+				if (robots.get(j).hasLost()) {
+					continue;
+				}
 				oldPositions[j][0] = robots.get(j).getX();
 				oldPositions[j][1] = robots.get(j).getY();
 				List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
@@ -139,19 +142,22 @@ public class GameModel {
 				}
 			}
 			checkConveyorBeltCollides(oldPositions);
-			if(checkRobotsStatus())return;;
+			if(checkRobotsStatus())return;
 		}
 		if(maxTravelDistance == 0){// if no robot stands on a conveyorBelt, ";B1" still
 			// is required for conveyorBelts to move in the GUI.
 			allMoves.add(";B1");
 		}
 		allMoves.add(";B4");
-		for(int i = 0; i<robots.size(); i++){
+		for (int i = 0; i < robots.size(); i++){
+			if (robots.get(i).hasLost()) {
+				continue;
+			}
 			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 					robots.get(i).getY()).getBoardElements();
-			if(boardElements != null && boardElements.size() > 0){
-				for(BoardElement boardelement : boardElements){
-					if(boardelement instanceof Gears){
+			if (boardElements != null && boardElements.size() > 0){
+				for (BoardElement boardelement : boardElements){
+					if (boardelement instanceof Gears){
 						boardelement.action(robots.get(i));
 						addMove(robots.get(i));
 					}
@@ -161,7 +167,10 @@ public class GameModel {
 		}
 		fireAllLasers();
 
-		for(int i = 0; i < robots.size(); i++){
+		for (int i = 0; i < robots.size(); i++){
+			if (robots.get(i).hasLost()) {
+				continue;
+			}
 			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 					robots.get(i).getY()).getBoardElements();
 			if(boardElements != null && boardElements.size() > 0){
@@ -281,13 +290,16 @@ public class GameModel {
 		int y;
 		int direction;
 
-		for(Laser laser : lasers){
+		for (Laser laser : lasers){
 			x = laser.getX();
 			y = laser.getY();
 			direction = laser.getDirection();
 			fireLaser(x, y, direction);
 		}
-		for(Robot robot : robots){
+		for (Robot robot : robots){
+			if (robot.hasLost()) {
+				continue;
+			}
 			x = robot.getX();
 			y = robot.getY();
 			direction = robot.getDirection();
@@ -355,7 +367,7 @@ public class GameModel {
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
 				// Do any robot stand on the same tile as another the robot from the parameters.
-				if(robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
+				if(!r.hasLost() && robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
@@ -393,8 +405,8 @@ public class GameModel {
 
 		for (int i = 0; i < 5; i++) { //loop all 5 cards
 			allMoves.add(";" + "R#" + i);
-			for(int j = 0; j < robots.size(); j++){ //for all robots
-				for(int k = 0; k<robots.size(); k++){
+			for (int j = 0; j < robots.size(); j++) { //for all robots
+				for (int k = 0; k < robots.size(); k++) {
 					oldPosition[k][0] = robots.get(k).getX();
 					oldPosition[k][1] = robots.get(k).getY();
 				}
@@ -411,12 +423,15 @@ public class GameModel {
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
 
-				int numberOfSteps = 1;
-				if(currentCards.get(indexOfHighestPriority)[i] instanceof Move){
-					numberOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
+				int nbrOfSteps = 1;
+				if (currentCards.get(indexOfHighestPriority)[i] instanceof Move){
+					nbrOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
 							).getDistance());
 				}
-				for(int k = 0; k<numberOfSteps; k++){
+				for (int k = 0; k < nbrOfSteps; k++){
+					if (robots.get(indexOfHighestPriority).isDead()) {
+						break; //so that robot doesn't walk more after dying this for-loop
+					}
 					oldPosition[indexOfHighestPriority][0] = robots.get(indexOfHighestPriority).getX();
 					oldPosition[indexOfHighestPriority][1] = robots.get(indexOfHighestPriority).getY();
 					currentCards.get(indexOfHighestPriority)[i]
@@ -427,7 +442,7 @@ public class GameModel {
 					if(checkRobotsStatus())return;;
 					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
 					.instantAction(currentRobot);
-					if(checkRobotsStatus())return;
+					if (checkRobotsStatus())return;
 				}
 
 				//Remove the card so it doesn't execute twice
@@ -439,6 +454,9 @@ public class GameModel {
 
 		for(Robot robot : robots){
 			deck.returnCards(robot.returnCards());
+			if (robot.isDead() && !robot.hasLost()) {
+				robot.respawn();
+			}
 		}
 
 		//TODO give specials to robots standing on "wrench & hammer"
@@ -480,7 +498,7 @@ public class GameModel {
 	 * @return true if a player has won, else false
 	 */
 	private boolean checkIfRobotLost(int robotID) {
-		if (robots.get(robotID).getLife() == 0) {
+		if (robots.get(robotID).hasLost()) {
 			--robotsPlaying;
 			if (robotHasWonBecauseItsAlone()) {
 				return true;
