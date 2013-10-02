@@ -72,23 +72,12 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
-	    int maxTravelDistance = 0;
-	    for(int i = 0; i< robots.size(); i++){
-	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
-	    		  robots.get(i).getY()).getBoardElements();
-	    	if(boardElements != null && boardElements.size() > 0){
-	    		if(boardElements.get(0) instanceof ConveyorBelt){
-		    		if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
-		    			maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
-		    		}
-	      		}
-	    	}
-	    }
+	    int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 	    for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 		}
 	    checkIfRobotsOnMap();
-
+	    
 	    int[][] oldPositions = new int[robots.size()][2];
 	    for(int i = 0; i<maxTravelDistance; i++){
     		allMoves.add(";B1" + (maxTravelDistance-i));
@@ -215,28 +204,28 @@ public class GameModel {
 		boolean noWall = true;
 		if(direction == GameBoard.NORTH){
 			while(y >= 0 && !robotIsHit && noWall){
-				robotIsHit = isRobotHit(x, y);
 				noWall = canMove(x, y, direction);
 				y--;
+				robotIsHit = isRobotHit(x, y);
 			}
 			
 		}else if(direction == GameBoard.EAST){
-			while(x < gameBoard.getWidth() && !robotIsHit){
-				robotIsHit = isRobotHit(x, y);
+			while(x < gameBoard.getWidth() && !robotIsHit && noWall){
 				noWall = canMove(x, y, direction);
 				x++;
+				robotIsHit = isRobotHit(x, y);
 			}
 		}else if(direction == GameBoard.SOUTH){
-			while(y < gameBoard.getHeight() && !robotIsHit){
-				robotIsHit = isRobotHit(x, y);
+			while(y < gameBoard.getHeight() && !robotIsHit && noWall){
 				noWall = canMove(x, y, direction);
 				y++;
+				robotIsHit = isRobotHit(x, y);
 			}
 		}else if(direction == GameBoard.WEST){
-			while(x >= 0 && !robotIsHit){
-				robotIsHit = isRobotHit(x, y);
+			while(x >= 0 && !robotIsHit && noWall){
 				noWall = canMove(x, y, direction);
 				x--;
+				robotIsHit = isRobotHit(x, y);
 			}
 		}
 
@@ -383,7 +372,6 @@ public class GameModel {
 		allMoves.clear();
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
-			robots.get(i).fillEmptyCardRegisters();
 			Card[] chosenCards = robots.get(i).getChosenCards();
 				currentCards.add(chosenCards);
 		}

@@ -12,6 +12,8 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
+// TODO handle all sort of indata, i.e. handle exceptions if client sends incorrect data.
+
 public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
 	private Timer timer;
@@ -68,7 +70,7 @@ public class GameController implements PropertyChangeListener {
 	public void handleRemainingRobots() {
 		for (int i = 0; i < gameModel.getRobots().size(); i++) {
 			if (!gameModel.getRobots().get(i).haveSentCards()) {
-				setChosenCardsToRobot(new int[]{0,0,0,0,0}, i);
+				setChosenCardsToRobot(i + ":-1:-1:-1:-1:-1");
 			}
 		}
 	}
@@ -89,32 +91,37 @@ public class GameController implements PropertyChangeListener {
 	/**
 	 * Set the given input from the client to a specific robots chosen cards.
 	 * 
-	 * @param indexOfChosenCard array of length == 5. Index of the robot's card that the robot have chosen.
-	 * @param robotID The index of the robot in the list of robots held by GameModel
+	 * @param chosenCards should contain data about the robot and the chosenCards according to
+	 * separate document.
+	 * @return a String containing data of the locked cards.
 	 */
-	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
+	public String setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
+		String[] cardStrings = chosenCards.split(":");
+		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
 		cardTimer[robotID].clear();
-		List<Card> chosenCards = new ArrayList<Card>();
+		List<Card> cards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {
-			if (indexOfChosenCard[i] == -1) {
-				chosenCards.add(null);
-			} else {
-				if (!chosenCards.contains(robot.getCards().get(indexOfChosenCard[i]))) {
-					chosenCards.add(robot.getCards().get(indexOfChosenCard[i]));					
-				} else {
-					chosenCards.add(null);
-				}
+			if (Integer.parseInt(cardStrings[i]) == -1) {
+				cards.add(null);
+			} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
+				cards.add(robot.getCards().get(Integer.parseInt(cardStrings[i])));
 			}
 		}
-		robot.setChosenCards(chosenCards);
+		robot.setChosenCards(cards);
+		robot.fillEmptyCardRegisters();
 		robot.setSentCards(true);
 		nbrOfRobotsDone++;
 		if(nbrOfRobotsAlive == nbrOfRobotsDone && !isRunRunning) {
 			endOfRound.run();
 		}
 
+		StringBuilder sb = new StringBuilder();
+		for(Card card : gameModel.getRobots().get(robotID).getChosenCards()) {
+			sb.append(card.getPriority() + ":");
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -141,7 +148,7 @@ public class GameController implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals("cardTimeOut")) {
-			setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, (Integer)pce.getNewValue());
+			setChosenCardsToRobot((Integer)pce.getNewValue() + ":-1:-1:-1:-1:-1");
 		}
 	}
 
@@ -167,6 +174,11 @@ public class GameController implements PropertyChangeListener {
 		return sb.toString(); 
 	}
 	
+	/**
+	 * TODO remove?????
+	 * @param robotID
+	 * @return
+	 */
 	public Card[] getChosenCards(int robotID){
 		return gameModel.getRobots().get(robotID).getChosenCards();
 	}
