@@ -115,10 +115,7 @@ public class Robot {
 	 * @param damage the amount of damage
 	 */
 	public void damage(int damage){
-		// TODO
-		// There exists a bug in how robots receive damage at the moment, the line below
-		// will cause a player not to receive damage -> receive a full amount of cards.
-//		this.damage += damage;
+		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
 		}
@@ -160,15 +157,6 @@ public class Robot {
 	 */
 	public int getSpawnPointY(){
 		return spawnPointY;
-	}
-	
-	/**
-	 * Sets the robot on the spawn point. Sets isDead to false.
-	 */
-	public void respawn() {
-		setX(spawnPointX);
-		setY(spawnPointY);
-		setDead(false);
 	}
 	
 	/**
