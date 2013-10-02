@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HealthAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
@@ -95,8 +96,17 @@ public class Client {
 				result.newPhase();
 			}else if(parallel[0].substring(0, 1).equals("B")) {
 				int phase = Integer.parseInt(parallel[0].substring(1));	
-				if(phase == 5) {
-					// TODO: life data
+				if(phase == 5) { // Laser phase
+					MultiAction multi = new MultiAction();
+					for(int i = 1; i < parallel.length; i++) {
+						String[] data = parallel[i].split(":");
+						HealthAction ha = new HealthAction(
+								Integer.parseInt(data[0]),
+								Integer.parseInt(data[1].substring(1)),
+								Integer.parseInt(data[1].substring(0, 1)));
+						multi.add(ha);
+					}
+					result.addAction(multi);
 				}else{
 					GameAction action;
 					// If no actions follows:

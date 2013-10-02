@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.PlayerInfoView;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -45,6 +48,7 @@ public class DeckView extends Stage {
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
+	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
 
 	/**
 	 * Specifying that the game should start.
@@ -78,12 +82,14 @@ public class DeckView extends Stage {
 	/**
 	 * Creates a new default instance.
 	 */
-	public DeckView() {
+	public DeckView(RobotView clientsRobot) {
 		super();
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
 		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
+		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				
 		cl = new CardListener(this);
 		
@@ -125,8 +131,6 @@ public class DeckView extends Stage {
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
 		
-		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
-		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		registers = new Register[5];
 		for(int i = 0; i < 5; i++) {
 			registers[i] = new Register(compTexture, i);
@@ -177,6 +181,9 @@ public class DeckView extends Stage {
     	lStyle.font = new BitmapFont();
     	timerLabel = new Label("", lStyle);
     	statusBar.add(timerLabel);
+    	
+    	playerInfo = new PlayerInfoView(compTexture, clientsRobot);
+    	statusBar.add(playerInfo);
 	}
 	
 	/*
