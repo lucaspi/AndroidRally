@@ -31,7 +31,7 @@ public class GameController implements PropertyChangeListener {
 		this.nbrOfPlayers = String.valueOf(nbrOfPlayers);
 		isRunRunning = false;
 		nbrOfRobotsDone = 0;
-		gameModel = new GameModel(nbrOfPlayers);
+		gameModel = new GameModel(this, nbrOfPlayers);
 		
 		mapAsString = gameModel.getMap();
 		
@@ -46,7 +46,9 @@ public class GameController implements PropertyChangeListener {
 				handleRemainingRobots();
 				gameModel.moveRobots();
 				//If the game is over a new round will not be started.
-				newRound();
+				if (gameModel.isGameOver()) {
+					newRound();
+				}
 				isRunRunning = false;
 			}
 		};
@@ -149,6 +151,11 @@ public class GameController implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals("cardTimeOut")) {
 			setChosenCardsToRobot((Integer)pce.getNewValue() + ":-1:-1:-1:-1:-1");
+		} else if (pce.getPropertyName().equals(GameModel.ROBOT_LOST)) {
+			//send to client that a specific robot lost
+		} else if (pce.getPropertyName().equals(GameModel.ROBOT_WON)) {
+			//send to all clients which robot that has won
+			//end game
 		}
 	}
 

@@ -13,6 +13,7 @@ public class GameBoard {
 	private List<Laser> lasers;
 	private String map;
 	private int longestConveyorBelt = 0;
+	private int nbrOfCheckPoints;
 	/*
 	 * Max 8 players.
 	 */
@@ -63,6 +64,7 @@ public class GameBoard {
 	 * @param map the String[][] which will be converted to a gameBoard.
 	 */
 	public GameBoard(String map) {
+		nbrOfCheckPoints = 0;
 		createBoard(map);
 		this.map = map;
 		lasers = new ArrayList<Laser>();
@@ -162,6 +164,7 @@ public class GameBoard {
 							tiles[x][y].addBoardElement(new ConveyorBelt(tileData / 100, ((tileData / 10)%10)));
 						}else if(tile == TILE_CHECKPOINT) {
 							tiles[x][y].addBoardElement(new CheckPoint(tileData / 10));
+							nbrOfCheckPoints++;
 						}else if(tile == TILE_REPAIR) {
 							tiles[x][y].addBoardElement(new Wrench(1));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
@@ -206,6 +209,9 @@ public class GameBoard {
 	
 	public int getMaxConveyorBeltDistance(){
 		return longestConveyorBelt;
+	}
 		
+	public int getNbrOfCheckPoints() {
+		return nbrOfCheckPoints;
 	}
 }

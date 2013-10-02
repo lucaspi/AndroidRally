@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameModel;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,31 +28,44 @@ public class GameModel {
 	private List<Robot> robots;
 	private Deck deck;
 	private List<String> allMoves = new ArrayList<String>();
+	private PropertyChangeSupport pcs;
+	public static final String ROBOT_WON = "robotWon";
+	public static final String ROBOT_LOST = "robotLost";
+	private int robotsPlaying;
+	private boolean isGameOver;
 	
 	private static final String testMap = "yxxxxxxxxxxxx5xxx36xyxxxxxxxxxx12xxxxx78:16xyxxxxxxxxxxxxx06xx58:16xyxxxxxxxx32xx22xx4xxx38xyxxxxxxxx1xxxxx06xx16xyxxxxxxxx103x103x103x103x103xxx18:16xyxxxxxxxx203x203x203x203x203xxx28:16xyxxxxxxxx1xxxxx06xxxyxxxxxxxxxxxx14xxx48:16xyxxxxxxxxxxxxx06xx68:16xyxxxxxxxxxxxxxxx88xyxxxxxxxxxxxx5xxxx";
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.
 	 * 
+	 * @param pcl a PropertyChangeListener listening for event with propertyNames
+	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
 	 * @param nbrOfPlayers the number of players in the game including CPU:s
 	 */
-	public GameModel(int nbrOfPlayers) {
-		this(nbrOfPlayers, testMap);
+	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers) {
+		this(pcl, nbrOfPlayers, testMap);
 	}
 	
 	/**
 	 * Only for testing!!
+	 * @param pcl a PropertyChangeListener listening for event with propertyNames
+	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
 	 * @param nbrOfPlayers
 	 * @param testMap
 	 */
-	public GameModel(int nbrOfPlayers, String map) {
+	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers, String map) {
 		gameBoard = new GameBoard(map);
+		isGameOver = false;
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
 		for (int i = 0; i < nbrOfPlayers; i++) {
 			robots.add(new Robot(startingPositions[i][0], startingPositions[i][1]));
 		}
+		robotsPlaying = nbrOfPlayers;
 		deck = new Deck();
+		pcs = new PropertyChangeSupport(this);
+		pcs.addPropertyChangeListener(pcl);
 	}
 	
 	/**
@@ -119,15 +134,20 @@ public class GameModel {
 	    	
 	    }
 	    fireAllLasers();
-	    deleteDeadRobots();
 	    
-	    for(int i = 0; i<robots.size(); i++){
+	    for(int i = 0; i < robots.size(); i++){
 	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
     				robots.get(i).getY()).getBoardElements();
 	    	if(boardElements != null && boardElements.size() > 0){
 	    		for(BoardElement boardelement : boardElements){
 	    			if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
 		    			boardelement.action(robots.get(i));
+		    			if (boardelement instanceof CheckPoint
+		    					&& ((CheckPoint)boardelement).getNbrOfCheckPoint()
+		    					== gameBoard.getNbrOfCheckPoints()) {
+		    				isGameOver = true;
+		    				pcs.firePropertyChange(ROBOT_WON, -1, i); //FIXME!!! Fråga Linus om addMove osv. ang. GameOver
+		    			}
 		    		}
 	    		}
 	    	}
@@ -253,33 +273,6 @@ public class GameModel {
 			direction = robot.getDirection();
 			fireLaser(x, y, direction);
 		}
-	}
-	
-	/**
-	 * If a robots life is equal to 0 it will be deleted from the game.
-	 */
-	public void deleteDeadRobots() {
-		// TODO this method isn't necessary?
-//		int i = 0;
-//		while (i < robots.size()) {
-//			if (robots.get(i).getLife() == 0) {
-//				robots.remove(i);
-//			} else {
-//				i++;
-//			}
-//		}
-//		if (robots.size() == 1) {
-//			gameOver(robots.get(0));
-//		}
-	}
-	
-	/**
-	 * Method gameOver is called by deleteDeadRobots() when there is only
-	 * one robot left.
-	 * @param winner the winning robot
-	 */
-	public void gameOver(Robot winner) {
-		//TODO add functionality or change to boolean?
 	}
 	
 	/*
@@ -414,7 +407,6 @@ public class GameModel {
 					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
 							.instantAction(currentRobot);
 					checkIfRobotsOnMap();
-					deleteDeadRobots();
 				}
 				
 				//Remove the card so it doesn't execute twice
@@ -432,10 +424,21 @@ public class GameModel {
 	}
 	
 	private void checkIfRobotsOnMap(){
-		for(int i = 0; i<robots.size(); i++){
+		for(int i = 0; i < robots.size(); i++){
 			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
 					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
-				robots.get(i).die();
+				robots.get(i).die(); //TODO maybe separate goto spawn point and lose life
+				if (robots.get(i).getLife() == 0) {
+					if (--robotsPlaying == 1) {
+						for (int j = 0; j < robots.size() ; j++) {
+							if (robots.get(j) != null) {
+								pcs.firePropertyChange(ROBOT_WON, -1, j);
+							}
+						}
+					} else {
+						pcs.firePropertyChange(ROBOT_LOST, -1, i);
+					}
+				}
 				resetRobotPosition(robots.get(i));
 			}
 		}
@@ -503,4 +506,9 @@ public class GameModel {
 	public GameBoard getGameBoard() {
 		return gameBoard;
 	}
+
+	public boolean isGameOver() {
+		return isGameOver;
+	}
+	
 }
