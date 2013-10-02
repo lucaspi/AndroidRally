@@ -94,16 +94,32 @@ public class Client {
 			if(parallel[0].equals("R")) {
 				result.newPhase();
 			}else if(parallel[0].substring(0, 1).equals("B")) {
-				GameAction holder = new HolderAction(1000);
 				int phase = Integer.parseInt(parallel[0].substring(1));	
-				if(phase < 10) {
-					holder.setMoveRound(phase);
+				if(phase == 5) {
+					// TODO: life data
 				}else{
-					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
-					holder.setSubRound(phase % 10);
+					GameAction action;
+					// If no actions follows:
+					if(parallel.length == 1) {
+						action = new HolderAction(1000);
+					}else{ // If actions
+						MultiAction multi = new MultiAction();
+						for(int i = 1; i < parallel.length; i++) {
+							multi.add(createSingleAction(parallel[i]));
+						}
+						action = multi;
+					}
+					if(phase < 10) {
+						action.setMoveRound(phase);
+					}else{
+						action.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
+						action.setSubRound(phase % 10);
+					}
+					result.addAction(action);
 				}
-				result.addAction(holder);
-			}else if(parallel.length > 1){
+			}
+			// Generic multiaction
+			else if(parallel.length > 1){
 				MultiAction a = new MultiAction();
 				for(int i = 0; i < parallel.length; i++) {
 					a.add(createSingleAction(parallel[i]));
@@ -183,10 +199,10 @@ public class Client {
 	 * @param dockPositions All the docks' positions.
 	 * @return A list of all the robots.
 	 */
-	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {
+	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {		
 		// From server example: "
 		// TODO: server input
-		List<RobotView> robots = new ArrayList<RobotView>();		
+		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);

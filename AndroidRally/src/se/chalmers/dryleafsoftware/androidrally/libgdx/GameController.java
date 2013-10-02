@@ -120,18 +120,15 @@ public class GameController implements PropertyChangeListener {
 				actions.get(0).cleanUp(game.getBoardView().getRobots());
 				actions.remove(0);
 			}
+			game.getBoardView().stopAnimations();
 			if(!actions.isEmpty()) {
 				actions.get(0).action(game.getBoardView().getRobots());
 				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_CONVEYER) {
 					game.getBoardView().stopAnimations();
 					game.getBoardView().setAnimate((GameAction.PHASE_BOARD_ELEMENT_CONVEYER * 10 
 							+ actions.get(0).getSubPhase()));
-				}else if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_GEARS) {
-					game.getBoardView().stopAnimations();
-					game.getBoardView().setAnimate(4);
-				}else if(actions.get(0).getPhase() == GameAction.PHASE_LASER) {
-					game.getBoardView().stopAnimations();
-					game.getBoardView().setAnimate(5);
+				}else{
+					game.getBoardView().setAnimate(actions.get(0).getPhase());
 				}
 			}
 		}
