@@ -103,18 +103,7 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
-		int maxTravelDistance = 0;
-		for(int i = 0; i< robots.size(); i++){
-			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
-					robots.get(i).getY()).getBoardElements();
-			if(boardElements != null && boardElements.size() > 0){
-				if(boardElements.get(0) instanceof ConveyorBelt){
-					if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
-						maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
-					}
-				}
-			}
-		}
+		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
 			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
 			if(robot.isDead()){
@@ -139,7 +128,7 @@ public class GameModel {
 					if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
 						if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
 							boardElements.get(0).action(robots.get(j));
-							addMove(robots.get(j));
+							addSimultaneousMove(robots.get(j));
 							if(checkGameStatus())return;
 						}
 					}
@@ -156,25 +145,11 @@ public class GameModel {
 			if(checkGameStatus())return;
 		}
 		
-		allMoves.add(";B4");
-		for (int i = 0; i < robots.size(); i++){
-			if (robots.get(i).isDead()) {
-				continue;
-			}
-			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
-					robots.get(i).getY()).getBoardElements();
-			if (boardElements != null && boardElements.size() > 0){
-				for (BoardElement boardelement : boardElements){
-					if (boardelement instanceof Gears){
-						boardelement.action(robots.get(i));
-						addMove(robots.get(i));
-					}
-				}
-			}
-
-		}
 	    allMoves.add(";B4");
 	    for(int i = 0; i<robots.size(); i++){
+	    	if (robots.get(i).isDead()) {
+				continue;
+			}
 	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
     				robots.get(i).getY()).getBoardElements();
 	    	if(boardElements != null && boardElements.size() > 0){
@@ -212,8 +187,7 @@ public class GameModel {
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
-				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - 
-						robots.get(i).getHealth()));
+				allMoves.add("#" + i + ":" + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
 			}
 		}
 	}
