@@ -20,7 +20,7 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	private int nbrOfRobotsAlive;
+	private int nbrOfRobotsStilInGame;
 	private String nbrOfPlayers;
 	private String mapAsString;
 
@@ -61,7 +61,7 @@ public class GameController implements PropertyChangeListener {
 		};
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			cardTimer[i] = new CardTimer(65, i, this);
+			cardTimer[i] = new CardTimer(30, i, this);
 		}
 		hoursEachRound = 24;
 	}
@@ -94,7 +94,7 @@ public class GameController implements PropertyChangeListener {
 
 	public void stopRoundTimer() {
 		timer.stop();
-		timer.clear(); //FIXME If there are problems with the timer, this might be it
+		//timer.clear(); //FIXME If there are problems with the timer, this might be it
 	}
 
 	/**
@@ -103,9 +103,9 @@ public class GameController implements PropertyChangeListener {
 	 * @param indexOfChosenCard array of length == 5. Index of the robot's card that the robot have chosen.
 	 * @param robotID The index of the robot in the list of robots held by GameModel
 	 */
-	public void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
+	public synchronized void setChosenCardsToRobot(int[] indexOfChosenCard, int robotID) { //TODO ClientID?
 		cardTimer[robotID].stop();
-		cardTimer[robotID].clear(); //FIXME If there are problems with the timer, this might be it
+		//cardTimer[robotID].clear(); //FIXME If there are problems with the timer, this might be it
 		List<Card> chosenCards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 0; i < 5; i++) {
@@ -122,7 +122,7 @@ public class GameController implements PropertyChangeListener {
 		robot.setChosenCards(chosenCards);
 		robot.setSentCards(true);
 		nbrOfRobotsDone++;
-		if(nbrOfRobotsAlive == nbrOfRobotsDone && !isRunRunning) {
+		if(nbrOfRobotsStilInGame == nbrOfRobotsDone && !isRunRunning) {
 			endOfRound.run();
 		}
 
@@ -166,7 +166,9 @@ public class GameController implements PropertyChangeListener {
 	 * @return the robot's cards (not chosen cards)
 	 */
 	public List<Card> getCards(int robotID) {
-		return gameModel.getRobots().get(robotID).getCards(); 
+		System.out.println("getCards anropas för " + robotID);
+		cardTimer[robotID] = new CardTimer(30, robotID, this);
+		return gameModel.getRobots().get(robotID).getCards();
 	}
 
 	/**
@@ -182,10 +184,10 @@ public class GameController implements PropertyChangeListener {
 		startRoundTimer();
 		
 		//Check how many robots that are still alive this round
-		nbrOfRobotsAlive = 0;
+		nbrOfRobotsStilInGame = 0;
 		for (Robot robotInList : gameModel.getRobots()) {
 			if (robotInList.getLife() > 0) {
-				nbrOfRobotsAlive++;
+				nbrOfRobotsStilInGame++;
 			}
 		}
 		nbrOfRobotsDone = 0;
@@ -202,7 +204,4 @@ public class GameController implements PropertyChangeListener {
 	public String getRoundResults() {
 		return this.gameModel.getAllMoves();
 	}
-	
-//TODO game end how?
-
 }
