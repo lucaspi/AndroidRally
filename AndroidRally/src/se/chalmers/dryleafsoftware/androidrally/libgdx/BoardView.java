@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
@@ -10,6 +11,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 
@@ -248,9 +250,16 @@ public class BoardView extends Stage {
 	 * @param subPhase The phase to animate.
 	 */
 	public void setAnimate(int subPhase) {
+//		if(subPhase == GameAction.PHASE_LASER) {
+//			for(RobotView robot : robots) {
+//			animated.add(new LaserView(new TextureRegion(texture, 0, 192, 64, 64), 
+//					(int)(robot.getX() / 40), 16 - (int)(robot.getY() / 40), 
+//					(int)(robot.getRotation() / -90)));
+//			}
+//		}
 		for(AnimatedImage a : animated) {
 			a.enable(subPhase);
-			if(a instanceof LaserView) {
+			if(subPhase == GameAction.PHASE_LASER && a instanceof LaserView) {
 				((LaserView)a).setCollisionMatrix(collisionMatrix);
 			}
 		}

@@ -2,29 +2,42 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
-import android.util.Log;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Logger;
 
+/**
+ * This view class only displays the laser beam. For proper collision when drawing, use
+ * <code>setCollisionMatrix()</code>.
+ * 
+ * @author
+ *
+ */
 public class LaserView extends AnimatedImage {
 	
 	private int x, y;
-	private final int dir;
 	private boolean[][][] collisionMatrix;
 	private int length;
 	private boolean hasCalc = false;
 	
+	/**
+	 * Creates a new laser which will use the specified texture.
+	 * @param texture The texture of the laser beam.
+	 * @param x The X-coordinate. (In array).
+	 * @param y The Y-coordinate. (In array).
+	 * @param dir The direction to shot.
+	 */
 	public LaserView(TextureRegion texture, int x, int y, int dir) {
 		super(texture);
 		this.x = x;
 		this.y = y;
-		this.dir = dir;
 		setRotation(-dir * 90);
 		setVisible(false);
 		setPhaseMask(5);
 	}
 	
+	/**
+	 * Set to use proper collision.
+	 * @param collisionMatrix Array of booleans describing collision.
+	 */
 	public void setCollisionMatrix(boolean[][][] collisionMatrix) {
 		this.collisionMatrix = collisionMatrix;
 		hasCalc = false;
@@ -45,7 +58,7 @@ public class LaserView extends AnimatedImage {
 	@Override
 	public void animate(float timeDelta) {
 		if(!hasCalc) {
-			switch(dir) {
+			switch(((int)(getRotation() / -90) + 4) % 4) {
 			case MapBuilder.DIR_NORTH:
 				length = 40 * (y+1);
 				for(int i = 0; i <= y; i++) {

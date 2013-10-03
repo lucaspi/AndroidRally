@@ -35,16 +35,25 @@ public class RobotView extends Image  {
 
 	private int damage = 0, lives = MAX_LIVES;
 	private final int robotID;
+	private final LaserView laser;
 
 	/**
 	 * Creates a new instance of a robot with the specified ID-number.
 	 * @param robotID The ID-number of this robot.
 	 * @param texture The texture to use.
 	 */
-	public RobotView(int robotID, TextureRegion texture) {
+	public RobotView(int robotID, TextureRegion texture, LaserView laser) {
 		super(texture);
 		this.setSize(40, 40);
 		this.robotID = robotID;
+		this.laser = laser;
+	}
+	
+	public LaserView getLaser() {
+		laser.setPosition(this.getX(), this.getY());
+		laser.setOrigin(20, 20);
+		laser.setRotation(getRotation());
+		return laser;
 	}
 	
 	/**

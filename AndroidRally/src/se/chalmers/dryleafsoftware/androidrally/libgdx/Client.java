@@ -10,6 +10,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HealthAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import com.badlogic.gdx.graphics.Texture;
@@ -124,6 +125,8 @@ public class Client {
 					action.setMoveRound(phase);
 					result.addAction(action);
 				}
+			}else if(parallel[0].equals("F")) {
+				// TODO: SPECIAL ACTIOn !
 			}
 			// Generic multiaction
 			else if(parallel.length > 1){
@@ -211,7 +214,8 @@ public class Client {
 		// TODO: server input
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
-			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
+			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
+					new LaserView(new TextureRegion(texture, 0, 192, 64, 64), 0, 0, 0));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);
