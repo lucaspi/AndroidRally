@@ -23,12 +23,9 @@ public class ConveyorBeltTest {
 				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.NORTH)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
 		};
 		
-<<<<<<< HEAD
 //		GameModel gm = new GameModel(2, testMap);
-		GameModel gm = new GameModel(2, "");
-=======
-		GameModel gm = new GameModel(null, 2, testMap);
->>>>>>> 19e92fa668a5288c36b791bd2afa4aae0e56efad
+//		GameModel gm = new GameModel(2, "");
+		GameModel gm = new GameModel(null, 2, "");
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
@@ -72,12 +69,9 @@ public class ConveyorBeltTest {
 				{				"",				"1"+String.valueOf(GameBoard.WEST)+3,				""						}
 		};
 		
-<<<<<<< HEAD
 //		GameModel gm = new GameModel(2, testMap);
-		GameModel gm = new GameModel(2, "");
-=======
-		GameModel gm = new GameModel(null, 2, testMap);
->>>>>>> 19e92fa668a5288c36b791bd2afa4aae0e56efad
+//		GameModel gm = new GameModel(2, "");
+		GameModel gm = new GameModel(null, 2, "");
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);

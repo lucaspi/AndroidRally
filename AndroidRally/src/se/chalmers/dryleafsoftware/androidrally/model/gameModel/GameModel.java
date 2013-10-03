@@ -33,8 +33,24 @@ public class GameModel {
 	public static final String ROBOT_LOST = "robotLost";
 	private int robotsPlaying;
 	private boolean isGameOver;
-	
+
 	private static final String testMap = "yxxxxxxx16xxxxx5xxx36xyxx06xxx27x37xxxx12xxxxx78:16xyxxxxx27xxxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07x1xxxxx06xx16xyx06xx26xx27xxx103x103x103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxxxxxxxx06xx68:16xyxxxxxxx17xxxxxxxx88xyxxxxxxxxxxxx5xxxx";
+
+	private static String[][] testmap = new String[][] {
+		{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+		{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
+		{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
+		{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
+		{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
+		{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
+		{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
+		{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
+		{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
+		{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+		{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
+		{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
+	};
+
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.
@@ -46,7 +62,7 @@ public class GameModel {
 	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers) {
 		this(pcl, nbrOfPlayers, testMap);
 	}
-	
+
 	/**
 	 * Only for testing!!
 	 * @param pcl a PropertyChangeListener listening for event with propertyNames
@@ -67,7 +83,7 @@ public class GameModel {
 		pcs = new PropertyChangeSupport(this);
 		pcs.addPropertyChangeListener(pcl);
 	}
-	
+
 	/**
 	 * Give cards to all players/CPU:s.
 	 */
@@ -87,38 +103,76 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	public void activateBoardElements() {
-	    int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
-	    for (Robot robot : robots) {
-			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+		int maxTravelDistance = 0;
+		for(int i = 0; i< robots.size(); i++){
+			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+					robots.get(i).getY()).getBoardElements();
+			if(boardElements != null && boardElements.size() > 0){
+				if(boardElements.get(0) instanceof ConveyorBelt){
+					if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() > maxTravelDistance){
+						maxTravelDistance = ((ConveyorBelt)boardElements.get(0)).getTravelDistance();
+					}
+				}
+			}
 		}
-	    checkIfRobotsOnMap();
-	    
-	    int[][] oldPositions = new int[robots.size()][2];
-	    for(int i = 0; i<maxTravelDistance; i++){
-    		allMoves.add(";B1" + (maxTravelDistance-i));
-	    	for(int j = 0; j< robots.size(); j++){
-	    		oldPositions[j][0] = robots.get(j).getX();
-	    		oldPositions[j][1] = robots.get(j).getY();
-	    		List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
-	    				robots.get(j).getY()).getBoardElements();
-		    	if(boardElements != null && boardElements.size() > 0){
-		    		if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
-		    			if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
-		    				boardElements.get(0).action(robots.get(j));
-		    				addSimultaneousMove(robots.get(j));
-							checkIfRobotsOnMap();
-		    				gameBoard.getTile(robots.get(j).getX(), robots.get(j).getY()).instantAction(robots.get(j));
-		    			}
-		    		}
-		    	}
-	    	}
-	    	checkConveyorBeltCollides(oldPositions);
-		    checkIfRobotsOnMap();
-	    }
-	    if(maxTravelDistance == 0){// if no robot stands on a conveyorBelt, ";B1" still
-	    	// is required for conveyorBelts to move in the GUI.
-    		allMoves.add(";B10");
-	    }
+		for (Robot robot : robots) {
+			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+			if(robot.isDead()){
+				allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
+						robots.get(robot.getDirection()));
+			}
+		}
+		if(checkGameStatus())return;
+
+		int[][] oldPositions = new int[robots.size()][2];
+		for(int i = 0; i<maxTravelDistance; i++){
+			allMoves.add(";B" + (maxTravelDistance-i));
+			for(int j = 0; j< robots.size(); j++){
+				if (robots.get(j).isDead()) {
+					continue;
+				}
+				oldPositions[j][0] = robots.get(j).getX();
+				oldPositions[j][1] = robots.get(j).getY();
+				List<BoardElement> boardElements = gameBoard.getTile(robots.get(j).getX(), 
+						robots.get(j).getY()).getBoardElements();
+				if(boardElements != null && boardElements.size() > 0){
+					if(boardElements.get(0) instanceof ConveyorBelt){//ConveyorBelt should always be first
+						if(((ConveyorBelt)boardElements.get(0)).getTravelDistance() >= maxTravelDistance-i){
+							boardElements.get(0).action(robots.get(j));
+							addMove(robots.get(j));
+							if(checkGameStatus())return;
+						}
+					}
+				}
+			}
+			checkConveyorBeltCollides(oldPositions);
+			for(Robot robot : robots){
+				gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+				if(robot.isDead()){
+					allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
+							robot.getDirection());
+				}
+			}
+			if(checkGameStatus())return;
+		}
+		
+		allMoves.add(";B4");
+		for (int i = 0; i < robots.size(); i++){
+			if (robots.get(i).isDead()) {
+				continue;
+			}
+			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+					robots.get(i).getY()).getBoardElements();
+			if (boardElements != null && boardElements.size() > 0){
+				for (BoardElement boardelement : boardElements){
+					if (boardelement instanceof Gears){
+						boardelement.action(robots.get(i));
+						addMove(robots.get(i));
+					}
+				}
+			}
+
+		}
 	    allMoves.add(";B4");
 	    for(int i = 0; i<robots.size(); i++){
 	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
@@ -133,35 +187,37 @@ public class GameModel {
 	    	}
 	    	
 	    }
+
 	    fireAllLasers();
-	    
-	    for(int i = 0; i < robots.size(); i++){
-	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
-    				robots.get(i).getY()).getBoardElements();
-	    	if(boardElements != null && boardElements.size() > 0){
-	    		for(BoardElement boardelement : boardElements){
-	    			if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
-		    			boardelement.action(robots.get(i));
-		    			if (boardelement instanceof CheckPoint
-		    					&& ((CheckPoint)boardelement).getNbrOfCheckPoint()
-		    					== gameBoard.getNbrOfCheckPoints()) {
-		    				isGameOver = true;
-		    				pcs.firePropertyChange(ROBOT_WON, -1, i); //FIXME!!! Fråga Linus om addMove osv. ang. GameOver
-		    			}
-		    		}
-	    		}
-	    	}
-	    }
-	    addDamageToAllMoves();
+		int[] oldRobotHealth = new int[robots.size()];
+		for (int i = 0; i < robots.size(); i++){
+			if (robots.get(i).isDead()) {
+				continue;
+			}
+			oldRobotHealth[i] = robots.get(i).getHealth();
+			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+					robots.get(i).getY()).getBoardElements();
+			if(boardElements != null && boardElements.size() > 0){
+				for(BoardElement boardelement : boardElements){
+					if(boardelement instanceof CheckPoint || boardelement instanceof Wrench){
+						boardelement.action(robots.get(i));
+					}
+				}
+			}
+		}
+		addDamageToAllMoves(oldRobotHealth);
 	}
-	
-	private void addDamageToAllMoves(){
+
+	private void addDamageToAllMoves(int[] oldRobotHealth){
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
-			allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
+				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - 
+						robots.get(i).getHealth()));
+			}
 		}
 	}
-	
+
 	/**
 	 * Return the map as a String[][]. Each String representing
 	 * a tile with it's boardelements.
@@ -170,7 +226,7 @@ public class GameModel {
 	public String getMap(){
 		return gameBoard.getMapAsString();
 	}
-	
+
 	private boolean isRobotHit(int x, int y){
 		for(Robot robot : this.robots){
 			if(robot.getX() == x && robot.getY() == y){
@@ -178,9 +234,9 @@ public class GameModel {
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
-	
+
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
 			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall()){
@@ -201,7 +257,7 @@ public class GameModel {
 		}
 		return false;
 	}
-	
+
 	/*
 	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
 	 */
@@ -218,7 +274,7 @@ public class GameModel {
 		// This should only happen if the robot is standing still.
 		return true;
 	}
-	
+
 	private void fireLaser(int x, int y, int direction){
 		boolean robotIsHit = false;
 		boolean noWall = true;
@@ -228,7 +284,7 @@ public class GameModel {
 				y--;
 				robotIsHit = isRobotHit(x, y);
 			}
-			
+
 		}else if(direction == GameBoard.EAST){
 			while(x < gameBoard.getWidth() && !robotIsHit && noWall){
 				noWall = canMove(x, y, direction);
@@ -250,7 +306,7 @@ public class GameModel {
 		}
 
 	}
-	
+
 
 	/**
 	 * Fires all lasers from both robots and lasers attached to walls.
@@ -260,21 +316,24 @@ public class GameModel {
 		int x;
 		int y;
 		int direction;
-		
-		for(Laser laser : lasers){
+
+		for (Laser laser : lasers){
 			x = laser.getX();
 			y = laser.getY();
 			direction = laser.getDirection();
 			fireLaser(x, y, direction);
 		}
-		for(Robot robot : robots){
+		for (Robot robot : robots){
+			if (robot.isDead()) {
+				continue;
+			}
 			x = robot.getX();
 			y = robot.getY();
 			direction = robot.getDirection();
 			fireLaser(x, y, direction);
 		}
 	}
-	
+
 	/*
 	 * This method should only be called after conveyorBelts have moved all robots.
 	 * Size of oldPositions needs to be int[robots.size()][2]
@@ -283,9 +342,16 @@ public class GameModel {
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
-				nbrOfMovedRobots++;
+				if(canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
+					addSimultaneousMove(robots.get(i));
+					nbrOfMovedRobots++;
+				}else{
+					robots.get(i).setX(oldPositions[i][0]);
+					robots.get(i).setY(oldPositions[i][1]);
+				}
 			}
 		}
+		
 		List<Robot> handleCollision = new ArrayList<Robot>();
 		for(int i = 0; i<robots.size(); i++){
 			for(int j = 0; j<robots.size(); j++){
@@ -301,7 +367,7 @@ public class GameModel {
 						robots.get(i).setY(oldPositions[i][1]);
 						robots.get(j).setX(oldPositions[j][0]);
 						robots.get(j).setY(oldPositions[j][1]);
-						
+
 						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
 						// for the code to work.
 						for(int k = 1; k<=nbrOfMovedRobots; k++){
@@ -321,11 +387,11 @@ public class GameModel {
 				}
 			}
 		}
-		for(int i = 0; i<robots.size(); i++){
-			canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1]);
+		for(Robot robot : handleCollision){
+			handleCollision(robot, oldPositions[robots.indexOf(robot)][0], oldPositions[robots.indexOf(robot)][1]);
 		}
 	}
-	
+
 	/*
 	 * Return true if the collision needs to be reversed
 	 */
@@ -334,7 +400,7 @@ public class GameModel {
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
 				// Do any robot stand on the same tile as another the robot from the parameters.
-				if(robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
+				if(!r.isDead() && robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
@@ -357,7 +423,7 @@ public class GameModel {
 		}
 		return wallCollision;
 	}
-	
+
 	/**
 	 * Move robots according to the chosen cards.
 	 */
@@ -366,14 +432,14 @@ public class GameModel {
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
 			Card[] chosenCards = robots.get(i).getChosenCards();
-				currentCards.add(chosenCards);
+			currentCards.add(chosenCards);
 		}
 		int[][] oldPosition = new int[robots.size()][2];
-		
+
 		for (int i = 0; i < 5; i++) { //loop all 5 cards
 			allMoves.add(";" + "R#" + i);
-			for(int j = 0; j < robots.size(); j++){ //for all robots
-				for(int k = 0; k<robots.size(); k++){
+			for (int j = 0; j < robots.size(); j++) { //for all robots
+				for (int k = 0; k < robots.size(); k++) {
 					oldPosition[k][0] = robots.get(k).getX();
 					oldPosition[k][1] = robots.get(k).getY();
 				}
@@ -381,7 +447,7 @@ public class GameModel {
 				int indexOfHighestPriority = -1; //player index in array
 				for (int k = 0; k < currentCards.size(); k++) { //find highest card
 					if (currentCards.get(k)[i] != null //check if card exists and..
-						&&	highestPriority //..is the highest one
+							&&	highestPriority //..is the highest one
 							< currentCards.get(k)[i].getPriority()) {
 						highestPriority = currentCards.get(k)[i].getPriority();
 						indexOfHighestPriority = k;
@@ -390,12 +456,15 @@ public class GameModel {
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
 
-				int numberOfSteps = 1;
-				if(currentCards.get(indexOfHighestPriority)[i] instanceof Move){
-					numberOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
+				int nbrOfSteps = 1;
+				if (currentCards.get(indexOfHighestPriority)[i] instanceof Move){
+					nbrOfSteps = Math.abs(((Move)currentCards.get(indexOfHighestPriority)[i]
 							).getDistance());
 				}
-				for(int k = 0; k<numberOfSteps; k++){
+				for (int k = 0; k < nbrOfSteps; k++){
+					if (robots.get(indexOfHighestPriority).isDead()) {
+						break; //so that robot doesn't walk more after dying this for-loop
+					}
 					oldPosition[indexOfHighestPriority][0] = robots.get(indexOfHighestPriority).getX();
 					oldPosition[indexOfHighestPriority][1] = robots.get(indexOfHighestPriority).getY();
 					currentCards.get(indexOfHighestPriority)[i]
@@ -403,47 +472,96 @@ public class GameModel {
 					addMove(currentRobot);
 					handleCollision(currentRobot, oldPosition[indexOfHighestPriority][0], 
 							oldPosition[indexOfHighestPriority][1]);
-					checkIfRobotsOnMap();
-					gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
-							.instantAction(currentRobot);
-					checkIfRobotsOnMap();
+					if(checkGameStatus())return;
+					if(!currentRobot.isDead()){
+						gameBoard.getTile(currentRobot.getX(), currentRobot.getY())
+						.instantAction(currentRobot);
+					}
+					if(currentRobot.isDead()){
+						allMoves.add(";F#" + robots.indexOf(currentRobot) + ":" + 
+								currentRobot.getDirection());
+					}
+					if (checkGameStatus())return;
 				}
-				
+
 				//Remove the card so it doesn't execute twice
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
 			activateBoardElements();
 			checkConveyorBeltCollides(oldPosition);
 		}
-		
+
 		for(Robot robot : robots){
 			deck.returnCards(robot.returnCards());
+			if (robot.isDead() && !robot.hasLost()) {
+				resetRobotPosition(robot);
+				robot.setDead(false);
+			}
 		}
-		
+
 		//TODO give specials to robots standing on "wrench & hammer"
 	}
-	
-	private void checkIfRobotsOnMap(){
+
+	/**
+	 * 
+	 * @return true if if game is over, else false
+	 */
+	private boolean checkGameStatus(){
 		for(int i = 0; i < robots.size(); i++){
+			if (robotHasReachedLastCheckPoint())return true;
 			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
 					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
-				robots.get(i).die(); //TODO maybe separate goto spawn point and lose life
-				if (robots.get(i).getLife() == 0) {
-					if (--robotsPlaying == 1) {
-						for (int j = 0; j < robots.size() ; j++) {
-							if (robots.get(j) != null) {
-								pcs.firePropertyChange(ROBOT_WON, -1, j);
-							}
-						}
-					} else {
-						pcs.firePropertyChange(ROBOT_LOST, -1, i);
-					}
+				robots.get(i).die();
+				if(isGameOver(i))return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if a player has won.
+	 * @return true if a robot has won, else false
+	 */
+	private boolean robotHasReachedLastCheckPoint() {
+		for (int i = 0; i < robots.size(); i++){
+			if (robots.get(i).getLastCheckPoint() == gameBoard.getNbrOfCheckPoints()) {
+				isGameOver = true;
+				pcs.firePropertyChange(ROBOT_WON, -1, i);
+			}
+		}
+		return isGameOver;
+	}
+
+	/**
+	 * Check if a robot has lost.
+	 * @return true if a player has won, else false
+	 */
+	private boolean isGameOver(int robotID) {
+		if (robots.get(robotID).hasLost()) {
+			--robotsPlaying;
+			robotHasWonBecauseItsAlone();
+			if (!isGameOver) {
+				pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
+			}
+		}
+		return isGameOver;
+	}
+
+	/**
+	 * Checks if robot has won because its alone.
+	 * @return true if there is only one robot left, else false
+	 */
+	private void robotHasWonBecauseItsAlone() {
+		if (robotsPlaying == 1) {
+			for (int j = 0; j < robots.size() ; j++) {
+				if (robots.get(j) != null) {
+					isGameOver = true;
+					pcs.firePropertyChange(ROBOT_WON, -1, j);
 				}
-				resetRobotPosition(robots.get(i));
 			}
 		}
 	}
-	
+
 	private void resetRobotPosition(Robot robot){
 		int distanceFromSpawnPoint = 0;
 		while(true){
@@ -470,17 +588,20 @@ public class GameModel {
 			}
 		}
 	}
-	
+
 	private void addSimultaneousMove(Robot robot){
 		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString());
 	}
-	
+
 	private void addMove(Robot robot){
+		System.out.println("indexOf " + robots.indexOf(robot));
 		allMoves.add(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString() );
+		System.out.println(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
+				robot.getXAsString() + robot.getYAsString() );
 	}
-	
+
 	/**
 	 * Return a String containing all moves during a round.
 	 * @return a String containing all moves during a round.
@@ -494,7 +615,7 @@ public class GameModel {
 		String returnString = sb.substring(1);
 		return returnString;
 	}
-	
+
 	/**
 	 * Returns a list of all robots in the game.
 	 * @return a list of all robots in the game.
@@ -502,7 +623,7 @@ public class GameModel {
 	public List<Robot> getRobots(){
 		return robots;
 	}
-	
+
 	public GameBoard getGameBoard() {
 		return gameBoard;
 	}
@@ -510,5 +631,5 @@ public class GameModel {
 	public boolean isGameOver() {
 		return isGameOver;
 	}
-	
+
 }

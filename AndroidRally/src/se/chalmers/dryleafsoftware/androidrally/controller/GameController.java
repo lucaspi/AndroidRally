@@ -45,8 +45,8 @@ public class GameController implements PropertyChangeListener {
 				stopRoundTimer();
 				handleRemainingRobots();
 				gameModel.moveRobots();
-				//If the game is over a new round will not be started.
-				if (gameModel.isGameOver()) {
+				//If the game is over a new round will not be started. Game will end.
+				if (!gameModel.isGameOver()) {
 					newRound();
 				}
 				isRunRunning = false;
@@ -101,7 +101,7 @@ public class GameController implements PropertyChangeListener {
 		String[] cardStrings = chosenCards.split(":");
 		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
-		cardTimer[robotID].clear();
+		cardTimer[robotID].clear(); //FIXME If there are problems with the timer, this might be it
 		List<Card> cards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 1; i <= 5; i++) {
@@ -155,7 +155,6 @@ public class GameController implements PropertyChangeListener {
 			//send to client that a specific robot lost
 		} else if (pce.getPropertyName().equals(GameModel.ROBOT_WON)) {
 			//send to all clients which robot that has won
-			//end game
 		}
 	}
 

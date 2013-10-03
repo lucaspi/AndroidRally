@@ -26,6 +26,8 @@ public class Robot {
 	private int spawnPointY;
 	private int checkpoint;
 	private boolean sentCards;
+	private boolean isDead;
+	private boolean hasLost;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -34,6 +36,8 @@ public class Robot {
 		cards = new ArrayList<Card>();
 		chosenCards = new Card[5];
 		checkpoint = 0;
+		setDead(false);
+		setHasLost(false);
 	}
 	
 	/**
@@ -111,9 +115,6 @@ public class Robot {
 	 * @param damage the amount of damage
 	 */
 	public void damage(int damage){
-		// TODO
-		// There exists a bug in how robots receive damage at the moment, the line below
-		// will cause a player not to receive damage -> receive a full amount of cards.
 		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
@@ -127,6 +128,10 @@ public class Robot {
 	public void die(){
 		life--;
 		damage = 0;
+		setDead(true);
+		if (life == 0) {
+			setHasLost(true);
+		}
 	}
 	
 	/**
@@ -256,5 +261,21 @@ public class Robot {
 
 	public void setSentCards(boolean sentCards) {
 		this.sentCards = sentCards;
+	}
+
+	public boolean isDead() {
+		return isDead;
+	}
+
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+	}
+	
+	public boolean hasLost() {
+		return hasLost;
+	}
+
+	public void setHasLost(boolean hasLost) {
+		this.hasLost = hasLost;
 	}
 }
