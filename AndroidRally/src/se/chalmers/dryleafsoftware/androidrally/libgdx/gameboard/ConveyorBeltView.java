@@ -24,7 +24,6 @@ public class ConveyorBeltView extends AnimatedImage {
 	public ConveyorBeltView(TextureRegion texture, int degree, int speedMulti) {
 		super(texture);
 		this.texture = texture;
-		this.setOrigin(getWidth()/2, getHeight()/2);
 		this.rotate(-degree);
 //		this.speedMulti = speedMulti;
 		this.speedMulti = 1;

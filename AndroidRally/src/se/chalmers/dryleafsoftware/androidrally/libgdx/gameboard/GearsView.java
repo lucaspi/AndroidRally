@@ -19,7 +19,6 @@ public class GearsView extends AnimatedImage {
 	 */
 	public GearsView(TextureRegion texture, boolean clockWise) {
 		super(texture);	
-		this.setOrigin(getWidth()/2, getHeight()/2);
 		if(!clockWise) {
 			texture.flip(true, false);
 			direction *= -1;

@@ -106,6 +106,8 @@ public class Client {
 								Integer.parseInt(data[1].substring(0, 1)));
 						multi.add(ha);
 					}
+					multi.setDuration(1000);
+					multi.setMoveRound(GameAction.PHASE_LASER);
 					result.addAction(multi);
 				}else{
 					GameAction action;
@@ -119,12 +121,7 @@ public class Client {
 						}
 						action = multi;
 					}
-					if(phase < 10) {
-						action.setMoveRound(phase);
-					}else{
-						action.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
-						action.setSubRound(phase % 10);
-					}
+					action.setMoveRound(phase);
 					result.addAction(action);
 				}
 			}

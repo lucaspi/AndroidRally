@@ -18,7 +18,6 @@ public abstract class GameAction {
 	private int duration;
 	private long started;
 	private int phaseRound = PHASE_MOVE;
-	private int subPhase = 1;
 	
 	/**
 	 * When the robot is moving. (Default)
@@ -65,22 +64,6 @@ public abstract class GameAction {
 	 */
 	public int getPhase() {
 		return this.phaseRound;
-	}
-	
-	/**
-	 * Sets the subphase of the action. This should be set if the phase has several steps.
-	 * @param subRound The sub phase of the action.
-	 */
-	public void setSubRound(int subRound) {
-		this.subPhase = subRound;
-	}
-	
-	/**
-	 * Gives the subphase of the action.
-	 * @return The subphase of the action.
-	 */
-	public int getSubPhase() {
-		return this.subPhase;
 	}
 	
 	/**

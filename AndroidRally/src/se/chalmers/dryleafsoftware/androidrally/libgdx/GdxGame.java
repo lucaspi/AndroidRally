@@ -133,13 +133,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			gameBoard.stopAnimations();
 			if(!actions.isEmpty()) {
 				actions.get(0).action(gameBoard.getRobots());
-				if(actions.get(0).getPhase() == GameAction.PHASE_BOARD_ELEMENT_CONVEYER) {
-					gameBoard.stopAnimations();
-					gameBoard.setAnimate((GameAction.PHASE_BOARD_ELEMENT_CONVEYER * 10 
-							+ actions.get(0).getSubPhase()));
-				}else{
-					gameBoard.setAnimate(actions.get(0).getPhase());
-				}
+				gameBoard.setAnimate(actions.get(0).getPhase());
 			}
 		}
 		// Get next list of actions

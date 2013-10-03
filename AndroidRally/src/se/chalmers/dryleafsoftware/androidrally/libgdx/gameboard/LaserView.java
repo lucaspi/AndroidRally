@@ -2,7 +2,10 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
+import android.util.Log;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Logger;
 
 public class LaserView extends AnimatedImage {
 	
@@ -18,6 +21,8 @@ public class LaserView extends AnimatedImage {
 		this.y = y;
 		this.dir = dir;
 		setRotation(-dir * 90);
+		setVisible(false);
+		setPhaseMask(5);
 	}
 	
 	public void setCollisionMatrix(boolean[][][] collisionMatrix) {
@@ -25,6 +30,18 @@ public class LaserView extends AnimatedImage {
 		hasCalc = false;
 	}
 	
+	@Override
+	public void enable(int phase) {
+		super.enable(phase);
+		setVisible(isEnabled());
+	}
+	
+	@Override
+	public void disable() {
+		super.disable();
+		setVisible(false);
+	}
+
 	@Override
 	public void animate(float timeDelta) {
 		if(!hasCalc) {
@@ -66,11 +83,9 @@ public class LaserView extends AnimatedImage {
 				}
 				break;
 			}
-			hasCalc = true;
 			setHeight(length);
-			System.out.println("Serttign " + length);
-			System.out.println("is: " + getHeight());
 			layout();
+			hasCalc = true;
 		}
 	}
 }
