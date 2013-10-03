@@ -69,7 +69,7 @@ public class LaserView extends AnimatedImage {
 				break;
 			case MapBuilder.DIR_SOUTH:
 				length = 40 * (16-y);
-				for(int i = y; i < 16; i++) {
+				for(int i = y + 1; i < 16; i++) {
 					if(collisionMatrix[x][i][0]) {
 						length = 40 * (i-y);
 						break;
@@ -87,7 +87,7 @@ public class LaserView extends AnimatedImage {
 				break;
 			case MapBuilder.DIR_EAST:
 				length = 40 * (12-x);
-				for(int i = x; i < 12; i++) {
+				for(int i = x + 1; i < 12; i++) {
 					if(collisionMatrix[i][y][1]) {
 						length = 40 * (i-x);
 						break;

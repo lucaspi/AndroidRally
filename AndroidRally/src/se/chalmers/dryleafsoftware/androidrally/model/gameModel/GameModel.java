@@ -34,8 +34,8 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 
-	private static final String testMap = "yxxxxxxx16xxxxx5xxx36xyxx06xxx27x37xxxx12xxxxx78:16xyxxxxx27xxxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07x1xxxxx06xx16xyx06xx26xx27xxx103x103x103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxxxxxxxx06xx68:16xyxxxxxxx17xxxxxxxx88xyxxxxxxxxxxxx5xxxx";
-
+	private static final String testMap = "yxxxxxx16x16xxxxx5xxx36xyxx06xxx27x37:06xxxx12xxxxx78:16xyxxxxx27x06xxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07:26:06x1xxxxx06xx16xyx06xx26x26x27x06xx103x103x103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07:06x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxx16xx16xxxx06xx68:16xyxxxxxxx17:16xx16:37xxxxxx88xyxxxxxxxxxxxx5xxxx";
+	
 	private static String[][] testmap = new String[][] {
 		{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
 		{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},

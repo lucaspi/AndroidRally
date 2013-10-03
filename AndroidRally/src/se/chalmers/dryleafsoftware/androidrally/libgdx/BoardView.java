@@ -209,8 +209,6 @@ public class BoardView extends Stage {
 				}else if(dir == MapBuilder.DIR_EAST) {
 					collisionMatrix[x+1][y][1] = true;
 				}
-				
-				
 			}
 			@Override
 			public void buildLaser(int x, int y, int dir) {
