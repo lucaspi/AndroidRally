@@ -7,6 +7,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
@@ -42,6 +43,8 @@ public class BoardView extends Stage {
 	private final Group container; 
 	private final Table scrollContainer;
 	private final ScrollPane pane;
+	
+	private boolean[][][] collisionMatrix;
 			
 	/**
 	 * Creates a new instance of BoardView.
@@ -133,6 +136,7 @@ public class BoardView extends Stage {
 	 * NOTE: The bottom four rows of the map array will always be created as the dock area.
 	 */
 	public void createBoard(final Texture texture, String map) {
+		collisionMatrix = new boolean[12][16][2];
 		final Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
 		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
@@ -194,11 +198,24 @@ public class BoardView extends Stage {
 			public void buildWall(int x, int y, int dir) {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 384, 0, 64, 64)), x, y, dir));
+				if(dir == MapBuilder.DIR_NORTH) {
+					collisionMatrix[x][y][0] = true;
+				}else if(dir == MapBuilder.DIR_SOUTH) {
+					collisionMatrix[x][y+1][0] = true;
+				}else if(dir == MapBuilder.DIR_WEST) {
+					collisionMatrix[x][y][1] = true;
+				}else if(dir == MapBuilder.DIR_EAST) {
+					collisionMatrix[x+1][y][1] = true;
+				}
+				
+				
 			}
 			@Override
 			public void buildLaser(int x, int y, int dir) {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
+				animated.add((AnimatedImage)setCommonValues(
+						new LaserView(new TextureRegion(texture, 32, 192, 32, 32), x, y, (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
@@ -232,6 +249,9 @@ public class BoardView extends Stage {
 	public void setAnimate(int subPhase) {
 		for(AnimatedImage a : animated) {
 			a.enable(subPhase);
+			if(a instanceof LaserView) {
+				((LaserView)a).setCollisionMatrix(collisionMatrix);
+			}
 		}
 	}
 
