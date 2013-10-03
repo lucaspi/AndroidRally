@@ -217,7 +217,7 @@ public class BoardView extends Stage {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
 				animated.add((AnimatedImage)setCommonValues(
-						new LaserView(new TextureRegion(texture, 0, 192, 64, 64), x, y, (dir + 2)%4), x, y));
+						new LaserView(new TextureRegion(texture, 0, 192, 64, 64), (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
@@ -250,13 +250,12 @@ public class BoardView extends Stage {
 	 * @param subPhase The phase to animate.
 	 */
 	public void setAnimate(int subPhase) {
-//		if(subPhase == GameAction.PHASE_LASER) {
-//			for(RobotView robot : robots) {
-//			animated.add(new LaserView(new TextureRegion(texture, 0, 192, 64, 64), 
-//					(int)(robot.getX() / 40), 16 - (int)(robot.getY() / 40), 
-//					(int)(robot.getRotation() / -90)));
-//			}
-//		}
+		if(subPhase == GameAction.PHASE_LASER) {
+			for(RobotView robot : robots) {
+				animated.add(robot.getLaser());
+				container.addActor(robot.getLaser());
+			}
+		}
 		for(AnimatedImage a : animated) {
 			a.enable(subPhase);
 			if(subPhase == GameAction.PHASE_LASER && a instanceof LaserView) {

@@ -215,7 +215,7 @@ public class Client {
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
-					new LaserView(new TextureRegion(texture, 0, 192, 64, 64), 0, 0, 0));
+					new LaserView(new TextureRegion(texture, 64, 192, 64, 64), 0));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);

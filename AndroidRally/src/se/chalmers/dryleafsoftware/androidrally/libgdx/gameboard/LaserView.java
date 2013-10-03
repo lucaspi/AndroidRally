@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class LaserView extends AnimatedImage {
 	
-	private int x, y;
 	private boolean[][][] collisionMatrix;
 	private int length;
 	private boolean hasCalc = false;
@@ -25,10 +24,8 @@ public class LaserView extends AnimatedImage {
 	 * @param y The Y-coordinate. (In array).
 	 * @param dir The direction to shot.
 	 */
-	public LaserView(TextureRegion texture, int x, int y, int dir) {
+	public LaserView(TextureRegion texture, int dir) {
 		super(texture);
-		this.x = x;
-		this.y = y;
 		setRotation(-dir * 90);
 		setVisible(false);
 		setPhaseMask(5);
@@ -58,6 +55,8 @@ public class LaserView extends AnimatedImage {
 	@Override
 	public void animate(float timeDelta) {
 		if(!hasCalc) {
+			int x = (int) (getX() / 40);
+			int y = 15 - (int) (getY() / 40);
 			switch(((int)(getRotation() / -90) + 4) % 4) {
 			case MapBuilder.DIR_NORTH:
 				length = 40 * (y+1);
