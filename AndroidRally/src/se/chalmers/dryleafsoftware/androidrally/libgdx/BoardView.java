@@ -202,9 +202,9 @@ public class BoardView extends Stage {
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
-				overlayImage.setPosition(40 * x - 20, 640 - 40 * (y+1));
-				overlayImage.setOrigin(overlayImage.getWidth()/2 + 20, 
-						overlayImage.getHeight()/2);
+				overlayImage.setPosition(40 * x, 640 - 40 * (y+1) + 20);
+				overlayImage.setOrigin(overlayImage.getWidth()/2 , 
+						overlayImage.getHeight()/2 - 20);
 				overlayImage.rotate(-(dir) * 90);
 				return overlayImage;	
 			}

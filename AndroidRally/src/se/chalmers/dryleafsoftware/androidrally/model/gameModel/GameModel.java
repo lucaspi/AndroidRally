@@ -34,7 +34,7 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 	
-	private static final String testMap = "yxxxxxxxxxxxx5xxx36xyxxxxxxxxxx12xxxxx78:16xyxxxxxxxxxxxxx06xx58:16xyxxxxxxxx32xx22xx4xxx38xyxxxxxxxx1xxxxx06xx16xyxxxxxxxx103x103x103x103x103xxx18:16xyxxxxxxxx203x203x203x203x203xxx28:16xyxxxxxxxx1xxxxx06xxxyxxxxxxxxxxxx14xxx48:16xyxxxxxxxxxxxxx06xx68:16xyxxxxxxxxxxxxxxx88xyxxxxxxxxxxxx5xxxx";
+	private static final String testMap = "yxxxxxxx16xxxxx5xxx36xyxx06xxx27x37xxxx12xxxxx78:16xyxxxxx27xxxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07x1xxxxx06xx16xyx06xx26xx27xxx103x103x103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxxxxxxxx06xx68:16xyxxxxxxx17xxxxxxxx88xyxxxxxxxxxxxx5xxxx";
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.

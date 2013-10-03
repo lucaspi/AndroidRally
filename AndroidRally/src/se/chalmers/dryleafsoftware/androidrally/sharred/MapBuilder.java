@@ -78,10 +78,10 @@ public abstract class MapBuilder {
 							buildStartDock(x, y, tileData / 10);
 							break;
 						case TILE_WALL:
-							buildWall(x, y, tileData / 10 + 1);
+							buildWall(x, y, tileData / 10);
 							break;
 						case TILE_LASER:
-							buildLaser(x, y, tileData / 10 + 1);
+							buildLaser(x, y, tileData / 10);
 							break;
 						}
 					} // loop - elements
