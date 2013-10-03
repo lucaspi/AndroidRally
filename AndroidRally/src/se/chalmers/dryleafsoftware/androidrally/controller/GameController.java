@@ -87,7 +87,7 @@ public class GameController implements PropertyChangeListener {
 
 	public void stopRoundTimer() {
 		timer.stop();
-		timer.clear(); //FIXME If there are problems with the timer, this might be it
+		timer.clear();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class GameController implements PropertyChangeListener {
 		String[] cardStrings = chosenCards.split(":");
 		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
-		cardTimer[robotID].clear(); //FIXME If there are problems with the timer, this might be it
+		cardTimer[robotID].clear();
 		List<Card> cards = new ArrayList<Card>();
 		Robot robot = gameModel.getRobots().get(robotID);
 		for (int i = 1; i <= 5; i++) {
