@@ -115,7 +115,7 @@ public class GameModel {
 
 		int[][] oldPositions = new int[robots.size()][2];
 		for(int i = 0; i<maxTravelDistance; i++){
-			allMoves.add(";B" + (maxTravelDistance-i));
+			allMoves.add(";B" + "1" + (maxTravelDistance-i));
 			for(int j = 0; j< robots.size(); j++){
 				if (robots.get(j).isDead()) {
 					continue;
