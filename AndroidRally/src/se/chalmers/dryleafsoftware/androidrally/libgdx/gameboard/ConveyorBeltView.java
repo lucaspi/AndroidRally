@@ -34,12 +34,6 @@ public class ConveyorBeltView extends AnimatedImage {
 		}
 		this.setPhaseMask(mask);
 	}
-	
-	@Override
-	public void setSize(float width, float height) {
-		super.setSize(width, height);
-		this.setOrigin(getWidth()/2, getHeight()/2);
-	}
 
 	@Override
 	public void animate(float timeDelta) {

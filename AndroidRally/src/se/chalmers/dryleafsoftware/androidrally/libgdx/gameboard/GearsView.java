@@ -26,12 +26,6 @@ public class GearsView extends AnimatedImage {
 		}
 		this.setPhaseMask(4);
 	}
-	
-	@Override
-	public void setSize(float width, float height) {
-		super.setSize(width, height);
-		this.setOrigin(getWidth()/2, getHeight()/2);
-	}
 
 	@Override
 	public void animate(float timeDelta) {

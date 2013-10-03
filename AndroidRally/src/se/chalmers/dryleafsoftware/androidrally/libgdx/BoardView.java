@@ -215,7 +215,7 @@ public class BoardView extends Stage {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
 				animated.add((AnimatedImage)setCommonValues(
-						new LaserView(new TextureRegion(texture, 32, 192, 32, 32), x, y, (dir + 2)%4), x, y));
+						new LaserView(new TextureRegion(texture, 0, 192, 64, 64), x, y, (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
@@ -228,6 +228,7 @@ public class BoardView extends Stage {
 			private Image setCommonValues(Image i, int x, int y) {
 				i.setSize(40, 40);
 				i.setPosition(40 * x, 640 - 40 * (y+1));
+				i.setOrigin(20, 20);
 				return i;
 			}
 		};

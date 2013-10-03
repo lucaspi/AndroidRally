@@ -2,48 +2,29 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class LaserView extends AnimatedImage {
 	
 	private int x, y;
-	private int dir;
+	private final int dir;
 	private boolean[][][] collisionMatrix;
-	private TextureRegion texture;
+	private int length;
+	private boolean hasCalc = false;
 	
 	public LaserView(TextureRegion texture, int x, int y, int dir) {
 		super(texture);
-		this.texture = texture;
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
+		setRotation(-dir * 90);
 	}
 	
 	public void setCollisionMatrix(boolean[][][] collisionMatrix) {
 		this.collisionMatrix = collisionMatrix;
+		hasCalc = false;
 	}
 	
-	int length;
-	boolean hasCalc = false;
-	
-	@Override
-	public void draw(SpriteBatch spriteBatch, float a) {
-		if(getEnabled()) {
-			spriteBatch.draw(
-					texture,
-			        getX() + 4,
-			        getY(),
-			        texture.getRegionWidth()/2,
-			        texture.getRegionHeight()/2 + 4,
-			        texture.getRegionWidth(),
-			        length,
-			        1,
-			        1,
-			        -dir * 90);
-		}
-	}
-
 	@Override
 	public void animate(float timeDelta) {
 		if(!hasCalc) {
@@ -64,7 +45,6 @@ public class LaserView extends AnimatedImage {
 						length = 40 * (i-y);
 						break;
 					}
-					System.out.println(x + ", " + i + ", " + collisionMatrix[x][i][0]);
 				}
 				break;
 			case MapBuilder.DIR_WEST:
@@ -83,11 +63,14 @@ public class LaserView extends AnimatedImage {
 						length = 40 * (i-x);
 						break;
 					}
-					System.out.println(x + ", " + i + ", " + collisionMatrix[x][i][0]);
 				}
 				break;
 			}
 			hasCalc = true;
+			setHeight(length);
+			System.out.println("Serttign " + length);
+			System.out.println("is: " + getHeight());
+			layout();
 		}
 	}
 }
