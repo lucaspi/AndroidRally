@@ -54,7 +54,7 @@ public class GameController implements PropertyChangeListener {
 		};
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			cardTimer[i] = new CardTimer(65, i, this);
+			cardTimer[i] = new CardTimer(30, i, this);
 		}
 		hoursEachRound = 24;
 	}
@@ -72,7 +72,7 @@ public class GameController implements PropertyChangeListener {
 	public void handleRemainingRobots() {
 		for (int i = 0; i < gameModel.getRobots().size(); i++) {
 			if (!gameModel.getRobots().get(i).haveSentCards()) {
-				setChosenCardsToRobot(i + ":-1:-1:-1:-1:-1");
+				setRandomCards(i);
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class GameController implements PropertyChangeListener {
 	 * separate document.
 	 * @return a String containing data of the locked cards.
 	 */
-	public String setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
+	public synchronized String setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
 		String[] cardStrings = chosenCards.split(":");
 		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
@@ -149,8 +149,8 @@ public class GameController implements PropertyChangeListener {
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
-		if (pce.getPropertyName().equals("cardTimeOut")) {
-			setChosenCardsToRobot((Integer)pce.getNewValue() + ":-1:-1:-1:-1:-1");
+		if (pce.getPropertyName().equals(CardTimer.CARD_TIME_OUT)) {
+			setRandomCards((Integer)pce.getNewValue());
 		} else if (pce.getPropertyName().equals(GameModel.ROBOT_LOST)) {
 			//send to client that a specific robot lost
 		} else if (pce.getPropertyName().equals(GameModel.ROBOT_WON)) {
@@ -177,6 +177,8 @@ public class GameController implements PropertyChangeListener {
 			}
 			sb.append(c.getPriority() + ":");
 		}
+		cardTimer[robotID].resetCardTimer();
+		cardTimer[robotID].start();
 		return sb.toString(); 
 	}
 	
@@ -223,6 +225,7 @@ public class GameController implements PropertyChangeListener {
 		return this.gameModel.getAllMoves();
 	}
 	
-//TODO game end how?
-
+	private void setRandomCards(int robotID) {
+		setChosenCardsToRobot(robotID + ":-1:-1:-1:-1:-1");
+	}
 }
