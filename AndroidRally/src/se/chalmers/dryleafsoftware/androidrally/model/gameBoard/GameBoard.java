@@ -185,22 +185,22 @@ public class GameBoard {
 		tiles[x][y].setWall(wall);
 		switch (wall){
 		case GameBoard.NORTH:
-			if(y>0){
+			if(y-1>0){
 				tiles[x][y-1].setWall(GameBoard.SOUTH);
 			}
 			break;
 		case GameBoard.EAST:
-			if(x<getWidth()){
+			if(x+1<getWidth()){
 				tiles[x+1][y].setWall(GameBoard.WEST);
 			}
 			break;
 		case GameBoard.SOUTH:
-			if(y<getHeight()){
+			if(y+1<getHeight()){
 				tiles[x][y+1].setWall(GameBoard.NORTH);
 			}
 			break;
 		case GameBoard.WEST:
-			if(x>0){
+			if(x-1>0){
 				tiles[x-1][y].setWall(GameBoard.EAST);	
 			}
 			break;

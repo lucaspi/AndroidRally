@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class LaserView extends AnimatedImage {
 	
-	private boolean[][][] collisionMatrix;
+	private CollisionMatrix collisionMatrix;
 	private int length;
 	private boolean hasCalc = false;
 	
@@ -35,7 +35,7 @@ public class LaserView extends AnimatedImage {
 	 * Set to use proper collision.
 	 * @param collisionMatrix Array of booleans describing collision.
 	 */
-	public void setCollisionMatrix(boolean[][][] collisionMatrix) {
+	public void setCollisionMatrix(CollisionMatrix collisionMatrix) {
 		this.collisionMatrix = collisionMatrix;
 		hasCalc = false;
 	}
@@ -57,11 +57,12 @@ public class LaserView extends AnimatedImage {
 		if(!hasCalc) {
 			int x = (int) (getX() / 40);
 			int y = 15 - (int) (getY() / 40);
-			switch(((int)(getRotation() / -90) + 4) % 4) {
+			int dir = ((int)(getRotation() / -90) + 4) % 4;
+			switch(dir) {
 			case MapBuilder.DIR_NORTH:
 				length = 40 * (y+1);
 				for(int i = 0; i <= y; i++) {
-					if(collisionMatrix[x][y - i][0]) {
+					if(collisionMatrix.cannotTravel(x, y-i, dir)) {
 						length = 40 * (i+1);
 						break;
 					}
@@ -70,7 +71,7 @@ public class LaserView extends AnimatedImage {
 			case MapBuilder.DIR_SOUTH:
 				length = 40 * (16-y);
 				for(int i = y + 1; i < 16; i++) {
-					if(collisionMatrix[x][i][0]) {
+					if(collisionMatrix.cannotTravel(x, i, dir)) {
 						length = 40 * (i-y);
 						break;
 					}
@@ -79,7 +80,7 @@ public class LaserView extends AnimatedImage {
 			case MapBuilder.DIR_WEST:
 				length = 40 * (x+1);
 				for(int i = 0; i <= x; i++) {
-					if(collisionMatrix[x - i][y][1]) {
+					if(collisionMatrix.cannotTravel(x-i, y, dir)) {
 						length = 40 * (i+1);
 						break;
 					}
@@ -88,7 +89,7 @@ public class LaserView extends AnimatedImage {
 			case MapBuilder.DIR_EAST:
 				length = 40 * (12-x);
 				for(int i = x + 1; i < 12; i++) {
-					if(collisionMatrix[i][y][1]) {
+					if(collisionMatrix.cannotTravel(i, y, dir)) {
 						length = 40 * (i-x);
 						break;
 					}

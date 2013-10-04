@@ -10,6 +10,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HealthAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
@@ -126,7 +127,13 @@ public class Client {
 					result.addAction(action);
 				}
 			}else if(parallel[0].equals("F")) {
-				// TODO: SPECIAL ACTIOn !
+//				result.addAction(createSingleAction(parallel[1]));
+//				result.addAction(new SpecialAction(robotID,
+//						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));
+//				result.addToNext(new SpecialAction(robotID, 
+//						SpecialAction.RESPAWN_ACTION,
+//						SpecialAction.VISIBLE_ACTION));
+				
 			}
 			// Generic multiaction
 			else if(parallel.length > 1){

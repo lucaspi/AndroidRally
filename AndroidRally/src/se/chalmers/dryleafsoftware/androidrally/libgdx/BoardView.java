@@ -6,6 +6,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CollisionMatrix;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
@@ -45,8 +46,7 @@ public class BoardView extends Stage {
 	private final Group container; 
 	private final Table scrollContainer;
 	private final ScrollPane pane;
-	
-	private boolean[][][] collisionMatrix;
+	private CollisionMatrix collisionMatrix;
 			
 	/**
 	 * Creates a new instance of BoardView.
@@ -138,7 +138,7 @@ public class BoardView extends Stage {
 	 * NOTE: The bottom four rows of the map array will always be created as the dock area.
 	 */
 	public void createBoard(final Texture texture, String map) {
-		collisionMatrix = new boolean[12][16][2];
+		collisionMatrix = new CollisionMatrix(12, 16);
 		final Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
 		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
@@ -201,13 +201,13 @@ public class BoardView extends Stage {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 384, 0, 64, 64)), x, y, dir));
 				if(dir == MapBuilder.DIR_NORTH) {
-					collisionMatrix[x][y][0] = true;
+					collisionMatrix.setWall(x, y, 0);
 				}else if(dir == MapBuilder.DIR_SOUTH) {
-					collisionMatrix[x][y+1][0] = true;
+					collisionMatrix.setWall(x, y+1, 0);
 				}else if(dir == MapBuilder.DIR_WEST) {
-					collisionMatrix[x][y][1] = true;
+					collisionMatrix.setWall(x, y, 1);
 				}else if(dir == MapBuilder.DIR_EAST) {
-					collisionMatrix[x+1][y][1] = true;
+					collisionMatrix.setWall(x+1, y, 1);
 				}
 			}
 			@Override
@@ -249,9 +249,11 @@ public class BoardView extends Stage {
 	 */
 	public void setAnimate(int subPhase) {
 		if(subPhase == GameAction.PHASE_LASER) {
+			collisionMatrix.clearDynamic();
 			for(RobotView robot : robots) {
 				animated.add(robot.getLaser());
 				container.addActor(robot.getLaser());
+				collisionMatrix.setDynamic((int)(robot.getX()/40), 15 - (int)(robot.getY()/40));
 			}
 		}
 		for(AnimatedImage a : animated) {
