@@ -152,11 +152,6 @@ public class GameController implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals(CardTimer.CARD_TIME_OUT)) {
 			setRandomCards((Integer) pce.getNewValue());
-		} else if (pce.getPropertyName().equals(GameModel.ROBOT_LOST)) {
-			cardTimer[(Integer) pce.getNewValue()].removePropertyChangeListener(this);
-			//send to client that a specific robot lost
-		} else if (pce.getPropertyName().equals(GameModel.ROBOT_WON)) {
-			//send to all clients which robot that has won
 		}
 	}
 
