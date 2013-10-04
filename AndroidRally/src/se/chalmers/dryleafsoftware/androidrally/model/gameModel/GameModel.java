@@ -448,7 +448,6 @@ public class GameModel {
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
 			activateBoardElements();
-			checkConveyorBeltCollides(oldPosition);
 		}
 
 		allMoves.add(";B6");
