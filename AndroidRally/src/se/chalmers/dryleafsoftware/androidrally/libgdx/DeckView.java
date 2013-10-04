@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -49,6 +50,7 @@ public class DeckView extends Stage {
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
 	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
+	private final Table allPlayerInfo; // The panel with all the players' info
 
 	/**
 	 * Specifying that the game should start.
@@ -74,6 +76,10 @@ public class DeckView extends Stage {
 	 * Specifying that the round has ended.
 	 */
 	public static final String TIMER_ROUND = "timerRound";
+	/**
+	 * Specifying that the info button has been pressed.
+	 */
+	public static final String EVENT_INFO = "info";
 	
 	private int timerTick;
 	private final Timer timer;	
@@ -82,7 +88,7 @@ public class DeckView extends Stage {
 	/**
 	 * Creates a new default instance.
 	 */
-	public DeckView(RobotView clientsRobot) {
+	public DeckView(List<RobotView> robots, int robotID) {
 		super();
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -162,6 +168,23 @@ public class DeckView extends Stage {
     			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
     		}
     	});
+        
+        final TextButton showPlayers = new TextButton("Info", style);
+        statusBar.add(showPlayers); // Border
+        showPlayers.addListener(new ClickListener() {
+        	private boolean dispOpp = false;
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			if(dispOpp) {
+    				displayNormal();
+    				showPlayers.setText("Info");
+    			}else{
+    				displayOpponentInfo();
+    				showPlayers.setText("Back");
+    			}
+    			dispOpp = !dispOpp;
+    		}
+    	});
 		
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
@@ -182,8 +205,21 @@ public class DeckView extends Stage {
     	timerLabel = new Label("", lStyle);
     	statusBar.add(timerLabel);
     	
-    	playerInfo = new PlayerInfoView(compTexture, clientsRobot);
+    	playerInfo = new PlayerInfoView(compTexture, robots.get(robotID));
     	statusBar.add(playerInfo);
+    	
+    	allPlayerInfo = new Table();
+    	allPlayerInfo.setPosition(0, 0);
+    	allPlayerInfo.setSize(480, 240);
+    	Table scrollContainer = new Table();
+    	ScrollPane pane = new ScrollPane(scrollContainer);
+    	allPlayerInfo.add(pane);
+    	for(int i = 0; i < robots.size(); i++) {
+    		if(i != robotID) {
+    			scrollContainer.add(new PlayerInfoView(compTexture, robots.get(i))).pad(10);
+    			scrollContainer.row();
+    		}
+    	}
 	}
 	
 	/*
@@ -336,6 +372,12 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	public void displayOpponentInfo() {
+		container.removeActor(lowerArea);
+		container.removeActor(upperArea);
+		container.add(allPlayerInfo);
+	}
+	
 	/**
 	 * Displays the panel which should be visible while waiting for round results.
 	 */
@@ -346,6 +388,12 @@ public class DeckView extends Stage {
 				r.removeListener(cardListener);
 			}
 		}
+	}
+	
+	public void displayNormal() {
+		container.removeActor(allPlayerInfo);
+		container.add(upperArea);
+		container.add(lowerArea);
 	}
 	
 	/**

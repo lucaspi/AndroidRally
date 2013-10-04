@@ -44,6 +44,10 @@ public class Client {
 		this.robotID = 0;
 	}
 	
+	public int getRobotID() {
+		return robotID;
+	}
+	
 	/**
 	 * Returns the map of the board as a matrix of strings.
 	 * @return A map of the board as a matrix of strings.
@@ -60,15 +64,6 @@ public class Client {
 	public boolean sendCard(CardView[] cards) {
 		// Send example: ”12345:0:7:1:4:-1"
 		StringBuilder sb = new StringBuilder("" + robotID);
-		int[] temp = new int[5]; // TODO: remove
-		for(int i = 0; i < 5; i++) {
-			if(cards[i] == null) {
-				temp[i] = -1;
-			}else{
-				temp[i] = cards[i].getIndex();
-			}
-			sb.append(":" + temp[i]);
-		}		
 		controller.setChosenCardsToRobot(sb.toString()); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
@@ -216,11 +211,10 @@ public class Client {
 	 * @param dockPositions All the docks' positions.
 	 * @return A list of all the robots.
 	 */
-	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {		
-		// From server example: "
+	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {	
 		// TODO: server input
 		List<RobotView> robots = new ArrayList<RobotView>();	
-		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
+		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
 					new LaserView(new TextureRegion(texture, 64, 192, 64, 64), 0));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);

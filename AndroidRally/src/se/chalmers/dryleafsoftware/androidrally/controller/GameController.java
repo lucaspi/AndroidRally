@@ -22,7 +22,6 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-//	private int nbrOfRobotsAlive; TODO remove
 	private String nbrOfPlayers;
 	private String mapAsString;
 
@@ -30,12 +29,12 @@ public class GameController implements PropertyChangeListener {
 	public GameController(int nbrOfPlayers) {
 		this.nbrOfPlayers = String.valueOf(nbrOfPlayers);
 		isRunRunning = false;
-		nbrOfRobotsDone = 0;
 		gameModel = new GameModel(this, nbrOfPlayers);
 		
 		mapAsString = gameModel.getMap();
 		
 		timer = new Timer();
+		timer.stop();
 		endOfRound = new Timer.Task() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
@@ -54,7 +53,8 @@ public class GameController implements PropertyChangeListener {
 		};
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			cardTimer[i] = new CardTimer(30, i, this);
+			cardTimer[i] = new CardTimer(30, i); //let the time be a variable
+			cardTimer[i].addPropertyChangeListener(this);
 		}
 		hoursEachRound = 24;
 	}
@@ -83,6 +83,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void startRoundTimer() {
 		Timer.schedule(endOfRound, hoursEachRound * 3600000);
+		timer.start();
 	}
 
 	public void stopRoundTimer() {
@@ -160,11 +161,7 @@ public class GameController implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent pce) {
 		if (pce.getPropertyName().equals(CardTimer.CARD_TIME_OUT)) {
-			setRandomCards((Integer)pce.getNewValue());
-		} else if (pce.getPropertyName().equals(GameModel.ROBOT_LOST)) {
-			//send to client that a specific robot lost
-		} else if (pce.getPropertyName().equals(GameModel.ROBOT_WON)) {
-			//send to all clients which robot that has won
+			setRandomCards((Integer) pce.getNewValue());
 		}
 	}
 
@@ -187,7 +184,6 @@ public class GameController implements PropertyChangeListener {
 			}
 			sb.append(c.getPriority() + ":");
 		}
-		cardTimer[robotID].resetCardTimer();
 		cardTimer[robotID].start();
 		return sb.toString(); 
 	}

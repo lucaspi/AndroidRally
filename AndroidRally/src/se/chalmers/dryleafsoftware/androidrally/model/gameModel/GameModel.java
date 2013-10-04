@@ -30,12 +30,10 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  *
  */
 public class GameModel {
-	public static int hejhej = 0;
 	private GameBoard gameBoard;
 	private List<Robot> robots;
 	private Deck deck;
 	private List<String> allMoves = new ArrayList<String>();
-	private PropertyChangeSupport pcs;
 	public static final String ROBOT_WON = "robotWon";
 	public static final String ROBOT_LOST = "robotLost";
 	private int robotsPlaying;
@@ -52,7 +50,7 @@ public class GameModel {
 	 * @param nbrOfPlayers the number of players in the game including CPU:s
 	 */
 	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers) {
-		this(pcl, nbrOfPlayers, testMap);
+		this(nbrOfPlayers, testMap);
 	}
 
 	/**
@@ -62,7 +60,7 @@ public class GameModel {
 	 * @param nbrOfPlayers
 	 * @param testMap
 	 */
-	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers, String map) {
+	public GameModel(int nbrOfPlayers, String map) {
 		gameBoard = new GameBoard(map);
 		isGameOver = false;
 		robots = new ArrayList<Robot>();
@@ -72,8 +70,6 @@ public class GameModel {
 		}
 		robotsPlaying = nbrOfPlayers;
 		deck = new Deck();
-		pcs = new PropertyChangeSupport(this);
-		pcs.addPropertyChangeListener(pcl);
 	}
 
 	/**
@@ -494,7 +490,7 @@ public class GameModel {
 		for (int i = 0; i < robots.size(); i++){
 			if (robots.get(i).getLastCheckPoint() == gameBoard.getNbrOfCheckPoints()) {
 				isGameOver = true;
-				pcs.firePropertyChange(ROBOT_WON, -1, i);
+				addRobotWon(robots.get(i));
 				return isGameOver;
 			}
 		}
@@ -508,7 +504,7 @@ public class GameModel {
 	private boolean isGameOver(int robotID) {
 		checkRobotAlone();
 		if (!isGameOver) {
-			pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
+			addRobotLost(robots.get(robotID));
 		}
 		return isGameOver;
 	}
@@ -522,7 +518,7 @@ public class GameModel {
 			for (int j = 0; j < robots.size() ; j++) {
 				if (!robots.get(j).hasLost()) {
 					isGameOver = true;
-					pcs.firePropertyChange(ROBOT_WON, -1, j);
+					addRobotWon(robots.get(j));
 					return;
 				}
 			}
@@ -554,6 +550,14 @@ public class GameModel {
 				break;
 			}
 		}
+	}
+	
+	private void addRobotWon(Robot robot) {
+		allMoves.add(";W#" + robot);
+	}
+	
+	private void addRobotLost(Robot robot) {
+		allMoves.add(";L#" + robot);
 	}
 
 	private void addSimultaneousMove(Robot robot){

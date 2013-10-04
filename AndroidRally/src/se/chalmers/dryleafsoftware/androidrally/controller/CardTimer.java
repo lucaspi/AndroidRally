@@ -5,37 +5,54 @@ import java.beans.PropertyChangeSupport;
 
 import com.badlogic.gdx.utils.Timer;
 
-public class CardTimer extends Timer {
+public class CardTimer {
 	
 	private int robotNbr;
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	public static final String CARD_TIME_OUT = "cardTimeOut";
-	private long secondsInFuture;
+	private long seconds;
+	private Timer timer;
 	
-	public CardTimer(long secondsInFuture, int robotID, PropertyChangeListener pcl) {
+	public CardTimer(long seconds, int robotID) {
 		super();
-		this.secondsInFuture = secondsInFuture;
+		timer = new Timer();
+		timer.stop();
+		this.seconds = seconds;
 		this.robotNbr = robotID;
-		pcs.addPropertyChangeListener(pcl);
-		stop();
 	}
 	
-	public void resetCardTimer() {
-		schedule(new Timer.Task() {
+	private void resetCardTimer() {
+		Timer.schedule(new Timer.Task() {
 			@Override
 			public void run() {
 				pcs.firePropertyChange(CARD_TIME_OUT, -1, robotNbr);
 			}
-		}, secondsInFuture);
+		}, seconds);
 	}
 	
 	/**
-	 * NEVER CALL if you have not first called resetCardTimer right before.
-	 * <br>
-	 * How the API is built is the problem.
+	 * Starts the timer based on the number of seconds given in the
+	 * constructor. Sends an event to listeners with name given by
+	 * static modifier CardTimer.CARD_TIME_OUT.
 	 */
-	@Override
 	public void start() {
-		super.start();
+		resetCardTimer();
+		timer.start();
+	}
+
+	public void stop() {
+		timer.stop();
+	}
+
+	public void clear() {
+		timer.clear();
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		pcs.addPropertyChangeListener(pcl);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		pcs.removePropertyChangeListener(pcl);
 	}
 }
