@@ -34,7 +34,11 @@ public class HealthAction extends GameAction {
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
-		robots.get(getRobotID()).setDamage(damage);
-		robots.get(getRobotID()).setLives(lives);
+		if(damage != -1) {
+			robots.get(getRobotID()).setDamage(damage);
+		}
+		if(lives != -1) {
+			robots.get(getRobotID()).setLives(lives);
+		}
 	}
 }
