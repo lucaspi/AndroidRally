@@ -138,6 +138,10 @@ public class Client {
 //						SpecialAction.RESPAWN_ACTION,
 //						SpecialAction.VISIBLE_ACTION));
 				
+			}else if(parallel[0].equals("L")) {
+				// TODO: lose
+			}else if(parallel[0].equals("W")) {
+				// TODO: win
 			}
 			// Generic multiaction
 			else if(parallel.length > 1){
