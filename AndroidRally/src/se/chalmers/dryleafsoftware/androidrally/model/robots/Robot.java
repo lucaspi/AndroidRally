@@ -247,6 +247,7 @@ public class Robot {
 		tempCards.addAll(cards);
 		for(int i = 0; i<5; i++){
 			if(this.chosenCards[i] == null){
+				System.out.println("tempCards Size: " + tempCards.size());
 				this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
 			}
 		}
