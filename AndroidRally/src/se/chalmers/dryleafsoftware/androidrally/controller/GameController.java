@@ -22,7 +22,7 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	private int nbrOfRobotsAlive;
+//	private int nbrOfRobotsAlive; TODO remove
 	private String nbrOfPlayers;
 	private String mapAsString;
 
@@ -115,7 +115,7 @@ public class GameController implements PropertyChangeListener {
 		robot.fillEmptyCardRegisters();
 		robot.setSentCards(true);
 		nbrOfRobotsDone++;
-		if(nbrOfRobotsAlive == nbrOfRobotsDone && !isRunRunning) {
+		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
 			endOfRound.run();
 		}
 
@@ -202,14 +202,6 @@ public class GameController implements PropertyChangeListener {
 	public void newRound() {
 		gameModel.dealCards();
 		startRoundTimer();
-		
-		//Check how many robots that are still alive this round
-		nbrOfRobotsAlive = 0;
-		for (Robot robotInList : gameModel.getRobots()) {
-			if (robotInList.getLife() > 0) {
-				nbrOfRobotsAlive++;
-			}
-		}
 		nbrOfRobotsDone = 0;
 	}
 	
