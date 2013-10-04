@@ -74,7 +74,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			gameBoard.addRobot(player);
 		}		
 		
-		this.deckView = new DeckView(players.get(0));
+		this.deckView = new DeckView(players, client.getRobotID());
 		deckView.addListener(this);
 		deckView.displayDrawCard();
 		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
@@ -195,6 +195,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		gameBoard.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		gameBoard.draw();
+		deckView.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		deckView.draw();
 		update();
 		
