@@ -64,6 +64,15 @@ public class Client {
 	public boolean sendCard(CardView[] cards) {
 		// Send example: ”12345:0:7:1:4:-1"
 		StringBuilder sb = new StringBuilder("" + robotID);
+		int[] temp = new int[5]; 
+		for(int i = 0; i < 5; i++) {
+			if(cards[i] == null) {
+				temp[i] = -1;
+			}else{
+				temp[i] = cards[i].getIndex();
+			}
+			sb.append(":" + temp[i]);
+		}	
 		controller.setChosenCardsToRobot(sb.toString()); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
