@@ -206,6 +206,7 @@ public class GameController implements PropertyChangeListener {
 	 * round has ended (unless the game is over).
 	 */
 	public void newRound() {
+		System.out.println("------------------------newRound---------------------------");
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
