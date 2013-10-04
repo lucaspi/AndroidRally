@@ -487,35 +487,35 @@ public class GameModel {
 			if (robots.get(i).getLastCheckPoint() == gameBoard.getNbrOfCheckPoints()) {
 				isGameOver = true;
 				pcs.firePropertyChange(ROBOT_WON, -1, i);
+				return isGameOver;
 			}
 		}
 		return isGameOver;
 	}
 
 	/**
-	 * Check if a robot has lost.
+	 * Check if a robot has lost IF a robot has lost.
 	 * @return true if a player has won, else false
 	 */
 	private boolean isGameOver(int robotID) {
-		if (robotsPlaying == 1) {
-			robotHasWonBecauseItsAlone();
-			if (!isGameOver) {
-				pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
-			}
+		checkRobotAlone();
+		if (!isGameOver) {
+			pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
 		}
 		return isGameOver;
 	}
 
 	/**
 	 * Checks if robot has won because its alone.
-	 * @return true if there is only one robot left, else false
+	 * Sets isGameOver to true if game is over.
 	 */
-	private void robotHasWonBecauseItsAlone() {
+	private void checkRobotAlone() {
 		if (robotsPlaying == 1) {
 			for (int j = 0; j < robots.size() ; j++) {
-				if (robots.get(j) != null) {
+				if (!robots.get(j).hasLost()) {
 					isGameOver = true;
 					pcs.firePropertyChange(ROBOT_WON, -1, j);
+					return;
 				}
 			}
 		}
@@ -589,6 +589,10 @@ public class GameModel {
 
 	public boolean isGameOver() {
 		return isGameOver;
+	}
+
+	public int getRobotsPlaying() {
+		return robotsPlaying;
 	}
 
 }
