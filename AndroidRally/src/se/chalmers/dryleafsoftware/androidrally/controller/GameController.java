@@ -5,8 +5,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.badlogic.gdx.utils.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
@@ -17,7 +17,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
 	private Timer timer;
-	private Timer.Task endOfRound;
+	private TimerTask endOfRound;
 	private int hoursEachRound;
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
@@ -34,8 +34,9 @@ public class GameController implements PropertyChangeListener {
 		mapAsString = gameModel.getMap();
 		
 		timer = new Timer();
-		timer.stop();
-		endOfRound = new Timer.Task() {
+		timer.cancel();
+		System.out.println("Antal tasks när timer skapas: " + timer.purge());
+		endOfRound = new TimerTask() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
@@ -82,13 +83,12 @@ public class GameController implements PropertyChangeListener {
 	 * 24 hours as default.
 	 */
 	public void startRoundTimer() {
-		Timer.schedule(endOfRound, hoursEachRound * 3600000);
-		timer.start();
+		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 
 	public void stopRoundTimer() {
-		timer.stop();
-		timer.clear();
+		timer.cancel();
+		timer.purge();
 	}
 
 	/**
@@ -99,8 +99,8 @@ public class GameController implements PropertyChangeListener {
 	 * @return a String containing data of the locked cards.
 	 */
 	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) { //TODO ClientID?
-		cardTimer[robotID].stop();
-		cardTimer[robotID].clear();
+		cardTimer[robotID].cancel();
+		cardTimer[robotID].purge();
 		try {
 			String[] cardStrings = chosenCards.split(":");
 			List<Card> cards = new ArrayList<Card>();

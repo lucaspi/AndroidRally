@@ -2,8 +2,9 @@ package se.chalmers.dryleafsoftware.androidrally.controller;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.badlogic.gdx.utils.Timer;
 
 public class CardTimer {
 	
@@ -16,18 +17,9 @@ public class CardTimer {
 	public CardTimer(long seconds, int robotID) {
 		super();
 		timer = new Timer();
-		timer.stop();
+		timer.cancel();
 		this.seconds = seconds;
 		this.robotNbr = robotID;
-	}
-	
-	private void resetCardTimer() {
-		Timer.schedule(new Timer.Task() {
-			@Override
-			public void run() {
-				pcs.firePropertyChange(CARD_TIME_OUT, -1, robotNbr);
-			}
-		}, seconds);
 	}
 	
 	/**
@@ -36,16 +28,20 @@ public class CardTimer {
 	 * static modifier CardTimer.CARD_TIME_OUT.
 	 */
 	public void start() {
-		resetCardTimer();
-		timer.start();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				pcs.firePropertyChange(CARD_TIME_OUT, -1, robotNbr);
+			}
+		}, seconds);
 	}
 
-	public void stop() {
-		timer.stop();
+	public void cancel() {
+		timer.cancel();
 	}
 
-	public void clear() {
-		timer.clear();
+	public void purge() {
+		timer.purge();
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
