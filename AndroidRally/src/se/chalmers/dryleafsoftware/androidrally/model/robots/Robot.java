@@ -81,6 +81,11 @@ public class Robot {
 	 */
 	public void addCards(List<Card> cards){
 		this.cards = cards;
+		for (Card card : chosenCards) {
+			if ( card != null) {
+				this.cards.add(card);
+			}
+		}
 	}
 	
 	/**
@@ -90,6 +95,11 @@ public class Robot {
 		List<Card> returnCards= new ArrayList<Card>();
 		
 		returnCards.addAll(cards);
+		
+		if (hasLost) {
+			return returnCards;
+		}
+		
 		
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
@@ -246,7 +256,7 @@ public class Robot {
 	}
 	
 	public void fillEmptyCardRegisters(){
-		if(!isDead){
+		if(!hasLost){ //locked cards shouldn't be able to be randomized
 			Random random = new Random();
 			List<Card> tempCards = new ArrayList<Card>();
 			tempCards.addAll(cards);
