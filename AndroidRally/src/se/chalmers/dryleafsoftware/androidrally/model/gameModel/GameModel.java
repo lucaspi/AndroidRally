@@ -17,9 +17,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Wrench;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
-//TODO
-//locked Card strängen fel?
-
 
 /**
  * This is the mainModel for AndroidRally.
@@ -88,7 +85,7 @@ public class GameModel {
 	 * A method that make board elements "do things" with robots, i.e.
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
-	public void activateBoardElements() {
+	private void activateBoardElements() {
 		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
 			if(!robot.isDead()){
@@ -174,7 +171,7 @@ public class GameModel {
 		addCheckPointReached(oldCheckPointReached);
 	}
 
-	public void addCheckPointReached(int[] oldCheckPoints){
+	private void addCheckPointReached(int[] oldCheckPoints){
 		allMoves.add(";B6");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getLastCheckPoint() != oldCheckPoints[i]){
@@ -193,9 +190,9 @@ public class GameModel {
 	}
 
 	/**
-	 * Return the map as a String[][]. Each String representing
+	 * Return the map as a String. With subStrings representing
 	 * a tile with it's boardelements.
-	 * @return the map as a String[][]
+	 * @return the map as a String
 	 */
 	public String getMap(){
 		return gameBoard.getMapAsString();
@@ -585,7 +582,7 @@ public class GameModel {
 	}
 	
 	private void addRobotDeadMove(Robot robot){
-		allMoves.add(";F#" + robots.indexOf(robot));
+		allMoves.add(";F#" + robots.indexOf(robot) + ":" + robot.getLife());
 	}
 
 	/**
@@ -610,14 +607,15 @@ public class GameModel {
 		return robots;
 	}
 
-	public GameBoard getGameBoard() {
-		return gameBoard;
-	}
-
 	public boolean isGameOver() {
 		return isGameOver;
 	}
 
+	/**
+	 * Return the amount of robots still in the game. I.e. robots
+	 * who have not lost all their lives.
+	 * @return the amount of robots still in the game.
+	 */
 	public int getRobotsPlaying() {
 		return robotsPlaying;
 	}

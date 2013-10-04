@@ -52,7 +52,7 @@ public class GameController implements PropertyChangeListener {
 		return this.gameModel;
 	}
 
-	public void handleRemainingRobots() {
+	private void handleRemainingRobots() {
 		for (int i = 0; i < gameModel.getRobots().size(); i++) {
 			if (!gameModel.getRobots().get(i).haveSentCards()) {
 				setRandomCards(i);
@@ -136,6 +136,11 @@ public class GameController implements PropertyChangeListener {
 		return sb.toString();
 	}
 	
+	/**
+	 * Return a string representing the last chosen cards from a specific robot.
+	 * @param robotID the id of the robot to get cards for.
+	 * @return a string representing the last chosen cards from a specific robot.
+	 */
 	public String getChosenCards(int robotID){
 		return gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 	}
@@ -214,6 +219,10 @@ public class GameController implements PropertyChangeListener {
 		return nbrOfPlayers;
 	}
 	
+	/**
+	 * Return a string containing all data from the last round.
+	 * @return a string containing all data from the last round.
+	 */
 	public String getRoundResults() {
 		return this.gameModel.getAllMoves();
 	}

@@ -88,7 +88,7 @@ public class Client {
 	 */
 	public RoundResult getRoundResult() {		
 		RoundResult result = new RoundResult();	
-		String indata = controller.getModel().getAllMoves();
+		String indata = controller.getRoundResults();		
 		String[] allActions = indata.split(";");
 		
 		System.out.println(indata);
@@ -139,7 +139,10 @@ public class Client {
 					result.addAction(action);
 				}
 			}else if(parallel[0].equals("F")) {
-				result.addAction(new SpecialAction(Integer.parseInt(parallel[1]),
+				String[] data = parallel[1].split(":");
+				result.addAction(new HealthAction(Integer.parseInt(data[0]), -1, 
+						Integer.parseInt(data[1])));
+				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
 						SpecialAction.Special.HOLE));	
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
