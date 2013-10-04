@@ -42,6 +42,7 @@ public class Client {
 		this.controller = new GameController(8); 
 		this.clientID = clientID;
 		this.robotID = 0;
+		controller.newRound();
 	}
 	
 	public int getRobotID() {
@@ -59,10 +60,8 @@ public class Client {
 	/**
 	 * Sends the cards to the server. Note: This list should not contain more then five!
 	 * @param cards The cards to send.
-	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
-	public boolean sendCard(CardView[] cards) {
-		// Send example: ”12345:0:7:1:4:-1"
+	public void sendCard(CardView[] cards) {
 		StringBuilder sb = new StringBuilder();
 		int[] temp = new int[5]; 
 		for(int i = 0; i < 5; i++) {
@@ -81,8 +80,6 @@ public class Client {
 				controller.setChosenCardsToRobot(i, ":-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
-		
-		return true;
 	}
 	
 	/**
@@ -115,7 +112,7 @@ public class Client {
 					multi.setDuration(1000);
 					multi.setMoveRound(GameAction.PHASE_LASER);
 					result.addAction(multi);
-				}else if(phase == 6) {
+				}else if(phase == GameAction.PHASE_RESPAWN) {
 					for(int i = 1; i < parallel.length; i++) {
 						SingleAction a = createSingleAction(parallel[i]);
 						a.setDuration(0);
@@ -124,6 +121,8 @@ public class Client {
 								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
 								SpecialAction.Special.RESPAWN));	
 					}
+				}else if(phase == GameAction.PHASE_CHECKPOINT) {
+					// TODO: checkpoint action!
 				}else{
 					GameAction action;
 					// If no actions follows:
@@ -177,49 +176,8 @@ public class Client {
 	 * Gives the client's cards.
 	 * @return A list of the client's cards.
 	 */
-	public void loadCards(Texture texture, DeckView deck) {
-		// From server example: "410:420:480:660:780:840:190:200:90"
-		controller.getModel().dealCards(); // TODO: server input
-		List<CardView> cards = new ArrayList<CardView>();
-		deck.clearChosen();
-				
-		String indata = controller.getCards(robotID);
-		int i = 0;
-		for(String card : indata.split(":")) {
-			String[] data = card.split(";");
-			
-			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
-			int regX = 0;
-			if(prio <= 60) {
-				regX = 0;	// UTURN
-			}else if(prio <= 410 && prio % 20 != 0) {
-				regX = 64;	// LEFT
-			}else if(prio <= 420 && prio % 20 == 0) {
-				regX = 128;	// LEFT
-			}else if(prio <= 480) {
-				regX = 192;	// Back 1
-			}else if(prio <= 660) {
-				regX = 256;	// Move 1
-			}else if(prio <= 780) {
-				regX = 320;	// Move 2
-			}else if(prio <= 840) {
-				regX = 384;	// Move 3
-			}	
-
-			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
-					prio, i);
-			cv.setSize(78, 110);
-			
-			if(data.length == 2) {
-				int lockPos = Integer.parseInt(data[0].substring(1));
-				deck.setLockedCard(cv, lockPos);
-			}else{
-				cards.add(cv);
-			}			
-			i++;
-		}
-		Collections.sort(cards);
-		deck.setDeckCards(cards);
+	public String loadCards() {	
+		return controller.getCards(robotID);
 	}
 	
 	/**

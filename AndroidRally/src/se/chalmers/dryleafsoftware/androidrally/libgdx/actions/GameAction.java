@@ -42,7 +42,11 @@ public abstract class GameAction {
 	/**
 	 * When robots respawn.
 	 */
-	public static final int PHASE_RESPAWN = 6;
+	public static final int PHASE_RESPAWN = 7;
+	/**
+	 * When robot touch checkpoint
+	 */
+	public static final int PHASE_CHECKPOINT = 6;
 	
 	/**
 	 * Creates a new instance which will work against the robot with the specified ID.
