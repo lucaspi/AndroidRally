@@ -12,7 +12,6 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
-import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 

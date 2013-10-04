@@ -5,6 +5,8 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.PlayerInfoView;
@@ -28,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * This stage holds all the cards the player has to play with.
@@ -81,9 +82,11 @@ public class DeckView extends Stage {
 	 */
 	public static final String EVENT_INFO = "info";
 	
-	private int timerTick;
 	private final Timer timer;	
 	private final Label timerLabel;
+	
+	private int cardTick = 0;
+	private int roundTick = 0;
 
 	/**
 	 * Creates a new default instance.
@@ -190,15 +193,27 @@ public class DeckView extends Stage {
 		drawPanel = buildDrawCardPanel();	
 
 		timer = new Timer();
-		timer.start();
 		// Tick every second.
-		timer.scheduleTask(new Timer.Task() {
+		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				timerTick--;
-				setTimerLabel(timerTick);
+				if(cardTick > 0) {
+					cardTick--;
+					if(cardTick == 0) {
+						pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+						System.out.println("---------------------------------CARD TIMER-----------");
+					}
+				}
+				if(roundTick > 0) {
+					roundTick--;
+					if(roundTick == 0) {
+						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+						System.out.println("-------------------------------------ROund timer!-----------");
+					}
+				}
+				setTimerLabel(cardTick > 0 ? cardTick : roundTick);
 			}
-		}, 0, 1f);
+		}, 1000, 1000);
 
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
@@ -299,9 +314,9 @@ public class DeckView extends Stage {
 	 * as [hh:mm:ss].
 	 */
 	private void setTimerLabel(int ticks) {
-		int h = timerTick / 3600;
-		int m = (timerTick / 60) % 60;
-		int s = timerTick % 60;
+		int h = ticks / 3600;
+		int m = (ticks / 60) % 60;
+		int s = ticks % 60;
 		s = Math.max(s, 0);
 		timerLabel.setText(String.format("%02d", h) + 
 				":" + String.format("%02d", m) + 
@@ -309,27 +324,25 @@ public class DeckView extends Stage {
 	}
 	
 	/**
-	 * Gives the current seconds left in the timer.
-	 * @return The current number of seconds left in the timer.
+	 * Sets the card timer to the specified number in seconds.
+	 * @param cardTick The card timer's delay in seconds.
 	 */
-	public int getTimerSeconds() {
-		return this.timerTick;
+	public void setCardTick(int cardTick) {
+		this.cardTick = cardTick;
+		if(cardTick > 0) {
+			setTimerLabel(cardTick);
+		}
 	}
 	
 	/**
-	 * Sets the timer to count down the specified amount of seconds.
-	 * @param seconds The seconds to count down.
-	 * @param event The event to fire when the timer reach zero.
+	 * Sets the round timer to the specified number in seconds.
+	 * @param roundTick The round timer's delay in seconds.
 	 */
-	public void setTimer(int seconds, final String event) {
-		this.timerTick = seconds;	
-		timer.scheduleTask(new Timer.Task() {
-			@Override
-			public void run() {
-				pcs.firePropertyChange(event, 0, 1);
-			}
-		}, seconds);
-		setTimerLabel(timerTick);
+	public void setRoundTick(int roundTick) {
+		this.roundTick = roundTick;
+		if(roundTick > 0) {
+			setTimerLabel(roundTick);
+		}
 	}
 	
 	/**
@@ -366,6 +379,12 @@ public class DeckView extends Stage {
 		setCards(input, texture, false);
 	}
 	
+	/**
+	 * Displays all cards.
+	 * @param input A String with all the cards' data.
+	 * @param texture The texture to use when creating the cards.
+	 * @param onlyLocked Set to <code>true</code> if only locked cards should be displayed.
+	 */
 	private void setCards(String input, Texture texture, boolean onlyLocked) {
 		List<CardView> cards = new ArrayList<CardView>();
 		// Clear cards
@@ -456,6 +475,9 @@ public class DeckView extends Stage {
 		}
 	}
 	
+	/**
+	 * Displays the normal panel which is divided into an upper and a lower area.
+	 */
 	public void displayNormal() {
 		container.removeActor(allPlayerInfo);
 		container.add(upperArea);
