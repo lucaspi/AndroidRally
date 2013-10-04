@@ -131,13 +131,11 @@ public class Client {
 					result.addAction(action);
 				}
 			}else if(parallel[0].equals("F")) {
-//				result.addAction(createSingleAction(parallel[1]));
-//				result.addAction(new SpecialAction(robotID,
-//						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));
-//				result.addToNext(new SpecialAction(robotID, 
-//						SpecialAction.RESPAWN_ACTION,
-//						SpecialAction.VISIBLE_ACTION));
-				
+				result.addAction(new SpecialAction(Integer.parseInt(parallel[1]),
+						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));
+				result.addToNext(new SpecialAction(Integer.parseInt(parallel[1]), 
+						SpecialAction.RESPAWN_ACTION,
+						SpecialAction.VISIBLE_ACTION));				
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
 			}else if(parallel[0].equals("W")) {
@@ -162,6 +160,7 @@ public class Client {
 	 */
 	private SingleAction createSingleAction(String indata) {
 		String[] data = indata.split(":");
+		System.out.println("Creating action : " + indata);
 		return new SingleAction(
 				Integer.parseInt(data[0]), 
 				Integer.parseInt(data[1].substring(0, 1)),
