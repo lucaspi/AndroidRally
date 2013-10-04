@@ -151,12 +151,14 @@ public class GameModel {
 	    	
 	    }
 
+	    int[] oldCheckPointReached = new int[robots.size()];
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
 				continue;
 			}
 			oldRobotHealth[i] = robots.get(i).getHealth();
+			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
 			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 					robots.get(i).getY()).getBoardElements();
 			if(boardElements != null && boardElements.size() > 0){
@@ -169,8 +171,18 @@ public class GameModel {
 		}
 	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
+		addCheckPointReached(oldCheckPointReached);
 	}
 
+	public void addCheckPointReached(int[] oldCheckPoints){
+		allMoves.add(";B6");
+		for(int i = 0; i<robots.size(); i++){
+			if(!robots.get(i).isDead() && robots.get(i).getLastCheckPoint() != oldCheckPoints[i]){
+				allMoves.add("#" + i + ":" + robots.get(i).getLastCheckPoint());
+			}
+		}
+	}
+	
 	private void addDamageToAllMoves(int[] oldRobotHealth){
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
@@ -451,7 +463,7 @@ public class GameModel {
 			activateBoardElements();
 		}
 
-		allMoves.add(";B6");
+		allMoves.add(";B7");
 		for(Robot robot : robots){
 			deck.returnCards(robot.returnCards());
 			if (robot.isDead() && !robot.hasLost()) {
