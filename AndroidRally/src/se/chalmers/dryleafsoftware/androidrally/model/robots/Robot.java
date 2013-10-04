@@ -28,6 +28,7 @@ public class Robot {
 	private boolean sentCards;
 	private boolean isDead;
 	private boolean hasLost;
+	private String lastRoundChosenCards;
 	
 	public Robot(int startX, int startY) {
 		positionX = startX;
@@ -281,5 +282,13 @@ public class Robot {
 
 	public void setHasLost(boolean hasLost) {
 		this.hasLost = hasLost;
+	}
+	
+	public void setLastChosenCards(String cards){
+		this.lastRoundChosenCards = cards;
+	}
+	
+	public String getLastRoundChosenCards(){
+		return lastRoundChosenCards;
 	}
 }

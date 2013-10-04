@@ -411,7 +411,7 @@ public class GameModel {
 					oldPosition[k][0] = robots.get(k).getX();
 					oldPosition[k][1] = robots.get(k).getY();
 				}
-				int highestPriority = 0;
+				int highestPriority = -1;
 				int indexOfHighestPriority = -1; //player index in array
 				for (int k = 0; k < currentCards.size(); k++) { //find highest card
 					if (currentCards.get(k)[i] != null //check if card exists and..
@@ -562,10 +562,7 @@ public class GameModel {
 	}
 
 	private void addMove(Robot robot){
-		System.out.println("indexOf " + robots.indexOf(robot));
 		allMoves.add(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
-				robot.getXAsString() + robot.getYAsString() );
-		System.out.println(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString() );
 	}
 	

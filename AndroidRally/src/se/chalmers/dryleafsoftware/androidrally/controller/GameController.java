@@ -97,7 +97,7 @@ public class GameController implements PropertyChangeListener {
 	 * separate document.
 	 * @return a String containing data of the locked cards.
 	 */
-	public synchronized String setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
+	public synchronized void setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
 		String[] cardStrings = chosenCards.split(":");
 		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
@@ -114,16 +114,26 @@ public class GameController implements PropertyChangeListener {
 		robot.setChosenCards(cards);
 		robot.fillEmptyCardRegisters();
 		robot.setSentCards(true);
+		robot.setLastChosenCards(getCurrentChosenCards(robotID + ""));
 		nbrOfRobotsDone++;
-		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
-			endOfRound.run();
-		}
 
+		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
+//			endOfRound.run();//TODO this line is removed for testing
+		}
+	}
+	
+	private String getCurrentChosenCards(String robot){
+		int robotID = Integer.parseInt(robot);
 		StringBuilder sb = new StringBuilder();
 		for(Card card : gameModel.getRobots().get(robotID).getChosenCards()) {
 			sb.append(card.getPriority() + ":");
 		}
 		return sb.toString();
+	}
+	
+	public String getChosenCards(String robot){
+		int robotID = Integer.parseInt(robot);
+		return gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 	}
 
 	/**
