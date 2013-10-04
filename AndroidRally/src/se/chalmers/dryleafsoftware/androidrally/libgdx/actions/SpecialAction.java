@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
  * 
  */
 public class SpecialAction extends GameAction{
-
+		
 	/**
 	 * Simulates falling in a dark hole.
 	 */
@@ -53,10 +53,12 @@ public class SpecialAction extends GameAction{
 	public void action(List<RobotView> robots) {
 		start();
 		robots.get(getRobotID()).addAction(action);
+		action.reset();
 	}
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
 		robots.get(getRobotID()).addAction(instantAction);
+		instantAction.reset();
 	}
 }

@@ -13,7 +13,9 @@ public class CollisionMatrix {
 	}
 	
 	public void setWall(int x, int y, int dir) {
-		this.walls[x][y][dir] = true;
+		if(validWallPos(x, y, dir)) {
+			this.walls[x][y][dir] = true;
+		}
 	}
 	
 	public void clearDynamic() {
@@ -21,7 +23,9 @@ public class CollisionMatrix {
 	}
 	
 	public void setDynamic(int x, int y) {
-		this.dynamic[x][y] = true;
+		if(validBlockedPos(x, y)) {
+			this.dynamic[x][y] = true;
+		}
 	}
 	
 	public boolean cannotTravel(int x, int y, int dir) {
@@ -39,11 +43,21 @@ public class CollisionMatrix {
 	}
 	
 	public boolean isWall(int x, int y, int dir) {
-		if(x < walls.length && y < walls[0].length) {
+		if(validWallPos(x, y, dir)) {
 			return walls[x][y][dir];
 		}else{
 			return false;
 		}
+	}
+	
+	private boolean validWallPos(int x, int y, int dir) {
+		return(x < walls.length && y < walls[0].length && dir < walls[0][0].length 
+				&& x >= 0 && y >= 0 && dir >= 0);
+	}
+	
+	private boolean validBlockedPos(int x, int y) {
+		return(x < dynamic.length && y < dynamic[0].length 
+				&& x >= 0 && y >= 0);
 	}
 	
 	public boolean isBlocked(int x, int y) {

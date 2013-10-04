@@ -116,10 +116,13 @@ public class Client {
 					multi.setMoveRound(GameAction.PHASE_LASER);
 					result.addAction(multi);
 				}else if(phase == 6) {
-					// TODO: respawn 
-//					result.addToNext(new SpecialAction(Integer.parseInt(parallel[1]), 
-//							SpecialAction.RESPAWN_ACTION,
-//							SpecialAction.VISIBLE_ACTION));	
+					for(int i = 1; i < parallel.length; i++) {
+						result.addAction(createSingleAction(parallel[i]));
+						result.addToNext(
+								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
+								SpecialAction.RESPAWN_ACTION,
+								SpecialAction.VISIBLE_ACTION));	
+					}
 				}else{
 					GameAction action;
 					// If no actions follows:
@@ -138,9 +141,6 @@ public class Client {
 			}else if(parallel[0].equals("F")) {
 				result.addAction(new SpecialAction(Integer.parseInt(parallel[1]),
 						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));	
-				result.addToNext(new SpecialAction(Integer.parseInt(parallel[1]), 
-						SpecialAction.RESPAWN_ACTION,
-						SpecialAction.VISIBLE_ACTION));	
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
 			}else if(parallel[0].equals("W")) {
