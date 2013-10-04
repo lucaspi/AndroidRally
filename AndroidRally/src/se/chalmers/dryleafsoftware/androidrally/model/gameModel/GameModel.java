@@ -585,7 +585,7 @@ public class GameModel {
 	}
 	
 	private void addRobotDeadMove(Robot robot){
-		allMoves.add(";F#" + robots.indexOf(robot));
+		allMoves.add(";F#" + robots.indexOf(robot) + ":" + robot.getLife());
 	}
 
 	/**
