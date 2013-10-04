@@ -94,11 +94,15 @@ public class Robot {
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
 		}
-		int i = 0;
-		while(returnCards.contains(chosenCards[i])){
-			chosenCards[i] = null;
-			i++;
+		
+		for(int i = 0; i < 5; i++){
+			if(returnCards.contains(chosenCards[i])){
+				chosenCards[i] = null;
+			}else{
+				break;
+			}
 		}
+
 		cards.clear();
 		setSentCards(false);
 		return returnCards;

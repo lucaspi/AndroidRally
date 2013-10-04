@@ -63,7 +63,7 @@ public class Client {
 	 */
 	public boolean sendCard(CardView[] cards) {
 		// Send example: ”12345:0:7:1:4:-1"
-		StringBuilder sb = new StringBuilder("" + robotID);
+		StringBuilder sb = new StringBuilder();
 		int[] temp = new int[5]; 
 		for(int i = 0; i < 5; i++) {
 			if(cards[i] == null) {
@@ -74,11 +74,11 @@ public class Client {
 			sb.append(":" + temp[i]);
 		}	
 		System.out.println("Sending cards");
-		controller.setChosenCardsToRobot(sb.toString()); // TODO: server
+		controller.setChosenCardsToRobot(robotID, sb.toString()); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
 				System.out.println("Sending cards");
-				controller.setChosenCardsToRobot(i + ":-1:-1:-1:-1:-1"); // TODO: remove
+				controller.setChosenCardsToRobot(i, ":-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
 		

@@ -98,34 +98,36 @@ public class GameController implements PropertyChangeListener {
 	 * separate document.
 	 * @return a String containing data of the locked cards.
 	 */
-	public synchronized void setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
-		System.out.println("Gettingd cards");
-		String[] cardStrings = chosenCards.split(":");
-		int robotID = Integer.parseInt(cardStrings[0]);
+	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) { //TODO ClientID?
 		cardTimer[robotID].stop();
 		cardTimer[robotID].clear();
-		List<Card> cards = new ArrayList<Card>();
-		Robot robot = gameModel.getRobots().get(robotID);
-		for (int i = 1; i <= 5; i++) {
-			if (Integer.parseInt(cardStrings[i]) == -1) {
-				cards.add(null);
-			} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
-				cards.add(robot.getCards().get(Integer.parseInt(cardStrings[i])));
+		try {
+			String[] cardStrings = chosenCards.split(":");
+			List<Card> cards = new ArrayList<Card>();
+			Robot robot = gameModel.getRobots().get(robotID);
+			for (int i = 1; i <= 5; i++) {
+				if (Integer.parseInt(cardStrings[i]) == -1) {
+					cards.add(null);
+				} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
+					cards.add(robot.getCards().get(Integer.parseInt(cardStrings[i])));
+				}
 			}
+			robot.setChosenCards(cards);
+		} catch (IllegalArgumentException e) {
+			// Do nothing
 		}
-		robot.setChosenCards(cards);
-		robot.fillEmptyCardRegisters();
-		robot.setSentCards(true);
-		robot.setLastChosenCards(getCurrentChosenCards(robotID + ""));
+		
+		gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
+		gameModel.getRobots().get(robotID).setSentCards(true);
+		gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
 		nbrOfRobotsDone++;
 
 		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
-			endOfRound.run();//TODO this line is removed for testing
+			endOfRound.run();
 		}
 	}
 	
-	private String getCurrentChosenCards(String robot){
-		int robotID = Integer.parseInt(robot);
+	private String getCurrentChosenCards(int robotID){
 		StringBuilder sb = new StringBuilder();
 		for(Card card : gameModel.getRobots().get(robotID).getChosenCards()) {
 			sb.append(card.getPriority() + ":");
@@ -133,8 +135,7 @@ public class GameController implements PropertyChangeListener {
 		return sb.toString();
 	}
 	
-	public String getChosenCards(String robot){
-		int robotID = Integer.parseInt(robot);
+	public String getChosenCards(int robotID){
 		return gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 	}
 
@@ -189,15 +190,6 @@ public class GameController implements PropertyChangeListener {
 		cardTimer[robotID].start();
 		return sb.toString(); 
 	}
-	
-	/**
-	 * TODO remove?????
-	 * @param robotID
-	 * @return
-	 */
-	public Card[] getChosenCards(int robotID){
-		return gameModel.getRobots().get(robotID).getChosenCards();
-	}
 
 	/**
 	 * All robots will receive new cards and
@@ -226,6 +218,6 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	private void setRandomCards(int robotID) {
-		setChosenCardsToRobot(robotID + ":-1:-1:-1:-1:-1");
+		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
 	}
 }

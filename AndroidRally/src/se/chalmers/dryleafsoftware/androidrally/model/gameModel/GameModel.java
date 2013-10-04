@@ -73,6 +73,7 @@ public class GameModel {
 	 * Give cards to all players/CPU:s.
 	 */
 	public void dealCards() {
+		deck.shuffleDeck();
 		for(Robot robot : robots) {
 			int nbrOfDrawnCards = robot.getHealth();
 			List<Card> drawnCards = new ArrayList<Card>();
