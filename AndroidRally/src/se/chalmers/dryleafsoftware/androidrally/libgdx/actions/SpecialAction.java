@@ -15,7 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
  */
 public class SpecialAction extends GameAction{
 		
-	public static enum Special {RESPAWN, HOLE};
+	public static enum Special {
+		RESPAWN, 
+		HOLE};
 	
 	private final Action action;
 	private final Action instantAction;
@@ -23,8 +25,7 @@ public class SpecialAction extends GameAction{
 	/**
 	 * Creates a new instance which will run the specified action.
 	 * @param robotID The ID of the robot to handle.
-	 * @param action The action to display.
-	 * @param instantAction The outcome of the action.
+	 * @param special The action to add.
 	 */
 	public SpecialAction(int robotID, Special special) {
 		super(robotID, 1000);

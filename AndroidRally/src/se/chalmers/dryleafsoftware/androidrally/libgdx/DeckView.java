@@ -347,14 +347,80 @@ public class DeckView extends Stage {
 	public void removeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 	}
+	
+	/**
+	 * Only displays the locked cards.
+	 * @param input The String with card data.
+	 * @param texture The texture to use.
+	 */
+	public void setChosenCards(String input, Texture texture) {
+		setCards(input, texture, true);
+	}
+	
+	/**
+	 * Displays all cards.
+	 * @param input The String with card data.
+	 * @param texture The texture to use.
+	 */
+	public void setDeckCards(String input, Texture texture) {
+		setCards(input, texture, false);
+	}
+	
+	private void setCards(String input, Texture texture, boolean onlyLocked) {
+		List<CardView> cards = new ArrayList<CardView>();
+		// Clear cards
+		for(Register r : registers) {
+			r.clear();
+			r.setLocked(false);
+		}
+				
+		String indata = input;
+		int i = 0;
+		for(String card : indata.split(":")) {
+			String[] data = card.split(";");
+			
+			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
+			int regX = 0;
+			if(prio <= 60) {
+				regX = 0;	// UTURN
+			}else if(prio <= 410 && prio % 20 != 0) {
+				regX = 64;	// LEFT
+			}else if(prio <= 420 && prio % 20 == 0) {
+				regX = 128;	// LEFT
+			}else if(prio <= 480) {
+				regX = 192;	// Back 1
+			}else if(prio <= 660) {
+				regX = 256;	// Move 1
+			}else if(prio <= 780) {
+				regX = 320;	// Move 2
+			}else if(prio <= 840) {
+				regX = 384;	// Move 3
+			}	
 
+			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
+					prio, i);
+			cv.setSize(78, 110);
+			
+			if(data.length == 2) {
+				int lockPos = Integer.parseInt(data[0].substring(1));
+				registers[lockPos].setCard(cv);
+				registers[lockPos].setLocked(true);
+			}else if(!onlyLocked){
+				cards.add(cv);
+			}			
+			i++;
+		}
+		Collections.sort(cards);
+		setDeckCards(cards);
+	}
+	
 	/**
 	 * Sets which cards the deck should display.
 	 * 
 	 * @param list
 	 *            The cards the deck should display.
 	 */
-	public void setDeckCards(List<CardView> list) {
+	private void setDeckCards(List<CardView> list) {
 		Table holder = new Table();
 		holder.setSize(480, 160);
 		holder.setLayoutEnabled(false);
@@ -437,7 +503,6 @@ public class DeckView extends Stage {
 	 * Rerenders all the player's card at their correct positions.
 	 */
 	public void updateCards() {
-//		updateChosenCards();
 		updateDeckCards();
 	}
 
@@ -493,18 +558,6 @@ public class DeckView extends Stage {
 			return this.deckCards.size()
 					* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
 		}
-	}
-	
-	public void clearChosen() {
-		for(Register r : registers) {
-			r.clear();
-			r.setLocked(false);
-		}
-	}
-	
-	public void setLockedCard(CardView cv, int index) {
-		registers[index].setCard(cv);
-		registers[index].setLocked(true);
 	}
 	
 	private void choseCard(CardView card) {
