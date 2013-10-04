@@ -99,6 +99,7 @@ public class GameController implements PropertyChangeListener {
 	 * @return a String containing data of the locked cards.
 	 */
 	public synchronized void setChosenCardsToRobot(String chosenCards) { //TODO ClientID?
+		System.out.println("Gettingd cards");
 		String[] cardStrings = chosenCards.split(":");
 		int robotID = Integer.parseInt(cardStrings[0]);
 		cardTimer[robotID].stop();
@@ -119,7 +120,7 @@ public class GameController implements PropertyChangeListener {
 		nbrOfRobotsDone++;
 
 		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
-//			endOfRound.run();//TODO this line is removed for testing
+			endOfRound.run();//TODO this line is removed for testing
 		}
 	}
 	

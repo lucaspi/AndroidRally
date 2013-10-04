@@ -73,9 +73,11 @@ public class Client {
 			}
 			sb.append(":" + temp[i]);
 		}	
+		System.out.println("Sending cards");
 		controller.setChosenCardsToRobot(sb.toString()); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
+				System.out.println("Sending cards");
 				controller.setChosenCardsToRobot(i + ":-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
@@ -87,9 +89,7 @@ public class Client {
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public RoundResult getRoundResult() {
-		controller.getModel().moveRobots();
-		
+	public RoundResult getRoundResult() {		
 		RoundResult result = new RoundResult();	
 		String indata = controller.getModel().getAllMoves();
 		String[] allActions = indata.split(";");
@@ -102,7 +102,7 @@ public class Client {
 				result.newPhase();
 			}else if(parallel[0].substring(0, 1).equals("B")) {
 				int phase = Integer.parseInt(parallel[0].substring(1));	
-				if(phase == 5) { // Laser phase
+				if(phase == GameAction.PHASE_LASER) { 
 					MultiAction multi = new MultiAction();
 					for(int i = 1; i < parallel.length; i++) {
 						String[] data = parallel[i].split(":");
@@ -115,6 +115,11 @@ public class Client {
 					multi.setDuration(1000);
 					multi.setMoveRound(GameAction.PHASE_LASER);
 					result.addAction(multi);
+				}else if(phase == 6) {
+					// TODO: respawn 
+//					result.addToNext(new SpecialAction(Integer.parseInt(parallel[1]), 
+//							SpecialAction.RESPAWN_ACTION,
+//							SpecialAction.VISIBLE_ACTION));	
 				}else{
 					GameAction action;
 					// If no actions follows:
@@ -132,10 +137,10 @@ public class Client {
 				}
 			}else if(parallel[0].equals("F")) {
 				result.addAction(new SpecialAction(Integer.parseInt(parallel[1]),
-						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));
+						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));	
 				result.addToNext(new SpecialAction(Integer.parseInt(parallel[1]), 
 						SpecialAction.RESPAWN_ACTION,
-						SpecialAction.VISIBLE_ACTION));				
+						SpecialAction.VISIBLE_ACTION));	
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
 			}else if(parallel[0].equals("W")) {
@@ -160,7 +165,6 @@ public class Client {
 	 */
 	private SingleAction createSingleAction(String indata) {
 		String[] data = indata.split(":");
-		System.out.println("Creating action : " + indata);
 		return new SingleAction(
 				Integer.parseInt(data[0]), 
 				Integer.parseInt(data[1].substring(0, 1)),

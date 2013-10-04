@@ -39,6 +39,10 @@ public abstract class GameAction {
 	 * When all the lasers on the boards is firing.
 	 */
 	public static final int PHASE_LASER = 5;
+	/**
+	 * When robots respawn.
+	 */
+	public static final int PHASE_RESPAWN = 6;
 	
 	/**
 	 * Creates a new instance which will work against the robot with the specified ID.
