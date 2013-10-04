@@ -34,24 +34,6 @@ public class GameController implements PropertyChangeListener {
 		mapAsString = gameModel.getMap();
 		
 		timer = new Timer();
-		timer.cancel();
-		System.out.println("Antal tasks när timer skapas: " + timer.purge());
-		endOfRound = new TimerTask() {
-			/* Method that is executing if the round time is out or
-			 * all robots are done playing their cards. */
-			@Override
-			public synchronized void run() {
-				isRunRunning = true;
-				stopRoundTimer();
-				handleRemainingRobots();
-				gameModel.moveRobots();
-				//If the game is over a new round will not be started. Game will end.
-				if (!gameModel.isGameOver()) {
-					newRound();
-				}
-				isRunRunning = false;
-			}
-		};
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
 			cardTimer[i] = new CardTimer(30, i); //let the time be a variable
@@ -83,12 +65,31 @@ public class GameController implements PropertyChangeListener {
 	 * 24 hours as default.
 	 */
 	public void startRoundTimer() {
+		reScheduleTimer();
 		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 
 	public void stopRoundTimer() {
-		timer.cancel();
-		timer.purge();
+		endOfRound.cancel();
+	}
+	
+	private void reScheduleTimer() {
+		endOfRound = new TimerTask() {
+			/* Method that is executing if the round time is out or
+			 * all robots are done playing their cards. */
+			@Override
+			public synchronized void run() {
+				isRunRunning = true;
+				stopRoundTimer();
+				handleRemainingRobots();
+				gameModel.moveRobots();
+				//If the game is over a new round will not be started. Game will end.
+				if (!gameModel.isGameOver()) {
+					newRound();
+				}
+				isRunRunning = false;
+			}
+		};
 	}
 
 	/**
@@ -99,10 +100,10 @@ public class GameController implements PropertyChangeListener {
 	 * @return a String containing data of the locked cards.
 	 */
 	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) { //TODO ClientID?
-		cardTimer[robotID].cancel();
-		cardTimer[robotID].purge();
+		cardTimer[robotID].cancelTask();
 		try {
 			String[] cardStrings = chosenCards.split(":");
+			System.out.println("Korten: " + chosenCards);
 			List<Card> cards = new ArrayList<Card>();
 			Robot robot = gameModel.getRobots().get(robotID);
 			for (int i = 1; i <= 5; i++) {

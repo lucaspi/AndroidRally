@@ -88,7 +88,7 @@ public class Client {
 	 */
 	public RoundResult getRoundResult() {		
 		RoundResult result = new RoundResult();	
-		String indata = controller.getModel().getAllMoves();
+		String indata = controller.getRoundResults();		
 		String[] allActions = indata.split(";");
 		
 		System.out.println(indata);

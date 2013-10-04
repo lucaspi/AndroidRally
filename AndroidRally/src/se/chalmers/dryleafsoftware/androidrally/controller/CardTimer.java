@@ -13,12 +13,11 @@ public class CardTimer {
 	public static final String CARD_TIME_OUT = "cardTimeOut";
 	private long seconds;
 	private Timer timer;
+	private TimerTask timeOut;
 	
 	public CardTimer(long seconds, int robotID) {
-		super();
 		timer = new Timer();
-		timer.cancel();
-		this.seconds = seconds;
+		this.seconds = seconds * 1000;
 		this.robotNbr = robotID;
 	}
 	
@@ -28,20 +27,23 @@ public class CardTimer {
 	 * static modifier CardTimer.CARD_TIME_OUT.
 	 */
 	public void start() {
-		timer.schedule(new TimerTask() {
+		reSchedule();
+		timer.schedule(timeOut, seconds);
+	}
+
+	public void cancelTask() {
+		if (timeOut != null) {
+			timeOut.cancel();
+		}
+	}
+	
+	private void reSchedule() {
+		timeOut = new TimerTask() {
 			@Override
 			public void run() {
 				pcs.firePropertyChange(CARD_TIME_OUT, -1, robotNbr);
 			}
-		}, seconds);
-	}
-
-	public void cancel() {
-		timer.cancel();
-	}
-
-	public void purge() {
-		timer.purge();
+		};
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
