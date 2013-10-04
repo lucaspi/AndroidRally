@@ -25,7 +25,7 @@ public class ConveyorBeltTest {
 		
 //		GameModel gm = new GameModel(2, testMap);
 //		GameModel gm = new GameModel(2, "");
-		GameModel gm = new GameModel(null, 2, "");
+		GameModel gm = new GameModel( 2, "");
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
@@ -71,7 +71,7 @@ public class ConveyorBeltTest {
 		
 //		GameModel gm = new GameModel(2, testMap);
 //		GameModel gm = new GameModel(2, "");
-		GameModel gm = new GameModel(null, 2, "");
+		GameModel gm = new GameModel(2, "");
 		
 		Card left = new Turn(80,TurnType.LEFT);
 		Card right = new Turn(90,TurnType.RIGHT);
