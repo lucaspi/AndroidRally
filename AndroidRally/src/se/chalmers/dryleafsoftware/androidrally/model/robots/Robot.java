@@ -242,13 +242,16 @@ public class Robot {
 	}
 	
 	public void fillEmptyCardRegisters(){
-		Random random = new Random();
-		List<Card> tempCards = new ArrayList<Card>();
-		tempCards.addAll(cards);
-		for(int i = 0; i<5; i++){
-			if(this.chosenCards[i] == null){
-				System.out.println("tempCards Size: " + tempCards.size());
-				this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
+		if(!isDead){
+			Random random = new Random();
+			List<Card> tempCards = new ArrayList<Card>();
+			tempCards.addAll(cards);
+			System.out.println("__ tempCards Size: " + tempCards.size());
+			for(int i = 0; i<5; i++){
+				if(this.chosenCards[i] == null){
+					System.out.println("tempCards Size: " + tempCards.size());
+					this.chosenCards[i] = tempCards.remove(random.nextInt(tempCards.size()));
+				}
 			}
 		}
 	}

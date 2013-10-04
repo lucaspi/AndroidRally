@@ -39,7 +39,7 @@ public class GameController implements PropertyChangeListener {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
-			public void run() {
+			public synchronized void run() {
 				isRunRunning = true;
 				stopRoundTimer();
 				handleRemainingRobots();
@@ -119,7 +119,7 @@ public class GameController implements PropertyChangeListener {
 		nbrOfRobotsDone++;
 
 		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
-//			endOfRound.run();//TODO this line is removed for testing
+			endOfRound.run();//TODO this line is removed for testing
 		}
 	}
 	

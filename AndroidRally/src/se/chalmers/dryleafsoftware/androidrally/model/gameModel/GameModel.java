@@ -523,6 +523,7 @@ public class GameModel {
 	}
 
 	private void resetRobotPosition(Robot robot){
+		allMoves.add(";B6");
 		int distanceFromSpawnPoint = 0;
 		while(true){
 			for(int i = robot.getSpawnPointX() - distanceFromSpawnPoint; i<=robot.getSpawnPointX() + distanceFromSpawnPoint; i++){
@@ -537,7 +538,7 @@ public class GameModel {
 						robot.setX(i);
 						robot.setY(j);
 						allMoves.remove(allMoves.size()-1);
-						addMove(robot);
+						addRespawnMove(robot);
 						return;
 					}
 				}
@@ -547,6 +548,11 @@ public class GameModel {
 				break;
 			}
 		}
+	}
+	
+	private void addRespawnMove(Robot robot){
+		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection() + 
+				robot.getXAsString() + robot.getYAsString());
 	}
 	
 	private void addRobotWon(Robot robot) {
