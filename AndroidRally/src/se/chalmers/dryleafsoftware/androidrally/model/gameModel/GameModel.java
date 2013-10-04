@@ -471,6 +471,7 @@ public class GameModel {
 			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
 					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
 				robots.get(i).die();
+				--robotsPlaying;
 				if(isGameOver(i))return true;
 			}
 		}
@@ -496,8 +497,7 @@ public class GameModel {
 	 * @return true if a player has won, else false
 	 */
 	private boolean isGameOver(int robotID) {
-		if (robots.get(robotID).hasLost()) {
-			--robotsPlaying;
+		if (robotsPlaying == 1) {
 			robotHasWonBecauseItsAlone();
 			if (!isGameOver) {
 				pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
