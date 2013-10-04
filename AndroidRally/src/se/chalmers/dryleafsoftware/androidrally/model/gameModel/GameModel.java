@@ -17,6 +17,13 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Wrench;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
+//TODO
+//robot.getchosenCards för client
+//locked Card strängen fel?
+//B5#
+//allMove ger -1 ibland
+
+
 /**
  * This is the mainModel for AndroidRally.
  * 
@@ -90,10 +97,11 @@ public class GameModel {
 	public void activateBoardElements() {
 		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
-			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
-			if(robot.isDead()){
-				allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
-						robots.get(robot.getDirection()));
+			if(!robot.isDead()){
+				gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+				if(robot.isDead()){
+					addRobotDeadMove(robot);
+				}
 			}
 		}
 		if(checkGameStatus())return;
@@ -121,10 +129,11 @@ public class GameModel {
 			}
 			checkConveyorBeltCollides(oldPositions);
 			for(Robot robot : robots){
-				gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
-				if(robot.isDead()){
-					allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
-							robot.getDirection());
+				if(!robot.isDead()){
+					gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+					if(robot.isDead()){
+						addRobotDeadMove(robot);
+					}
 				}
 			}
 			if(checkGameStatus())return;
@@ -148,7 +157,6 @@ public class GameModel {
 	    	
 	    }
 
-	    fireAllLasers();
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
@@ -165,6 +173,7 @@ public class GameModel {
 				}
 			}
 		}
+	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
 	}
 
@@ -172,7 +181,7 @@ public class GameModel {
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
-				allMoves.add("#" + i + ":" + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
 			}
 		}
 	}
@@ -300,7 +309,7 @@ public class GameModel {
 	private void checkConveyorBeltCollides(int[][] oldPositions){
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
-			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
+			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
 				if(canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
 					addSimultaneousMove(robots.get(i));
 					nbrOfMovedRobots++;
@@ -437,8 +446,7 @@ public class GameModel {
 						.instantAction(currentRobot);
 					}
 					if(currentRobot.isDead()){
-						allMoves.add(";F#" + robots.indexOf(currentRobot) + ":" + 
-								currentRobot.getDirection());
+						addRobotDeadMove(currentRobot);
 					}
 					if (checkGameStatus())return;
 				}
@@ -468,8 +476,8 @@ public class GameModel {
 	private boolean checkGameStatus(){
 		for(int i = 0; i < robots.size(); i++){
 			if (robotHasReachedLastCheckPoint())return true;
-			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
-					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
+			if(!robots.get(i).isDead() && (robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
+					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight())){
 				robots.get(i).die();
 				--robotsPlaying;
 				if(isGameOver(i))return true;
@@ -559,6 +567,10 @@ public class GameModel {
 				robot.getXAsString() + robot.getYAsString() );
 		System.out.println(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString() );
+	}
+	
+	private void addRobotDeadMove(Robot robot){
+		allMoves.add(";F#" + robots.indexOf(robot));
 	}
 
 	/**
