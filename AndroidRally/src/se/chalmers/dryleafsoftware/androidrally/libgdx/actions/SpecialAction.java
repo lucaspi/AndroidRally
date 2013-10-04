@@ -15,24 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
  */
 public class SpecialAction extends GameAction{
 		
-	/**
-	 * Simulates falling in a dark hole.
-	 */
-	public static final Action HOLE_ACTION = Actions.parallel(
-			Actions.fadeOut(1), Actions.scaleTo(0.3f, 0.3f, 1));
-	/**
-	 * Respawns the robot.
-	 */
-	public static final Action RESPAWN_ACTION = Actions.parallel(
-			Actions.fadeIn(1), Actions.scaleTo(1, 1, 1));
-	/**
-	 * Hides the robot.
-	 */
-	public static final Action INVISIBLE_ACTION = Actions.fadeOut(0);
-	/**
-	 * Makes the robot visible again.
-	 */
-	public static final Action VISIBLE_ACTION = Actions.fadeIn(0);
+	public static enum Special {RESPAWN, HOLE};
 	
 	private final Action action;
 	private final Action instantAction;
@@ -43,22 +26,34 @@ public class SpecialAction extends GameAction{
 	 * @param action The action to display.
 	 * @param instantAction The outcome of the action.
 	 */
-	public SpecialAction(int robotID, Action action, Action instantAction) {
+	public SpecialAction(int robotID, Special special) {
 		super(robotID, 1000);
-		this.action = action;
-		this.instantAction = instantAction;
+		switch(special) {
+		case RESPAWN:
+			action = Actions.parallel(
+					Actions.fadeIn(1), Actions.scaleTo(1, 1, 1));
+			instantAction = Actions.fadeIn(0);
+			setDuration(0);
+			break;
+		case HOLE:
+			action = Actions.parallel(
+					Actions.fadeOut(1), Actions.scaleTo(0.3f, 0.3f, 1));
+			instantAction = Actions.fadeOut(0);
+			break;
+			default:
+				action = null;
+				instantAction = null;
+		}
 	}
 
 	@Override
 	public void action(List<RobotView> robots) {
 		start();
 		robots.get(getRobotID()).addAction(action);
-		action.reset();
 	}
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
 		robots.get(getRobotID()).addAction(instantAction);
-		instantAction.reset();
 	}
 }
