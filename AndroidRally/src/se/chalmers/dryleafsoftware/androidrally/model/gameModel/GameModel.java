@@ -451,6 +451,7 @@ public class GameModel {
 			checkConveyorBeltCollides(oldPosition);
 		}
 
+		allMoves.add(";B6");
 		for(Robot robot : robots){
 			deck.returnCards(robot.returnCards());
 			if (robot.isDead() && !robot.hasLost()) {
@@ -523,7 +524,6 @@ public class GameModel {
 	}
 
 	private void resetRobotPosition(Robot robot){
-		allMoves.add(";B6");
 		int distanceFromSpawnPoint = 0;
 		while(true){
 			for(int i = robot.getSpawnPointX() - distanceFromSpawnPoint; i<=robot.getSpawnPointX() + distanceFromSpawnPoint; i++){
@@ -537,7 +537,6 @@ public class GameModel {
 					if(!tileOccupied && i>=0 && i<gameBoard.getWidth() && j>=0 && j<gameBoard.getHeight()){
 						robot.setX(i);
 						robot.setY(j);
-						allMoves.remove(allMoves.size()-1);
 						addRespawnMove(robot);
 						return;
 					}
