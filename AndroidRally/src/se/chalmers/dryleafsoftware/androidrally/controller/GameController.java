@@ -184,6 +184,7 @@ public class GameController implements PropertyChangeListener {
 			}
 			sb.append(c.getPriority() + ":");
 		}
+		System.out.println("getCards" + sb.toString());
 		cardTimer[robotID].start();
 		return sb.toString(); 
 	}

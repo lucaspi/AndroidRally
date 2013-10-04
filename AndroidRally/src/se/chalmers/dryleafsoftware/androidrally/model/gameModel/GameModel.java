@@ -18,10 +18,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Wrench;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 //TODO
-//robot.getchosenCards för client
 //locked Card strängen fel?
-//B5#
-//allMove ger -1 ibland
 
 
 /**
@@ -553,11 +550,11 @@ public class GameModel {
 	}
 	
 	private void addRobotWon(Robot robot) {
-		allMoves.add(";W#" + robot);
+		allMoves.add(";W#" + robots.indexOf(robot));
 	}
 	
 	private void addRobotLost(Robot robot) {
-		allMoves.add(";L#" + robot);
+		allMoves.add(";L#" + robots.indexOf(robot));
 	}
 
 	private void addSimultaneousMove(Robot robot){
