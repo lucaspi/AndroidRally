@@ -17,6 +17,13 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Laser;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Wrench;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
+//TODO
+//robot.getchosenCards för client
+//locked Card strängen fel?
+//B5#
+//allMove ger -1 ibland
+
+
 /**
  * This is the mainModel for AndroidRally.
  * 
@@ -36,21 +43,6 @@ public class GameModel {
 
 	private static final String testMap = "yxxxxxx16x16xxxxx5xxx36:37xyxx06xxx27x37:06xxxx12xxxxx78:16x27yxxxxx27x06xxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07:26:06x1xxxxx06xx16xyx06xx26x26x27x06xx103x103x103x103x103x07xx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07:06x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxx16xx16xxxx06xx68:16xyxxxxxxx17:16xx16:37xxxxxx88xyxxxxxxxxxxxx5xxx57x";
 	
-	private static String[][] testmap = new String[][] {
-		{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-		{"", "16", "", "", "", "", "", "", "", "", "", "", "", "", "58", "68"},
-		{"", "", "", "", "", "", "", "14", "", "", "", "5", "", "", "48", "78"},
-		{"", "37", "", "1", "", "", "", "233", "", "", "1", "", "", "38", "", "88"},
-		{"", "", "", "", "", "", "", "233", "", "", "", "", "", "", "28", ""},
-		{"", "", "", "", "4", "", "", "", "", "", "", "", "", "", "18", ""},
-		{"", "", "", "", "", "", "", "133", "", "", "", "", "", "", "", ""},
-		{"", "5", "", "", "", "", "", "133", "", "", "", "1", "", "", "", ""},
-		{"", "", "", "", "103", "103", "103", "133:103", "", "", "", "", "", "", "", ""},
-		{"", "", "36", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-		{"", "", "", "", "4", "", "", "", "", "", "", "22", "", "", "", ""},
-		{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""},
-	};
-
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
 	 * on the amount of players. Creates a deck with cards that is shuffled.
@@ -105,10 +97,11 @@ public class GameModel {
 	public void activateBoardElements() {
 		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
-			gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
-			if(robot.isDead()){
-				allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
-						robots.get(robot.getDirection()));
+			if(!robot.isDead()){
+				gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+				if(robot.isDead()){
+					addRobotDeadMove(robot);
+				}
 			}
 		}
 		if(checkGameStatus())return;
@@ -136,10 +129,11 @@ public class GameModel {
 			}
 			checkConveyorBeltCollides(oldPositions);
 			for(Robot robot : robots){
-				gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
-				if(robot.isDead()){
-					allMoves.add(";F#" + robots.indexOf(robot) + ":" + 
-							robot.getDirection());
+				if(!robot.isDead()){
+					gameBoard.getTile(robot.getX(), robot.getY()).instantAction(robot);
+					if(robot.isDead()){
+						addRobotDeadMove(robot);
+					}
 				}
 			}
 			if(checkGameStatus())return;
@@ -163,7 +157,6 @@ public class GameModel {
 	    	
 	    }
 
-	    fireAllLasers();
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
@@ -180,6 +173,7 @@ public class GameModel {
 				}
 			}
 		}
+	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
 	}
 
@@ -187,7 +181,7 @@ public class GameModel {
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
-				allMoves.add("#" + i + ":" + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
 			}
 		}
 	}
@@ -315,7 +309,7 @@ public class GameModel {
 	private void checkConveyorBeltCollides(int[][] oldPositions){
 		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
-			if(robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1]){
+			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
 				if(canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
 					addSimultaneousMove(robots.get(i));
 					nbrOfMovedRobots++;
@@ -452,8 +446,7 @@ public class GameModel {
 						.instantAction(currentRobot);
 					}
 					if(currentRobot.isDead()){
-						allMoves.add(";F#" + robots.indexOf(currentRobot) + ":" + 
-								currentRobot.getDirection());
+						addRobotDeadMove(currentRobot);
 					}
 					if (checkGameStatus())return;
 				}
@@ -483,9 +476,10 @@ public class GameModel {
 	private boolean checkGameStatus(){
 		for(int i = 0; i < robots.size(); i++){
 			if (robotHasReachedLastCheckPoint())return true;
-			if(robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
-					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight()){
+			if(!robots.get(i).isDead() && (robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
+					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight())){
 				robots.get(i).die();
+				--robotsPlaying;
 				if(isGameOver(i))return true;
 			}
 		}
@@ -501,36 +495,35 @@ public class GameModel {
 			if (robots.get(i).getLastCheckPoint() == gameBoard.getNbrOfCheckPoints()) {
 				isGameOver = true;
 				pcs.firePropertyChange(ROBOT_WON, -1, i);
+				return isGameOver;
 			}
 		}
 		return isGameOver;
 	}
 
 	/**
-	 * Check if a robot has lost.
+	 * Check if a robot has lost IF a robot has lost.
 	 * @return true if a player has won, else false
 	 */
 	private boolean isGameOver(int robotID) {
-		if (robots.get(robotID).hasLost()) {
-			--robotsPlaying;
-			robotHasWonBecauseItsAlone();
-			if (!isGameOver) {
-				pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
-			}
+		checkRobotAlone();
+		if (!isGameOver) {
+			pcs.firePropertyChange(ROBOT_LOST, -1, robotID);
 		}
 		return isGameOver;
 	}
 
 	/**
 	 * Checks if robot has won because its alone.
-	 * @return true if there is only one robot left, else false
+	 * Sets isGameOver to true if game is over.
 	 */
-	private void robotHasWonBecauseItsAlone() {
+	private void checkRobotAlone() {
 		if (robotsPlaying == 1) {
 			for (int j = 0; j < robots.size() ; j++) {
-				if (robots.get(j) != null) {
+				if (!robots.get(j).hasLost()) {
 					isGameOver = true;
 					pcs.firePropertyChange(ROBOT_WON, -1, j);
+					return;
 				}
 			}
 		}
@@ -575,6 +568,10 @@ public class GameModel {
 		System.out.println(";" + robots.indexOf(robot) + ":" + robot.getDirection() + 
 				robot.getXAsString() + robot.getYAsString() );
 	}
+	
+	private void addRobotDeadMove(Robot robot){
+		allMoves.add(";F#" + robots.indexOf(robot));
+	}
 
 	/**
 	 * Return a String containing all moves during a round.
@@ -604,6 +601,10 @@ public class GameModel {
 
 	public boolean isGameOver() {
 		return isGameOver;
+	}
+
+	public int getRobotsPlaying() {
+		return robotsPlaying;
 	}
 
 }

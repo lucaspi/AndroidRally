@@ -92,7 +92,11 @@ public class Robot {
 		
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
+		}
+		int i = 0;
+		while(returnCards.contains(chosenCards[i])){
 			chosenCards[i] = null;
+			i++;
 		}
 		cards.clear();
 		setSentCards(false);
@@ -187,7 +191,7 @@ public class Robot {
 	}
 	
 	public String getXAsString(){
-		if(positionX >= 10){
+		if(positionX >= 10 || positionX < 0){
 			return positionX + "";
 		}else{
 			return "0" + positionX;
@@ -195,7 +199,7 @@ public class Robot {
 	}
 	
 	public String getYAsString(){
-		if(positionY >= 10){
+		if(positionY >= 10 || positionY < 0){
 			return positionY + "";
 		}else{
 			return "0" + positionY;
