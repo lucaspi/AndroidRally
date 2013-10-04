@@ -86,6 +86,12 @@ public class GameModel {
 	 * move robots that are standing on a conveyor belt and so on.
 	 */
 	private void activateBoardElements() {
+		handleConveyorBelts();
+		handleGears();
+		handleImmobileActions();
+	}
+	
+	private void handleConveyorBelts(){
 		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
 			if(!robot.isDead()){
@@ -129,25 +135,9 @@ public class GameModel {
 			}
 			if(checkGameStatus())return;
 		}
-		
-	    allMoves.add(";B4");
-	    for(int i = 0; i<robots.size(); i++){
-	    	if (robots.get(i).isDead()) {
-				continue;
-			}
-	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
-    				robots.get(i).getY()).getBoardElements();
-	    	if(boardElements != null && boardElements.size() > 0){
-	    		for(BoardElement boardelement : boardElements){
-		    		if(boardelement instanceof Gears){
-		    			boardelement.action(robots.get(i));
-		    			addSimultaneousMove(robots.get(i));
-		    		}
-		    	}
-	    	}
-	    	
-	    }
-
+	}
+	
+	private void handleImmobileActions(){
 	    int[] oldCheckPointReached = new int[robots.size()];
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
@@ -169,6 +159,26 @@ public class GameModel {
 	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
 		addCheckPointReached(oldCheckPointReached);
+	}
+	
+	private void handleGears(){
+	    allMoves.add(";B4");
+	    for(int i = 0; i<robots.size(); i++){
+	    	if (robots.get(i).isDead()) {
+				continue;
+			}
+	    	List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
+    				robots.get(i).getY()).getBoardElements();
+	    	if(boardElements != null && boardElements.size() > 0){
+	    		for(BoardElement boardelement : boardElements){
+		    		if(boardelement instanceof Gears){
+		    			boardelement.action(robots.get(i));
+		    			addSimultaneousMove(robots.get(i));
+		    		}
+		    	}
+	    	}
+	    	
+	    }
 	}
 
 	private void addCheckPointReached(int[] oldCheckPoints){
@@ -460,7 +470,7 @@ public class GameModel {
 			activateBoardElements();
 		}
 
-		allMoves.add(";B7");
+		allMoves.add(";B7");// B7 = robot respawn actions.
 		for(Robot robot : robots){
 			deck.returnCards(robot.returnCards());
 			if (robot.isDead() && !robot.hasLost()) {
@@ -468,8 +478,6 @@ public class GameModel {
 				robot.setDead(false);
 			}
 		}
-
-		//TODO give specials to robots standing on "wrench & hammer"
 	}
 
 	/**
