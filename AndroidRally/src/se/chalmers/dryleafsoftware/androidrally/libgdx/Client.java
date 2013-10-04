@@ -117,11 +117,12 @@ public class Client {
 					result.addAction(multi);
 				}else if(phase == 6) {
 					for(int i = 1; i < parallel.length; i++) {
-						result.addAction(createSingleAction(parallel[i]));
+						SingleAction a = createSingleAction(parallel[i]);
+						a.setDuration(0);
+						result.addAction(a);
 						result.addToNext(
 								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
-								SpecialAction.RESPAWN_ACTION,
-								SpecialAction.VISIBLE_ACTION));	
+								SpecialAction.Special.RESPAWN));	
 					}
 				}else{
 					GameAction action;
@@ -140,7 +141,7 @@ public class Client {
 				}
 			}else if(parallel[0].equals("F")) {
 				result.addAction(new SpecialAction(Integer.parseInt(parallel[1]),
-						SpecialAction.HOLE_ACTION, SpecialAction.INVISIBLE_ACTION));	
+						SpecialAction.Special.HOLE));	
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
 			}else if(parallel[0].equals("W")) {
