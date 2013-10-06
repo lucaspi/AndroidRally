@@ -54,6 +54,7 @@ public class RobotView extends Image  {
 		laser.setPosition(this.getX(), this.getY());
 		laser.setOrigin(20, 20);
 		laser.setRotation(getRotation());
+		laser.setIsOuter(true);
 		return laser;
 	}
 	

@@ -14,8 +14,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class LaserView extends AnimatedImage {
 	
 	private CollisionMatrix collisionMatrix;
-	private int length;
 	private boolean hasCalc = false;
+	private boolean outer = false;
 	
 	/**
 	 * Creates a new laser which will use the specified texture.
@@ -29,6 +29,17 @@ public class LaserView extends AnimatedImage {
 		setRotation(-dir * 90);
 		setVisible(false);
 		setPhaseMask(5);
+	}
+	
+	/**
+	 * Sets where the laser is located on the tile. If it is "outer" then it is placed
+	 * on the border of the tile facing out, otherwise it will be pointing inward, i.e. the laser will
+	 * pass through the tile it is on. However, it will always face the direction it is specified
+	 * to face.
+	 * @param outer 
+	 */
+	public void setIsOuter(boolean outer) {
+		this.outer = outer;
 	}
 	
 	/**
@@ -51,52 +62,60 @@ public class LaserView extends AnimatedImage {
 		super.disable();
 		setVisible(false);
 	}
+	
+	private int calcHeight() {
+		int length = 0;
+		int x = (int) (getX() / 40);
+		int y = 15 - (int) (getY() / 40);
+		int dir = ((int)(getRotation() / -90) + 4) % 4;
+		if(!outer && collisionMatrix.isBlocked(x, y)) {
+			return 0;
+		}
+		switch(dir) {
+		case MapBuilder.DIR_NORTH:
+			length = 40 * (y+1);
+			for(int i = 0; i <= y; i++) {
+				if(collisionMatrix.cannotTravel(x, y-i, dir)) {
+					length = 40 * (i+1);
+					break;
+				}
+			}
+			break;
+		case MapBuilder.DIR_SOUTH:
+			length = 40 * (16-y);
+			for(int i = y; i <= 16; i++) {
+				if(collisionMatrix.cannotTravel(x, i, dir)) {
+					length = 40 * (i-y+1);
+					break;
+				}
+			}
+			break;
+		case MapBuilder.DIR_WEST:
+			length = 40 * (x+1);
+			for(int i = 0; i <= x; i++) {
+				if(collisionMatrix.cannotTravel(x-i, y, dir)) {
+					length = 40 * (i+1);
+					break;
+				}
+			}
+			break;
+		case MapBuilder.DIR_EAST:
+			length = 40 * (12-x);
+			for(int i = x; i <= 12; i++) {
+				if(collisionMatrix.cannotTravel(i, y, dir)) {
+					length = 40 * (i-x+1);
+					break;
+				}
+			}
+			break;
+		}
+		return length;
+	}
 
 	@Override
 	public void animate(float timeDelta) {
 		if(!hasCalc) {
-			int x = (int) (getX() / 40);
-			int y = 15 - (int) (getY() / 40);
-			int dir = ((int)(getRotation() / -90) + 4) % 4;
-			switch(dir) {
-			case MapBuilder.DIR_NORTH:
-				length = 40 * (y+1);
-				for(int i = 0; i <= y; i++) {
-					if(collisionMatrix.cannotTravel(x, y-i, dir)) {
-						length = 40 * (i+1);
-						break;
-					}
-				}
-				break;
-			case MapBuilder.DIR_SOUTH:
-				length = 40 * (16-y);
-				for(int i = y + 1; i < 16; i++) {
-					if(collisionMatrix.cannotTravel(x, i, dir)) {
-						length = 40 * (i-y);
-						break;
-					}
-				}
-				break;
-			case MapBuilder.DIR_WEST:
-				length = 40 * (x+1);
-				for(int i = 0; i <= x; i++) {
-					if(collisionMatrix.cannotTravel(x-i, y, dir)) {
-						length = 40 * (i+1);
-						break;
-					}
-				}
-				break;
-			case MapBuilder.DIR_EAST:
-				length = 40 * (12-x);
-				for(int i = x + 1; i < 12; i++) {
-					if(collisionMatrix.cannotTravel(i, y, dir)) {
-						length = 40 * (i-x);
-						break;
-					}
-				}
-				break;
-			}
-			setHeight(length);
+			setHeight(calcHeight());
 			layout();
 			hasCalc = true;
 		}

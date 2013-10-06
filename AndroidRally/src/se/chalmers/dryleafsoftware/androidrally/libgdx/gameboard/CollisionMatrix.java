@@ -30,13 +30,13 @@ public class CollisionMatrix {
 	
 	public boolean cannotTravel(int x, int y, int dir) {
 		if(dir == MapBuilder.DIR_NORTH) {
-			return (isWall(x, y, 0) || isBlocked(x, y));
+			return (isWall(x, y, 0) || isBlocked(x, y - 1));
 		}else if(dir == MapBuilder.DIR_SOUTH) {
-			return (isWall(x, y, 0) || isBlocked(x, y));
+			return (isWall(x, y + 1, 0) || isBlocked(x, y + 1));
 		}else if(dir == MapBuilder.DIR_WEST) {
-			return (isWall(x, y, 1) || isBlocked(x+1, y)); // not
+			return (isWall(x, y, 1) || isBlocked(x - 1, y));
 		}else if(dir == MapBuilder.DIR_EAST) {
-			return (isWall(x, y, 1) || isBlocked(x, y));
+			return (isWall(x + 1, y, 1) || isBlocked(x + 1, y));
 		}else{
 			return true;
 		}
@@ -61,11 +61,10 @@ public class CollisionMatrix {
 	}
 	
 	public boolean isBlocked(int x, int y) {
-//		if(x < dynamic.length && y < dynamic[0].length) {
-//			return dynamic[x][y];
-//		}else{
-//			return false;
-//		}
-		return false;
+		if(validBlockedPos(x, y)) {
+			return dynamic[x][y];
+		}else{
+			return false;
+		}
 	}
 }
