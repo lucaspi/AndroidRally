@@ -72,10 +72,10 @@ public class Client {
 			}
 			sb.append(":" + temp[i]);
 		}	
-		controller.setChosenCardsToRobot(robotID, sb.toString()); // TODO: server
+		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
-				controller.setChosenCardsToRobot(i, ":-1:-1:-1:-1:-1"); // TODO: remove
+				controller.setChosenCardsToRobot(i, "-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
 	}
