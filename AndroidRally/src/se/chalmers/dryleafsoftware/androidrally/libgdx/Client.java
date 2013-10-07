@@ -72,11 +72,9 @@ public class Client {
 			}
 			sb.append(":" + temp[i]);
 		}	
-		System.out.println("Sending cards");
 		controller.setChosenCardsToRobot(robotID, sb.toString()); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
-				System.out.println("Sending cards");
 				controller.setChosenCardsToRobot(i, ":-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
@@ -140,7 +138,7 @@ public class Client {
 				}
 			}else if(parallel[0].equals("F")) {
 				String[] data = parallel[1].split(":");
-				result.addAction(new HealthAction(Integer.parseInt(data[0]), HealthAction.UNCHANGED, 
+				result.addAction(new HealthAction(Integer.parseInt(data[0]), 0, 
 						Integer.parseInt(data[1])));
 				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
 						SpecialAction.Special.HOLE));	
