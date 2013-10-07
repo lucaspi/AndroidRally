@@ -34,7 +34,7 @@ public class HealthAction extends GameAction {
 	@Override
 	public void action(List<RobotView> robots) {
 		start();
-		// Do nothing
+		// Everything is being done in cleanUp!
 	}
 
 	@Override
