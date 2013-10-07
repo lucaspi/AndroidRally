@@ -259,33 +259,34 @@ public class GameModel {
 	private void fireLaser(int x, int y, int direction){
 		boolean robotIsHit = false;
 		boolean noWall = true;
-		if(direction == GameBoard.NORTH){
-			while(y >= 0 && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				y--;
-				robotIsHit = isRobotHit(x, y);
-			}
+		if(noWall = canMove(x, y, direction)){
+			if(direction == GameBoard.NORTH){
+				while(y >= 0 && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					y--;
+					robotIsHit = isRobotHit(x, y);
+				}
 
-		}else if(direction == GameBoard.EAST){
-			while(x < gameBoard.getWidth() && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				x++;
-				robotIsHit = isRobotHit(x, y);
-			}
-		}else if(direction == GameBoard.SOUTH){
-			while(y < gameBoard.getHeight() && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				y++;
-				robotIsHit = isRobotHit(x, y);
-			}
-		}else if(direction == GameBoard.WEST){
-			while(x >= 0 && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				x--;
-				robotIsHit = isRobotHit(x, y);
+			}else if(direction == GameBoard.EAST){
+				while(x < gameBoard.getWidth() && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					x++;
+					robotIsHit = isRobotHit(x, y);
+				}
+			}else if(direction == GameBoard.SOUTH){
+				while(y < gameBoard.getHeight() && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					y++;
+					robotIsHit = isRobotHit(x, y);
+				}
+			}else if(direction == GameBoard.WEST){
+				while(x >= 0 && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					x--;
+					robotIsHit = isRobotHit(x, y);
+				}
 			}
 		}
-
 	}
 
 
@@ -495,8 +496,8 @@ public class GameModel {
 				robots.get(i).die();
 				if(robots.get(i).hasLost()){
 					--robotsPlaying;
+					if(isGameOver(i))return true;
 				}
-				if(isGameOver(i))return true;
 			}
 		}
 		return false;
