@@ -54,6 +54,7 @@ public class Client {
 	 * @return A map of the board as a matrix of strings.
 	 */
 	public String getMap() {
+		System.out.println("To client: \"" + controller.getMap() + "\"");
 		return controller.getMap();
 	}
 	
@@ -72,6 +73,7 @@ public class Client {
 			}
 			sb.append(":" + temp[i]);
 		}	
+		System.out.println("From client: \"" + sb.toString() + "\"");
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
@@ -89,7 +91,7 @@ public class Client {
 		String indata = controller.getRoundResults();		
 		String[] allActions = indata.split(";");
 		
-		System.out.println(indata);
+		System.out.println("To client: \"" + indata + "\"");
 		
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
@@ -178,6 +180,7 @@ public class Client {
 	 * @return A list of the client's cards.
 	 */
 	public String loadCards() {	
+		System.out.println("To client: \"" + controller.getCards(robotID) + "\"");
 		return controller.getCards(robotID);
 	}
 	
@@ -189,6 +192,7 @@ public class Client {
 	 */
 	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {	
 		// TODO: server input
+		System.out.println("To client: \"" + controller.getNbrOfPlayers() + "\"");
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
