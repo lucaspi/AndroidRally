@@ -412,7 +412,7 @@ public class GameModel {
 		allMoves.clear();
 		List<Card[]> currentCards = new ArrayList<Card[]>();
 		for (int i = 0; i < robots.size(); i++) {
-			Card[] chosenCards = robots.get(i).getChosenCards();
+			Card[] chosenCards = robots.get(i).getChosenCards().clone();
 			currentCards.add(chosenCards);
 		}
 		int[][] oldPosition = new int[robots.size()][2];
@@ -433,6 +433,9 @@ public class GameModel {
 						highestPriority = currentCards.get(k)[i].getPriority();
 						indexOfHighestPriority = k;
 					}
+				}
+				if(indexOfHighestPriority == -1){
+					continue;// This will only happen when a robot don't have a card, i.e. it has lost.
 				}
 				//Move the robot that has the highest priority on its card
 				Robot currentRobot = robots.get(indexOfHighestPriority);
@@ -490,7 +493,9 @@ public class GameModel {
 			if(!robots.get(i).isDead() && (robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
 					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight())){
 				robots.get(i).die();
-				--robotsPlaying;
+				if(robots.get(i).hasLost()){
+					--robotsPlaying;
+				}
 				if(isGameOver(i))return true;
 			}
 		}

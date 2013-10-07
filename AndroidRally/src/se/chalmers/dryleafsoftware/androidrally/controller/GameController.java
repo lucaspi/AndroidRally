@@ -101,26 +101,27 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) { //TODO ClientID?
 		cardTimer[robotID].cancelTask();
-		try {
-			String[] cardStrings = chosenCards.split(":");
-			System.out.println("Korten: " + chosenCards);
-			List<Card> cards = new ArrayList<Card>();
-			Robot robot = gameModel.getRobots().get(robotID);
-			for (int i = 0; i < 5; i++) {
-				if (Integer.parseInt(cardStrings[i]) == -1) {
-					cards.add(null);
-				} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
-					cards.add(robot.getCards().get(Integer.parseInt(cardStrings[i])));
+		if(!gameModel.getRobots().get(robotID).hasLost()){
+			try {
+				String[] cardStrings = chosenCards.split(":");
+				List<Card> cards = new ArrayList<Card>();
+				Robot robot = gameModel.getRobots().get(robotID);
+				for (int i = 0; i < 5; i++) {
+					if (Integer.parseInt(cardStrings[i]) == -1) {
+						cards.add(null);
+					} else if(Integer.parseInt(cardStrings[i]) < robot.getCards().size()){
+						cards.add(robot.getCards().get(Integer.parseInt(cardStrings[i])));
+					}
 				}
+				robot.setChosenCards(cards);
+			} catch (IllegalArgumentException e) {
+				// Do nothing
 			}
-			robot.setChosenCards(cards);
-		} catch (IllegalArgumentException e) {
-			// Do nothing
+			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
+			gameModel.getRobots().get(robotID).setSentCards(true);
+			gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
+
 		}
-		
-		gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
-		gameModel.getRobots().get(robotID).setSentCards(true);
-		gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
 		nbrOfRobotsDone++;
 
 		if(gameModel.getRobotsPlaying() == nbrOfRobotsDone && !isRunRunning) {
@@ -182,6 +183,11 @@ public class GameController implements PropertyChangeListener {
 		List<Card> cards = gameModel.getRobots().get(robotID).getCards();
 		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
 		StringBuilder sb = new StringBuilder();
+		
+		System.out.println("______________________________");
+		for(Card c : chosenCards){
+			System.out.println("getChosenCards " + c);
+		}
 		
 		for(Card c : cards) {
 			for(int i = 0; i < chosenCards.length; i++) {
