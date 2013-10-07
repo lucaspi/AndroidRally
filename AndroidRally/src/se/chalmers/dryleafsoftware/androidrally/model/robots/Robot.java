@@ -148,11 +148,9 @@ public class Robot {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Called when damage is higher than starting health. Decreases life with 1
-	 * and set damage to 0.
-=======
-	 * Removes one damage from the robot.
+	 * Called when damage is higher than starting health.
+	 * Decreases life with repairAmount
+	 * and set damage to one less.
 	 * @param repairAmount 
 	 */
 	public void repair(int repairAmount) {
@@ -165,9 +163,8 @@ public class Robot {
 	}
 	
 	/**
-	 * Called when damage is higher than starting health.
-	 * Decreases life with 1 and set damage to 0.
->>>>>>> fa305feef754a1d2fe09381eca2f538dadf47f28
+	 *  Decreases life with 1 and sets damage to 0.
+	 *  Sets hasLost to true if life equals 0.
 	 */
 	public void die() {
 		life--;
@@ -210,6 +207,7 @@ public class Robot {
 	 * increased with 1. Damage will decrease with 1 and newSpawnPoint() will be
 	 * called so that the robot spawns at the specific checkpoint if it dies
 	 * (die() is called).
+	 * Decreases damage with 1.
 	 * 
 	 * @param checkpoint
 	 */
