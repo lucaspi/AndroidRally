@@ -15,7 +15,6 @@ public class RoundResult {
 
 	private final List<List<GameAction>> actions;
 	private List<GameAction> currentList;
-	private List<GameAction> nextList;
 	private int returnIndex = 0;
 	
 	/**
@@ -23,25 +22,14 @@ public class RoundResult {
 	 */
 	public RoundResult() {
 		this.actions = new ArrayList<List<GameAction>>();
-		this.nextList = new ArrayList<GameAction>();
-		actions.add(nextList);
 	}
 	
 	/**
 	 * Sets the next list as the current.
 	 */
 	public void newPhase() {
-		currentList = nextList;
-		nextList = new ArrayList<GameAction>();
-		actions.add(nextList);
-	}
-	
-	/**
-	 * Adds the specified action to the start of the next round.
-	 * @param action The 
-	 */
-	public void addToNext(GameAction action) {
-		nextList.add(action);
+		currentList = new ArrayList<GameAction>();
+		actions.add(currentList);
 	}
 	
 	/**

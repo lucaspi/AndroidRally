@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Deck;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 
@@ -147,8 +148,26 @@ public class Robot {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Called when damage is higher than starting health. Decreases life with 1
 	 * and set damage to 0.
+=======
+	 * Removes one damage from the robot.
+	 * @param repairAmount 
+	 */
+	public void repair(int repairAmount) {
+		if (this.damage > 0) {
+			damage -= repairAmount;
+			if (damage < 0) {
+				damage = 0;
+			}
+		}
+	}
+	
+	/**
+	 * Called when damage is higher than starting health.
+	 * Decreases life with 1 and set damage to 0.
+>>>>>>> fa305feef754a1d2fe09381eca2f538dadf47f28
 	 */
 	public void die() {
 		life--;
@@ -198,7 +217,7 @@ public class Robot {
 		if (checkpoint == this.checkpoint + 1) {
 			this.checkpoint++;
 			newSpawnPoint();
-			damage--;
+			repair(1);
 		}
 	}
 
@@ -273,7 +292,6 @@ public class Robot {
 			Random random = new Random();
 			List<Card> tempCards = new ArrayList<Card>();
 			tempCards.addAll(cards);
-			System.out.println("__ tempCards Size: " + tempCards.size());
 			for (int i = 0; i < 5; i++) {
 				if (this.chosenCards[i] == null) {
 					this.chosenCards[i] = tempCards.remove(random

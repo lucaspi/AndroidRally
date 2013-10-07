@@ -117,7 +117,7 @@ public class Client {
 						SingleAction a = createSingleAction(parallel[i]);
 						a.setDuration(0);
 						result.addAction(a);
-						result.addToNext(
+						result.addAction(
 								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
 								SpecialAction.Special.RESPAWN));	
 					}
@@ -140,7 +140,7 @@ public class Client {
 				}
 			}else if(parallel[0].equals("F")) {
 				String[] data = parallel[1].split(":");
-				result.addAction(new HealthAction(Integer.parseInt(data[0]), -1, 
+				result.addAction(new HealthAction(Integer.parseInt(data[0]), HealthAction.UNCHANGED, 
 						Integer.parseInt(data[1])));
 				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
 						SpecialAction.Special.HOLE));	

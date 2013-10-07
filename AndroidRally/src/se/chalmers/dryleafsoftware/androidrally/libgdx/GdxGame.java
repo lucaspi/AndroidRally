@@ -40,7 +40,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private static final int ROUNDTIME = 120;
 	
 	private Texture boardTexture, cardTexture;
-	private long runTimerStamp = TimeUtils.millis() +  ROUNDTIME*1000;
 			
 	/*
 	 *  Stages for specifying which stage the game is currently in:
@@ -77,7 +76,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		this.deckView = new DeckView(players, client.getRobotID());
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
+		deckView.setRoundTick(ROUNDTIME);
+//		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
 
 		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(gameBoard, deckView);
@@ -165,20 +165,19 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			// Displays the cards and waits for the timer task.
 			deckView.setDeckCards(client.loadCards(), cardTexture);
-			deckView.setTimer(Math.min(CARDTIME + 1, deckView.getTimerSeconds()), DeckView.TIMER_CARDS);
+			deckView.setCardTick(CARDTIME);
 			currentStage = Stage.CHOOSING_CARDS;
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)
 				&& currentStage.equals(Stage.CHOOSING_CARDS)) {
 			client.sendCard(deckView.getChosenCards());
 			deckView.displayWaiting();
 			currentStage = Stage.WAITING;
-			deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
+			deckView.setCardTick(-1);
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
-			runTimerStamp = TimeUtils.millis() +  ROUNDTIME*1000;
 			deckView.displayPlayOptions();
-			result = client.getRoundResult();		
-			deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
+			result = client.getRoundResult();
+			deckView.setRoundTick(ROUNDTIME);
 		}
 	}
 

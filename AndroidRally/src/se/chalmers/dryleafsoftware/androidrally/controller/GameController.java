@@ -184,11 +184,6 @@ public class GameController implements PropertyChangeListener {
 		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
 		StringBuilder sb = new StringBuilder();
 		
-		System.out.println("______________________________");
-		for(Card c : chosenCards){
-			System.out.println("getChosenCards " + c);
-		}
-		
 		for(Card c : cards) {
 			for(int i = 0; i < chosenCards.length; i++) {
 				if(chosenCards[i] == c) {
@@ -212,6 +207,7 @@ public class GameController implements PropertyChangeListener {
 	 * round has ended (unless the game is over).
 	 */
 	public void newRound() {
+		System.out.println("------------------------newRound---------------------------");
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;

@@ -6,7 +6,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
- * A MultiAction can do several SingleActions at the same time.
+ * A MultiAction can do several GameActions at the same time.
  * 
  * @author
  *
@@ -26,7 +26,7 @@ public class MultiAction extends GameAction {
 	 * Creates a new instance which will add the specified actions.
 	 * @param action The actions to add.
 	 */
-	public MultiAction(SingleAction... action) {
+	public MultiAction(GameAction... action) {
 		this();
 		for(GameAction a : action) {
 			add(a);
