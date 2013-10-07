@@ -117,7 +117,7 @@ public class Client {
 						SingleAction a = createSingleAction(parallel[i]);
 						a.setDuration(0);
 						result.addAction(a);
-						result.addToNext(
+						result.addAction(
 								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
 								SpecialAction.Special.RESPAWN));	
 					}

@@ -199,15 +199,7 @@ public class BoardView extends Stage {
 			public void buildWall(int x, int y, int dir) {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 384, 0, 64, 64)), x, y, dir));
-				if(dir == MapBuilder.DIR_NORTH) {
-					collisionMatrix.setWall(x, y, 0);
-				}else if(dir == MapBuilder.DIR_SOUTH) {
-					collisionMatrix.setWall(x, y+1, 0);
-				}else if(dir == MapBuilder.DIR_WEST) {
-					collisionMatrix.setWall(x, y, 1);
-				}else if(dir == MapBuilder.DIR_EAST) {
-					collisionMatrix.setWall(x+1, y, 1);
-				}
+				collisionMatrix.setWall(x, y, dir);
 			}
 			@Override
 			public void buildLaser(int x, int y, int dir) {
