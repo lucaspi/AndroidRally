@@ -496,10 +496,14 @@ public class GameModel {
 				robots.get(i).die();
 				if(robots.get(i).hasLost()){
 					--robotsPlaying;
-					if(isGameOver(i))return true;
+					if(isGameOver(i)){
+						System.out.println("checkGameStatus true: " + isGameOver);
+						return true;
+					}
 				}
 			}
 		}
+		System.out.println("checkGameStatus: " + isGameOver);
 		return false;
 	}
 
@@ -512,9 +516,11 @@ public class GameModel {
 			if (robots.get(i).getLastCheckPoint() == gameBoard.getNbrOfCheckPoints()) {
 				isGameOver = true;
 				addRobotWon(robots.get(i));
+				System.out.println("robotHasReachedLastCheckPoint: " + isGameOver);
 				return isGameOver;
 			}
 		}
+		System.out.println("robotHasReachedLastCheckPoint: " + isGameOver);
 		return isGameOver;
 	}
 
@@ -527,6 +533,7 @@ public class GameModel {
 		if (!isGameOver) {
 			addRobotLost(robots.get(robotID));
 		}
+		System.out.println("isGameOver: " + isGameOver);
 		return isGameOver;
 	}
 
@@ -540,10 +547,12 @@ public class GameModel {
 				if (!robots.get(j).hasLost()) {
 					isGameOver = true;
 					addRobotWon(robots.get(j));
+					System.out.println("checkRobotAlone: " + isGameOver);
 					return;
 				}
 			}
 		}
+		System.out.println("checkRobotAlone: " + isGameOver);
 	}
 
 	private void resetRobotPosition(Robot robot){
