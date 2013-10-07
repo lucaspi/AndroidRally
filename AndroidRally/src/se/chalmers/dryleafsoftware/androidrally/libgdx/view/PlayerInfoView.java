@@ -62,7 +62,7 @@ public class PlayerInfoView extends Table implements PropertyChangeListener {
 					damageIndicator[i].setDrawable(new TextureRegionDrawable(notDamage));
 				}
 			}
-		}else if(arg0.getPropertyName().equals(RobotView.EVENT_LIVE_CHANGE)) {
+		}else if(arg0.getPropertyName().equals(RobotView.EVENT_LIFE_CHANGE)) {
 			int lives = (Integer)arg0.getNewValue();
 			for(int i = 0; i < lifeIndicator.length; i++) {
 				if(i < lives) {

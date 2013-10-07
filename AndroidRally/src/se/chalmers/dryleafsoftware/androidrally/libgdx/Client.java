@@ -140,7 +140,7 @@ public class Client {
 				}
 			}else if(parallel[0].equals("F")) {
 				String[] data = parallel[1].split(":");
-				result.addAction(new HealthAction(Integer.parseInt(data[0]), -1, 
+				result.addAction(new HealthAction(Integer.parseInt(data[0]), HealthAction.UNCHANGED, 
 						Integer.parseInt(data[1])));
 				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
 						SpecialAction.Special.HOLE));	

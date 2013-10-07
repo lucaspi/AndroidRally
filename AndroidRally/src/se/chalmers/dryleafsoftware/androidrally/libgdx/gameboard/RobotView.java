@@ -31,7 +31,7 @@ public class RobotView extends Image  {
 	/**
 	 * When the number of lives change.
 	 */
-	public static final String EVENT_LIVE_CHANGE = "lifeChange";
+	public static final String EVENT_LIFE_CHANGE = "lifeChange";
 
 	private int damage = 0, lives = MAX_LIVES;
 	private final int robotID;
@@ -41,20 +41,25 @@ public class RobotView extends Image  {
 	 * Creates a new instance of a robot with the specified ID-number.
 	 * @param robotID The ID-number of this robot.
 	 * @param texture The texture to use.
+	 * @param laser The laser this robot should use.
 	 */
 	public RobotView(int robotID, TextureRegion texture, LaserView laser) {
 		super(texture);
 		this.setSize(40, 40);
 		this.robotID = robotID;
 		this.laser = laser;
+		laser.setIsOuter(true);
 	}
 	
+	/**
+	 * Gives the laser this robot has.
+	 * @return This robot's laser.
+	 */
 	public LaserView getLaser() {
 		laser.setSize(40, 40);
 		laser.setPosition(this.getX(), this.getY());
 		laser.setOrigin(20, 20);
 		laser.setRotation(getRotation());
-		laser.setIsOuter(true);
 		return laser;
 	}
 	
@@ -71,7 +76,7 @@ public class RobotView extends Image  {
 	 * @param lives The number of lives the robot has left.
 	 */
 	public void setLives(int lives) {
-		pcs.firePropertyChange(EVENT_LIVE_CHANGE, this.lives, lives);
+		pcs.firePropertyChange(EVENT_LIFE_CHANGE, this.lives, lives);
 		this.lives = lives;
 	}
 	

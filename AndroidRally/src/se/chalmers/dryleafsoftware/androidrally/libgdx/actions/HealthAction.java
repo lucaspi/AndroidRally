@@ -15,10 +15,15 @@ public class HealthAction extends GameAction {
 	private final int damage, lives;
 	
 	/**
+	 * Static value specifying that a value should stay unchanged.
+	 */
+	public static final int UNCHANGED = -1;
+	
+	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
 	 * @param robotID The ID of the robot to handle.
-	 * @param damage The damage to set to the robot.
-	 * @param lives The number of lives to set to the robot.
+	 * @param damage The damage to set to the robot. Supports UNCHANGED.
+	 * @param lives The number of lives to set to the robot. Supports UNCHANGED.
 	 */
 	public HealthAction(int robotID, int damage, int lives) {
 		super(robotID, 0);
@@ -34,10 +39,10 @@ public class HealthAction extends GameAction {
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
-		if(damage != -1) {
+		if(damage != UNCHANGED) {
 			robots.get(getRobotID()).setDamage(damage);
 		}
-		if(lives != -1) {
+		if(lives != UNCHANGED) {
 			robots.get(getRobotID()).setLives(lives);
 		}
 	}
