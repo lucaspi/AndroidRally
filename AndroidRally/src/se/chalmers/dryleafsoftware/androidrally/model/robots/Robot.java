@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Deck;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 
@@ -80,7 +81,16 @@ public class Robot {
 	 * @see Deck
 	 */
 	public void addCards(List<Card> cards){
+		System.out.println("Storlek på cards innan det lagts till nya kort " + this.cards.size());
 		this.cards = cards;
+		System.out.println("Antal nya kort " + cards.size());
+		System.out.println("Storlek på cards efter det lagts till nya kort " + this.cards.size());
+		for (Card card : chosenCards) {
+			if ( card != null) {
+				this.cards.add(card);
+			}
+		}
+		System.out.println("Efter att kort lagts till har roboten " + this.cards.size() + " kort");
 	}
 	
 	/**
@@ -90,6 +100,11 @@ public class Robot {
 		List<Card> returnCards= new ArrayList<Card>();
 		
 		returnCards.addAll(cards);
+		
+		if (hasLost) {
+			return returnCards;
+		}
+		
 		
 		for(int i = 0; i < damage - 4; i++){
 			returnCards.remove(chosenCards[4-i]);
@@ -127,6 +142,19 @@ public class Robot {
 		this.damage += damage;
 		if (damage > STARTING_HEALTH) {
 			die();
+		}
+	}
+	
+	/**
+	 * Removes one damage from the robot.
+	 * @param repairAmount 
+	 */
+	public void repair(int repairAmount) {
+		if (this.damage > 0) {
+			damage -= repairAmount;
+			if (damage < 0) {
+				damage = 0;
+			}
 		}
 	}
 	
@@ -179,7 +207,7 @@ public class Robot {
 		if(checkpoint == this.checkpoint + 1){
 			this.checkpoint++;
 			newSpawnPoint();
-			damage--;
+			repair(1);
 		}
 	}
 	
@@ -246,7 +274,7 @@ public class Robot {
 	}
 	
 	public void fillEmptyCardRegisters(){
-		if(!isDead){
+		if(!hasLost){ //locked cards shouldn't be able to be randomized
 			Random random = new Random();
 			List<Card> tempCards = new ArrayList<Card>();
 			tempCards.addAll(cards);

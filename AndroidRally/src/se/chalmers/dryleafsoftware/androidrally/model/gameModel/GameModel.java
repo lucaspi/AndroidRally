@@ -77,6 +77,8 @@ public class GameModel {
 			for (int i = 0; i < nbrOfDrawnCards; i++) {
 				drawnCards.add(deck.drawCard());
 			}
+			System.out.println("  ");
+			System.out.println("Robot " + robots.indexOf(robot));
 			robot.addCards(drawnCards);
 		}
 	}
