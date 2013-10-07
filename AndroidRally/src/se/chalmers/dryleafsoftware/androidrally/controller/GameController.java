@@ -86,6 +86,8 @@ public class GameController implements PropertyChangeListener {
 				//If the game is over a new round will not be started. Game will end.
 				if (!gameModel.isGameOver()) {
 					newRound();
+				} else {
+					timer.cancel();
 				}
 				isRunRunning = false;
 			}
