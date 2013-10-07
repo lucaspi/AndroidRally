@@ -5,6 +5,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.PlayerInfoView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,17 +17,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * This stage holds all the cards the player has to play with.
@@ -36,13 +43,15 @@ public class DeckView extends Stage {
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
-	private List<CardView> chosenCards = new ArrayList<CardView>();
+	private final Register[] registers;
 	private int position;
 	private final CardListener cl;
 	private Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
+	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
+	private final Table allPlayerInfo; // The panel with all the players' info
 
 	/**
 	 * Specifying that the game should start.
@@ -68,21 +77,29 @@ public class DeckView extends Stage {
 	 * Specifying that the round has ended.
 	 */
 	public static final String TIMER_ROUND = "timerRound";
+	/**
+	 * Specifying that the info button has been pressed.
+	 */
+	public static final String EVENT_INFO = "info";
 	
-	private int timerTick;
 	private final Timer timer;	
 	private final Label timerLabel;
+	
+	private int cardTick = 0;
+	private int roundTick = 0;
 
 	/**
 	 * Creates a new default instance.
 	 */
-	public DeckView() {
+	public DeckView(List<RobotView> robots, int robotID) {
 		super();
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
 		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
+		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
+		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				
 		cl = new CardListener(this);
 		
 		// Default camera
@@ -114,6 +131,7 @@ public class DeckView extends Stage {
 		upperArea.debug();
 		upperArea.setSize(480, 120);
 		upperArea.setPosition(0, 120);
+		upperArea.setLayoutEnabled(false);
 		container.add(upperArea);
 		
 		statusBar = new Table();
@@ -121,6 +139,14 @@ public class DeckView extends Stage {
 		statusBar.setSize(480, 80);
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
+		
+		registers = new Register[5];
+		for(int i = 0; i < 5; i++) {
+			registers[i] = new Register(compTexture, i);
+			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
+			upperArea.add(registers[i]);
+			
+		}
 		
 		// TODO: Remove this dummy button!
 		TextButtonStyle style = new TextButtonStyle();	  
@@ -145,25 +171,70 @@ public class DeckView extends Stage {
     			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
     		}
     	});
+        
+        final TextButton showPlayers = new TextButton("Info", style);
+        statusBar.add(showPlayers); // Border
+        showPlayers.addListener(new ClickListener() {
+        	private boolean dispOpp = false;
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			if(dispOpp) {
+    				displayNormal();
+    				showPlayers.setText("Info");
+    			}else{
+    				displayOpponentInfo();
+    				showPlayers.setText("Back");
+    			}
+    			dispOpp = !dispOpp;
+    		}
+    	});
 		
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
 
 		timer = new Timer();
-		timer.start();
 		// Tick every second.
-		timer.scheduleTask(new Timer.Task() {
+		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				timerTick--;
-				setTimerLabel(timerTick);
+				if(cardTick > 0) {
+					cardTick--;
+					if(cardTick == 0) {
+						pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+						System.out.println("---------------------------------CARD TIMER-----------");
+					}
+				}
+				if(roundTick > 0) {
+					roundTick--;
+					if(roundTick == 0) {
+						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+						System.out.println("-------------------------------------ROund timer!-----------");
+					}
+				}
+				setTimerLabel(cardTick > 0 ? cardTick : roundTick);
 			}
-		}, 0, 1f);
+		}, 1000, 1000);
 
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
     	timerLabel = new Label("", lStyle);
     	statusBar.add(timerLabel);
+    	
+    	playerInfo = new PlayerInfoView(compTexture, robots.get(robotID));
+    	statusBar.add(playerInfo);
+    	
+    	allPlayerInfo = new Table();
+    	allPlayerInfo.setPosition(0, 0);
+    	allPlayerInfo.setSize(480, 240);
+    	Table scrollContainer = new Table();
+    	ScrollPane pane = new ScrollPane(scrollContainer);
+    	allPlayerInfo.add(pane);
+    	for(int i = 0; i < robots.size(); i++) {
+    		if(i != robotID) {
+    			scrollContainer.add(new PlayerInfoView(compTexture, robots.get(i))).pad(10);
+    			scrollContainer.row();
+    		}
+    	}
 	}
 	
 	/*
@@ -243,9 +314,9 @@ public class DeckView extends Stage {
 	 * as [hh:mm:ss].
 	 */
 	private void setTimerLabel(int ticks) {
-		int h = timerTick / 3600;
-		int m = (timerTick / 60) % 60;
-		int s = timerTick % 60;
+		int h = ticks / 3600;
+		int m = (ticks / 60) % 60;
+		int s = ticks % 60;
 		s = Math.max(s, 0);
 		timerLabel.setText(String.format("%02d", h) + 
 				":" + String.format("%02d", m) + 
@@ -253,27 +324,25 @@ public class DeckView extends Stage {
 	}
 	
 	/**
-	 * Gives the current seconds left in the timer.
-	 * @return The current number of seconds left in the timer.
+	 * Sets the card timer to the specified number in seconds.
+	 * @param cardTick The card timer's delay in seconds.
 	 */
-	public int getTimerSeconds() {
-		return this.timerTick;
+	public void setCardTick(int cardTick) {
+		this.cardTick = cardTick;
+		if(cardTick > 0) {
+			setTimerLabel(cardTick);
+		}
 	}
 	
 	/**
-	 * Sets the timer to count down the specified amount of seconds.
-	 * @param seconds The seconds to count down.
-	 * @param event The event to fire when the timer reach zero.
+	 * Sets the round timer to the specified number in seconds.
+	 * @param roundTick The round timer's delay in seconds.
 	 */
-	public void setTimer(int seconds, final String event) {
-		this.timerTick = seconds;	
-		timer.scheduleTask(new Timer.Task() {
-			@Override
-			public void run() {
-				pcs.firePropertyChange(event, 0, 1);
-			}
-		}, seconds);
-		setTimerLabel(timerTick);
+	public void setRoundTick(int roundTick) {
+		this.roundTick = roundTick;
+		if(roundTick > 0) {
+			setTimerLabel(roundTick);
+		}
 	}
 	
 	/**
@@ -291,14 +360,86 @@ public class DeckView extends Stage {
 	public void removeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 	}
+	
+	/**
+	 * Only displays the locked cards.
+	 * @param input The String with card data.
+	 * @param texture The texture to use.
+	 */
+	public void setChosenCards(String input, Texture texture) {
+		setCards(input, texture, true);
+	}
+	
+	/**
+	 * Displays all cards.
+	 * @param input The String with card data.
+	 * @param texture The texture to use.
+	 */
+	public void setDeckCards(String input, Texture texture) {
+		setCards(input, texture, false);
+	}
+	
+	/**
+	 * Displays all cards.
+	 * @param input A String with all the cards' data.
+	 * @param texture The texture to use when creating the cards.
+	 * @param onlyLocked Set to <code>true</code> if only locked cards should be displayed.
+	 */
+	private void setCards(String input, Texture texture, boolean onlyLocked) {
+		List<CardView> cards = new ArrayList<CardView>();
+		// Clear cards
+		for(Register r : registers) {
+			r.clear();
+			r.setLocked(false);
+		}
+				
+		String indata = input;
+		int i = 0;
+		for(String card : indata.split(":")) {
+			String[] data = card.split(";");
+			
+			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
+			int regX = 0;
+			if(prio <= 60) {
+				regX = 0;	// UTURN
+			}else if(prio <= 410 && prio % 20 != 0) {
+				regX = 64;	// LEFT
+			}else if(prio <= 420 && prio % 20 == 0) {
+				regX = 128;	// LEFT
+			}else if(prio <= 480) {
+				regX = 192;	// Back 1
+			}else if(prio <= 660) {
+				regX = 256;	// Move 1
+			}else if(prio <= 780) {
+				regX = 320;	// Move 2
+			}else if(prio <= 840) {
+				regX = 384;	// Move 3
+			}	
 
+			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
+					prio, i);
+			cv.setSize(78, 110);
+			
+			if(data.length == 2) {
+				int lockPos = Integer.parseInt(data[0].substring(1));
+				registers[lockPos].setCard(cv);
+				registers[lockPos].setLocked(true);
+			}else if(!onlyLocked){
+				cards.add(cv);
+			}			
+			i++;
+		}
+		Collections.sort(cards);
+		setDeckCards(cards);
+	}
+	
 	/**
 	 * Sets which cards the deck should display.
 	 * 
 	 * @param list
 	 *            The cards the deck should display.
 	 */
-	public void setDeckCards(List<CardView> list) {
+	private void setDeckCards(List<CardView> list) {
 		Table holder = new Table();
 		holder.setSize(480, 160);
 		holder.setLayoutEnabled(false);
@@ -312,8 +453,14 @@ public class DeckView extends Stage {
 		}
 		for (CardView cv : deckCards) {
 			cv.addListener(cl);
+			cv.addListener(cardListener);
 		}
-		chosenCards.clear();
+	}
+	
+	public void displayOpponentInfo() {
+		container.removeActor(lowerArea);
+		container.removeActor(upperArea);
+		container.add(allPlayerInfo);
 	}
 	
 	/**
@@ -321,12 +468,29 @@ public class DeckView extends Stage {
 	 */
 	public void displayWaiting() {
 		lowerArea.clear();
+		for(Register r : registers) {
+			if(r.getCard() != null) {
+				r.removeListener(cardListener);
+			}
+		}
+	}
+	
+	/**
+	 * Displays the normal panel which is divided into an upper and a lower area.
+	 */
+	public void displayNormal() {
+		container.removeActor(allPlayerInfo);
+		container.add(upperArea);
+		container.add(lowerArea);
 	}
 	
 	/**
 	 * Displays the panel which should be visible after viewing the round results.
 	 */
 	public void displayDrawCard() {
+		for(Register r : registers) {
+			r.clear();
+		}
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
@@ -337,6 +501,11 @@ public class DeckView extends Stage {
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);
+		for(Register r : registers) {
+			if(r.getCard() != null) {
+				r.removeListener(cardListener);
+			}
+		}
 	}
 	
 	/**
@@ -344,28 +513,19 @@ public class DeckView extends Stage {
 	 * 
 	 * @return
 	 */
-	public List<CardView> getChosenCards() {
-		return this.chosenCards;
+	public CardView[] getChosenCards() {
+		CardView[] cards = new CardView[registers.length];
+		for(int i = 0; i < registers.length; i++) {
+			cards[i] = registers[i].getCard();
+		}
+		return cards;
 	}
 
 	/**
 	 * Rerenders all the player's card at their correct positions.
 	 */
 	public void updateCards() {
-		updateChosenCards();
 		updateDeckCards();
-	}
-
-	/**
-	 * Rerenders all the cards added to the register.
-	 */
-	public void updateChosenCards() {
-		for (int i = 0; i < this.chosenCards.size(); i++) {
-			CardView cv = this.chosenCards.get(i);
-			cv.setPosition(
-					240 - this.getChosenCardDeckWidth() / 2
-							+ (cv.getWidth() + 10) * i, cv.getHeight() + 10);
-		}
 	}
 
 	/**
@@ -421,91 +581,41 @@ public class DeckView extends Stage {
 					* ((int) this.deckCards.get(0).getWidth() + 10) - 10;
 		}
 	}
-
-	/**
-	 * Returns the total width it takes to render the cards added to the
-	 * register
-	 * 
-	 * @return
-	 */
-	public int getChosenCardDeckWidth() {
-		if (this.chosenCards.size() != 0) {
-			return this.chosenCards.size()
-					* ((int) this.chosenCards.get(0).getWidth() + 10) - 10;
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Moves a card to either the chosen cards or deck cards when it is tapped
-	 * 
-	 * @param card
-	 *            The card that was tapped
-	 */
-	public void moveCard(CardView card) {
-		if (chosenCards.remove(card)) {
-			deckCards.add(card);
-		} else if (chosenCards.size() < 5) {
-			if (deckCards.remove(card)) {
-				chosenCards.add(card);
+	
+	private void choseCard(CardView card) {
+		for(int i = 0; i < registers.length; i++) {
+			if(registers[i].isEmpty()) {
+				registers[i].setCard(card);
+				deckCards.remove(card);
+				break;
 			}
 		}
-		updateCards();
 	}
-
-	/**
-	 * Places a card at the correct place when dragged in place
-	 * 
-	 * @param card
-	 *            The card to be placed
-	 * @param x
-	 *            The x coordinate of the card
-	 * @param y
-	 *            The y coordinate of the card
-	 * @return
-	 */
-	public void placeCardAtPosition(CardView card) {
-		System.out.println(card.getX() + " " + card.getY());
-		if (card.getY() > 90 && card.getY() < 240) {
-			if (chosenCards.size() == 0) {
-				moveCard(card);
-				return;
-			} else if (card.getX() > chosenCards.get(chosenCards.size()-1).getX()) {
-				if (chosenCards.size() < 5 && deckCards.remove(card)) {
-					chosenCards.add(chosenCards.size(), card);
-					updateCards();
-					return;
-				} else if (chosenCards.remove(card)) {
-					chosenCards.add(chosenCards.size(), card);
-					updateCards();
-					return;
-				}
-			} else if (chosenCards.size() <= 5) {
-				for (int i = 0; i < chosenCards.size(); i++) {
-					if (card.getX() < chosenCards.get(i).getX()) {
-						if (chosenCards.size() < 5 && deckCards.remove(card)) {
-							chosenCards.add(i, card);
-							updateCards();
-							return;
-						} else if (chosenCards.contains(card) && chosenCards.indexOf(card) < i && chosenCards.remove(card)) {
-							chosenCards.add(i-1, card);
-							updateCards();
-							return;
-						} else if (chosenCards.remove(card)) {
-							chosenCards.add(i, card);
-							updateCards();
-							return;
-						}
-					}
-				}
-			}
-		} else if (card.getY() < 90) {
-			if (chosenCards.remove(card)) {
+	
+	public void unChoseCard(CardView card) {
+		for(int i = 0; i < registers.length; i++) {
+			if(registers[i].getCard() == card) {
+				registers[i].clear();
+				lowerArea.add(card);
 				deckCards.add(card);
+				break;
 			}
 		}
-		updateCards();
 	}
-
+	
+	private final ActorGestureListener cardListener = new ActorGestureListener() {
+		@Override
+		public void tap(InputEvent event, float x, float y, int count, int button) {
+			Actor pressed = getTouchDownTarget();
+			if(pressed instanceof CardView) {
+				CardView card = (CardView)pressed;
+				if(deckCards.contains(card)) {
+					choseCard(card);
+				}else{
+					unChoseCard(card);
+				}
+			}
+			updateCards();
+		}
+	};
 }

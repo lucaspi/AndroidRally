@@ -32,9 +32,9 @@ public class CardListener extends ActorGestureListener {
 	 */
 	@Override
 	public void tap(InputEvent event, float x, float y, int count, int button) {
-		if (touchedCard == null) {
-			deckView.moveCard((CardView) event.getListenerActor());
-		}
+//		if (touchedCard == null) {
+//			deckView.moveCard((CardView) event.getListenerActor());
+//		}
 	}
 
 	/**
@@ -55,8 +55,9 @@ public class CardListener extends ActorGestureListener {
 	 */
 	@Override
 	public boolean longPress(Actor actor, float x, float y) {
-		touchedCard = (CardView) actor;
-		setCorrectPositionOfCard(touchedCard, Gdx.input.getX(), Gdx.input.getY());
+//		touchedCard = (CardView) actor;
+//		deckView.addActor(touchedCard);
+//		setCorrectPositionOfCard(touchedCard, Gdx.input.getX(), Gdx.input.getY());
 		return false;
 	}
 
@@ -65,10 +66,10 @@ public class CardListener extends ActorGestureListener {
 	 */
 	@Override
 	public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-		if (touchedCard != null) {
-			deckView.placeCardAtPosition(touchedCard);
-			touchedCard = null;
-		}
+//		if (touchedCard != null) {
+//			deckView.placeCardAtPosition(touchedCard);
+//			touchedCard = null;
+//		}
 	}
 
 	/**

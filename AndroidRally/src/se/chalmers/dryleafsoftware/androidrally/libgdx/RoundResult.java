@@ -25,7 +25,7 @@ public class RoundResult {
 	}
 	
 	/**
-	 * Actions added after calling this will be laid in another pile.
+	 * Sets the next list as the current.
 	 */
 	public void newPhase() {
 		currentList = new ArrayList<GameAction>();

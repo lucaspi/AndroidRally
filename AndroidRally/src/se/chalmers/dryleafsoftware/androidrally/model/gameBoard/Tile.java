@@ -39,9 +39,7 @@ public class Tile {
 	 * @param robot the robot which every action will affect.
 	 */
 	public void action(Robot robot){
-		GameModel.hejhej = 2;
 		if(boardElements != null){
-			GameModel.hejhej = 3;
 			for(BoardElement boardElement : boardElements){
 				boardElement.action(robot);
 			}

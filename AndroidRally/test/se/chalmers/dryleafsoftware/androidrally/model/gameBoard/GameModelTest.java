@@ -1,7 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +15,22 @@ import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 public class GameModelTest {
+	private String testMap =
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx" +
+			"yxxxxxxxxxx";
+	
+	private String testMap2 = "yxxxyxxx";
 
 	@Test
 	public void testOneRobotWalksManySteps() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(4,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -104,18 +104,6 @@ public class GameModelTest {
 
 	@Test
 	public void testOneRobotPushesAnotherRobot() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -154,18 +142,6 @@ public class GameModelTest {
 
 	@Test
 	public void testOneRobotPushesAnotherRobot2Steps() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -205,18 +181,6 @@ public class GameModelTest {
 
 	@Test
 	public void testOneRobotPushesAnotherRobot3Steps() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -255,18 +219,6 @@ public class GameModelTest {
 
 	@Test
 	public void testOneRobotPushesAnotherRobotBackwards() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -306,18 +258,6 @@ public class GameModelTest {
 
 	@Test
 	public void testOneRobotPushesAnotherRobotIntoAWallFromSouth() {
-		String[][] testMap = new String[][]{
-				{"","","","","","","","",String.valueOf(GameBoard.NORTH)+"6",""},
-				{"","","","","","","",String.valueOf(GameBoard.SOUTH)+"6","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-				{"","","","","","","","","",""},
-		};
 		GameModel gm = new GameModel(2,testMap);
 
 		List<Card> cardList1 = new ArrayList<Card>();
@@ -356,10 +296,8 @@ public class GameModelTest {
 
 	@Test
 	public void testRobotPushesAnotherRobotOutsideMap(){
-		String[][] testMap = {{"","",""},
-				{"","",""}};
-
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(2,testMap2);
+		
 		gm.getRobots().set(0, new Robot(0,2));
 		gm.getRobots().set(1, new Robot(1,1));
 		gm.getRobots().get(1).move(1, GameBoard.WEST);
@@ -393,7 +331,6 @@ public class GameModelTest {
 
 		gm.moveRobots();
 
-
 		System.out.println("Knuffare x" + gm.getRobots().get(0).getX()); //TODO remove syso
 		System.out.println("Knuffare y" + gm.getRobots().get(0).getY());
 		System.out.println("Knuffad x" + gm.getRobots().get(1).getX());
@@ -412,10 +349,7 @@ public class GameModelTest {
 
 	@Test
 	public void testRobotWalksOutsideMap() {
-		String[][] testMap = {{"","",""},
-							  {"","",""}};
-
-		GameModel gm = new GameModel(2,testMap);
+		GameModel gm = new GameModel(2,testMap2);
 		gm.getRobots().set(0, new Robot(0,1));
 		gm.getRobots().set(1, new Robot(1,1));
 		gm.getRobots().get(0).move(1, GameBoard.NORTH);

@@ -64,14 +64,14 @@ public abstract class AnimatedImage extends Image {
 	 * Gives <code>true</code> if this image is currently animated.
 	 * @return <code>true</code> if this image is currently animated.
 	 */
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 	
 	@Override
 	public void act(float delta) {
 		super.act(delta);
-		if(getEnabled()) {
+		if(isEnabled()) {
 			animate(delta);
 		}
 	}

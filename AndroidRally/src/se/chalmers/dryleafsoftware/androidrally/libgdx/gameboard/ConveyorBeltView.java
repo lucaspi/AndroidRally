@@ -24,20 +24,14 @@ public class ConveyorBeltView extends AnimatedImage {
 	public ConveyorBeltView(TextureRegion texture, int degree, int speedMulti) {
 		super(texture);
 		this.texture = texture;
-		this.setOrigin(getWidth()/2, getHeight()/2);
 		this.rotate(-degree);
-		this.speedMulti = speedMulti;
+//		this.speedMulti = speedMulti;
+		this.speedMulti = 1;
 		int[] mask = new int[speedMulti];
 		for(int i = 0; i < mask.length; i++) {
 			mask[i] = 10 + i + 1;
 		}
 		this.setPhaseMask(mask);
-	}
-	
-	@Override
-	public void setSize(float width, float height) {
-		super.setSize(width, height);
-		this.setOrigin(getWidth()/2, getHeight()/2);
 	}
 
 	@Override

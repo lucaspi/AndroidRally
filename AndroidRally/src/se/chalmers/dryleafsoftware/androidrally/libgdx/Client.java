@@ -6,9 +6,12 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HealthAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import com.badlogic.gdx.graphics.Texture;
@@ -39,77 +42,115 @@ public class Client {
 		this.controller = new GameController(8); 
 		this.clientID = clientID;
 		this.robotID = 0;
+		controller.newRound();
+	}
+	
+	public int getRobotID() {
+		return robotID;
 	}
 	
 	/**
 	 * Returns the map of the board as a matrix of strings.
 	 * @return A map of the board as a matrix of strings.
 	 */
-	public String[][] getMap() {
-		String[] mapY = controller.getMap().substring(1).split("y");
-		String[][] map = new String[mapY.length][];
-		for(int i = 0; i < map.length; i++) {
-			map[i] = mapY[i].substring(1).split("x", 64);
-		}
-		return map;// TODO: server output
+	public String getMap() {
+		System.out.println("To client: \"" + controller.getMap() + "\"");
+		return controller.getMap();
 	}
 	
 	/**
 	 * Sends the cards to the server. Note: This list should not contain more then five!
 	 * @param cards The cards to send.
-	 * @return <code>true</code> if the client successfully sent the cards.
 	 */
-	public boolean sendCard(List<CardView> cards) {
-		// Send example: ”12345:0:7:1:4:-1"
-		StringBuilder sb = new StringBuilder("" + robotID);
-		int[] temp = new int[5]; // TODO: remove
+	public void sendCard(CardView[] cards) {
+		StringBuilder sb = new StringBuilder();
+		int[] temp = new int[5]; 
 		for(int i = 0; i < 5; i++) {
-			if(cards.size() > i) {
-				sb.append(":" + cards.get(i).getIndex());
-				temp[i] = cards.get(i).getIndex(); // TODO: remove
+			if(cards[i] == null) {
+				temp[i] = -1;
 			}else{
-				sb.append(":-1");
-				temp[i] = -1; // TODO: remove
+				temp[i] = cards[i].getIndex();
 			}
-		}
-		controller.setChosenCardsToRobot(temp, robotID); // TODO: server
+			sb.append(":" + temp[i]);
+		}	
+		System.out.println("From client: \"" + sb.toString() + "\"");
+		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
 		for(int i = 0; i < 8; i++) {
 			if(i != robotID) {
-				controller.setChosenCardsToRobot(new int[]{-1,-1,-1,-1,-1}, i); // TODO: remove
+				controller.setChosenCardsToRobot(i, "-1:-1:-1:-1:-1"); // TODO: remove
 			}
 		}
-		
-		return true;
 	}
 	
 	/**
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public RoundResult getRoundResult() {
-		controller.getModel().moveRobots();
-		
+	public RoundResult getRoundResult() {		
 		RoundResult result = new RoundResult();	
-		String indata = controller.getModel().getAllMoves();
+		String indata = controller.getRoundResults();		
 		String[] allActions = indata.split(";");
 		
-		System.out.println(indata);
-
+		System.out.println("To client: \"" + indata + "\"");
+		
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
 			if(parallel[0].equals("R")) {
 				result.newPhase();
 			}else if(parallel[0].substring(0, 1).equals("B")) {
-				GameAction holder = new HolderAction(1000);
 				int phase = Integer.parseInt(parallel[0].substring(1));	
-				if(phase < 10) {
-					holder.setMoveRound(phase);
+				if(phase == GameAction.PHASE_LASER) { 
+					MultiAction multi = new MultiAction();
+					for(int i = 1; i < parallel.length; i++) {
+						String[] data = parallel[i].split(":");
+						HealthAction ha = new HealthAction(
+								Integer.parseInt(data[0]),
+								Integer.parseInt(data[1].substring(1)),
+								Integer.parseInt(data[1].substring(0, 1)));
+						multi.add(ha);
+					}
+					multi.setDuration(1000);
+					multi.setMoveRound(GameAction.PHASE_LASER);
+					result.addAction(multi);
+				}else if(phase == GameAction.PHASE_RESPAWN) {
+					for(int i = 1; i < parallel.length; i++) {
+						SingleAction a = createSingleAction(parallel[i]);
+						a.setDuration(0);
+						result.addAction(a);
+						result.addAction(
+								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
+								SpecialAction.Special.RESPAWN));	
+					}
+				}else if(phase == GameAction.PHASE_CHECKPOINT) {
+					// TODO: checkpoint action!
 				}else{
-					holder.setMoveRound(GameAction.PHASE_BOARD_ELEMENT_CONVEYER);
-					holder.setSubRound(phase % 10);
+					GameAction action;
+					// If no actions follows:
+					if(parallel.length == 1) {
+						action = new HolderAction(1000);
+					}else{ // If actions
+						MultiAction multi = new MultiAction();
+						for(int i = 1; i < parallel.length; i++) {
+							multi.add(createSingleAction(parallel[i]));
+						}
+						action = multi;
+					}
+					action.setMoveRound(phase);
+					result.addAction(action);
 				}
-				result.addAction(holder);
-			}else if(parallel.length > 1){
+			}else if(parallel[0].equals("F")) {
+				String[] data = parallel[1].split(":");
+				result.addAction(new HealthAction(Integer.parseInt(data[0]), 0, 
+						Integer.parseInt(data[1])));
+				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
+						SpecialAction.Special.HOLE));	
+			}else if(parallel[0].equals("L")) {
+				// TODO: lose
+			}else if(parallel[0].equals("W")) {
+				// TODO: win
+			}
+			// Generic multiaction
+			else if(parallel.length > 1){
 				MultiAction a = new MultiAction();
 				for(int i = 0; i < parallel.length; i++) {
 					a.add(createSingleAction(parallel[i]));
@@ -138,38 +179,10 @@ public class Client {
 	 * Gives the client's cards.
 	 * @return A list of the client's cards.
 	 */
-	public List<CardView> getCards(Texture texture) {
-		// From server example: "410:420:480:660:780:840:190:200:90"
-		controller.getModel().dealCards(); // TODO: server input
-		List<CardView> cards = new ArrayList<CardView>();
-		
-		// TODO: change to robotID and input to string
-		for(int i = 0; i < controller.getModel().getRobots().get(0).getCards().size(); i++) {
-			Card card = controller.getModel().getRobots().get(0).getCards().get(i);
-			int prio = card.getPriority();
-			int regX = 0;
-			if(prio <= 60) {
-				regX = 0;	// UTURN
-			}else if(prio <= 410 && prio % 20 != 0) {
-				regX = 64;	// LEFT
-			}else if(prio <= 420 && prio % 20 == 0) {
-				regX = 128;	// LEFT
-			}else if(prio <= 480) {
-				regX = 192;	// Back 1
-			}else if(prio <= 660) {
-				regX = 256;	// Move 1
-			}else if(prio <= 780) {
-				regX = 320;	// Move 2
-			}else if(prio <= 840) {
-				regX = 384;	// Move 3
-			}				
-			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
-				card.getPriority(), i);
-			cv.setSize(78, 110);
-			cards.add(cv);
-		}
-		Collections.sort(cards);
-		return cards;
+	public String loadCards() {	
+		String temp = controller.getCards(robotID);
+		System.out.println("To client: \"" + temp + "\"");
+		return temp;
 	}
 	
 	/**
@@ -178,12 +191,13 @@ public class Client {
 	 * @param dockPositions All the docks' positions.
 	 * @return A list of all the robots.
 	 */
-	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {
-		// From server example: "
+	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {	
 		// TODO: server input
-		List<RobotView> robots = new ArrayList<RobotView>();		
-		for(int i = 0; i < controller.getModel().getRobots().size(); i++) {
-			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64));
+		System.out.println("To client: \"" + controller.getNbrOfPlayers() + "\"");
+		List<RobotView> robots = new ArrayList<RobotView>();	
+		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
+			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
+					new LaserView(new TextureRegion(texture, 64, 192, 64, 64), 0));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);
