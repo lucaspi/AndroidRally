@@ -124,6 +124,10 @@ public class Client {
 					}
 				}else if(phase == GameAction.PHASE_CHECKPOINT) {
 					// TODO: checkpoint action!
+					for(int i = 1; i < parallel.length; i++) {
+						String[] data = parallel[i].split(":");
+						System.out.println("Robot: " + data[0] + ", reached checkpoint: " + data[1]);
+					}
 				}else{
 					GameAction action;
 					// If no actions follows:
@@ -147,8 +151,10 @@ public class Client {
 						SpecialAction.Special.HOLE));	
 			}else if(parallel[0].equals("L")) {
 				// TODO: lose
+				System.out.println("Robot: " + parallel[1] + ", lost");
 			}else if(parallel[0].equals("W")) {
 				// TODO: win
+				System.out.println("Robot: " + parallel[1] + ", won");
 			}
 			// Generic multiaction
 			else if(parallel.length > 1){
