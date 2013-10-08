@@ -9,7 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,7 +47,6 @@ public class DeckView extends Stage {
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
-	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
 	private final Table allPlayerInfo; // The panel with all the players' info
 	private final RegisterView registerView;
 
@@ -137,6 +135,7 @@ public class DeckView extends Stage {
 		statusBar.debug();
 		statusBar.setSize(480, 80);
 		statusBar.setPosition(0, 240);
+		statusBar.setLayoutEnabled(false);
 		container.add(statusBar);
 		
 		registerView = new RegisterView(compTexture);
@@ -145,14 +144,16 @@ public class DeckView extends Stage {
 		
 		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
 		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		TextButtonStyle style = new TextButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 0, 32, 32)),
+				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 32, 32, 32)),
+				null);
+		style.font = new BitmapFont();
+				
 		// TODO: Remove this dummy button!
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
         TextButton dummy = new TextButton("Force round", style);
+        dummy.setPosition(0, 60);
+        dummy.setSize(100, 20);
         statusBar.add(dummy); // Border
         dummy.addListener(new ClickListener() {
     		@Override
@@ -161,6 +162,8 @@ public class DeckView extends Stage {
     		}
     	});
         TextButton dummy2 = new TextButton("Send cards", style);
+        dummy2.setPosition(100, 60);
+        dummy2.setSize(100, 20);
         statusBar.add(dummy2); // Border
         dummy2.addListener(new ClickListener() {
     		@Override
@@ -169,23 +172,6 @@ public class DeckView extends Stage {
     		}
     	});
         
-        final TextButton showPlayers = new TextButton("Info", style);
-        statusBar.add(showPlayers); // Border
-        showPlayers.addListener(new ClickListener() {
-        	private boolean dispOpp = false;
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			if(dispOpp) {
-    				displayNormal();
-    				showPlayers.setText("Info");
-    			}else{
-    				displayOpponentInfo();
-    				showPlayers.setText("Back");
-    			}
-    			dispOpp = !dispOpp;
-    		}
-    	});
-		
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
 
@@ -212,26 +198,61 @@ public class DeckView extends Stage {
 			}
 		}, 1000, 1000);
 
+		Table statusCenter = new Table();
+		statusCenter.setPosition(200, 0);
+		statusCenter.setSize(80, statusBar.getHeight());	
+		statusCenter.debug();
+		statusBar.add(statusCenter);
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
-    	timerLabel = new Label("", lStyle);
-    	statusBar.add(timerLabel);
+    	timerLabel = new Label("", lStyle);    	
+    	statusCenter.add(timerLabel);
+    	statusCenter.row();
     	
-    	playerInfo = new PlayerInfoView(compTexture, robots.get(robotID));
-    	statusBar.add(playerInfo);
+    	
+        final TextButton showPlayers = new TextButton("Info", style);
+        statusCenter.add(showPlayers).minWidth(75);
+        showPlayers.addListener(new ClickListener() {
+        	private boolean dispOpp = false;
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			if(dispOpp) {
+    				displayNormal();
+    				showPlayers.setText("Info");
+    			}else{
+    				displayOpponentInfo();
+    				showPlayers.setText("Back");
+    			}
+    			dispOpp = !dispOpp;
+    		}
+    	});
+    	
+    	DamageView dv = new DamageView(compTexture, robots.get(robotID));
+    	LifeView lv = new LifeView(compTexture, robots.get(robotID));
+    	lv.setPosition(0, 20);
+    	lv.setSize(120, 40);
+    	lv.debug();
+    	dv.setPosition(280, 20);
+    	dv.setSize(200, 40);
+    	dv.debug();
+    	statusBar.add(dv);
+    	statusBar.add(lv);
     	
     	allPlayerInfo = new Table();
     	allPlayerInfo.setPosition(0, 0);
     	allPlayerInfo.setSize(480, 240);
     	Table scrollContainer = new Table();
+    	scrollContainer.defaults().width(240);
     	ScrollPane pane = new ScrollPane(scrollContainer);
     	allPlayerInfo.add(pane);
     	for(int i = 0; i < robots.size(); i++) {
-    		if(i != robotID) {
-    			scrollContainer.add(new PlayerInfoView(compTexture, robots.get(i))).pad(10);
+    		if(i != robotID) {    			
+    	    	scrollContainer.add(new LifeView(compTexture, robots.get(i)));
+    	    	scrollContainer.add(new DamageView(compTexture, robots.get(i)));
     			scrollContainer.row();
     		}
     	}
+    	scrollContainer.debug();
 	}
 	
 	/*
@@ -279,7 +300,7 @@ public class DeckView extends Stage {
 				new TextureRegionDrawable(new TextureRegion(buttons, 0, 0, 64, 64)),
 				new TextureRegionDrawable(new TextureRegion(buttons, 0, 64, 64, 64)),
 				null));
-    	playPanel.add(pause).pad(externalPadding).maxSize(50, 50);
+    	playPanel.add(pause).size(50, 50).pad(0);
     	pause.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -292,7 +313,7 @@ public class DeckView extends Stage {
 				new TextureRegionDrawable(new TextureRegion(buttons, 64, 0, 64, 64)),
 				new TextureRegionDrawable(new TextureRegion(buttons, 64, 64, 64, 64)),
 				null));
-    	playPanel.add(play).pad(externalPadding).maxSize(50, 50);
+    	playPanel.add(play).size(50, 50).pad(0);
     	play.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -305,7 +326,7 @@ public class DeckView extends Stage {
 				new TextureRegionDrawable(new TextureRegion(buttons, 128, 0, 64, 64)),
 				new TextureRegionDrawable(new TextureRegion(buttons, 128, 64, 64, 64)),
 				null));
-    	playPanel.add(fastForward).pad(externalPadding).maxSize(50, 50);
+    	playPanel.add(fastForward).size(50, 50).pad(0);
     	fastForward.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -318,7 +339,7 @@ public class DeckView extends Stage {
 				new TextureRegionDrawable(new TextureRegion(buttons, 192, 0, 64, 64)),
 				new TextureRegionDrawable(new TextureRegion(buttons, 192, 64, 64, 64)),
 				null));
-    	playPanel.add(skipCard).pad(externalPadding).maxSize(50, 50);
+    	playPanel.add(skipCard).size(50, 50).pad(0);
     	skipCard.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -331,7 +352,7 @@ public class DeckView extends Stage {
 				new TextureRegionDrawable(new TextureRegion(buttons, 256, 0, 64, 64)),
 				new TextureRegionDrawable(new TextureRegion(buttons, 256, 64, 64, 64)),
 				null));
-    	playPanel.add(skipAll).pad(externalPadding).maxSize(50, 50);
+    	playPanel.add(skipAll).size(50, 50).pad(0);
     	skipAll.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {

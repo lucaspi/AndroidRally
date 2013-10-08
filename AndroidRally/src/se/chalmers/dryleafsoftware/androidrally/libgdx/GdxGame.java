@@ -126,7 +126,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Skips all actions
 	 */
 	private void skipAllActions() {
-		while(actions == null || !actions.isEmpty()) {
+		while(actions == null || !actions.isEmpty() || (actions.isEmpty() && result.hasNext())) {
 			skipCardActions();
 		}
 	}
@@ -228,8 +228,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		deckView.draw();
 		update();
 		
-		Table.drawDebug(deckView);
-		Table.drawDebug(gameBoard);
+//		Table.drawDebug(deckView);
+//		Table.drawDebug(gameBoard);
 	}
 
 	@Override
