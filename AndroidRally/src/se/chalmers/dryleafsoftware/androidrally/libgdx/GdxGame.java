@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.TimeUtils;
 
 
 /**
@@ -51,18 +50,20 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 *  	- SKIP_ACTION: Skips to the outcome.
 	 *  CHOOSING_CARDS : Waiting for timer to reach zero or player to send cards.
 	 */	
-	private static enum Stage { WAITING, STEP_ACTIONS, PLAY_ACTIONS, SKIP_ACTIONS, CHOOSING_CARDS };
+	private static enum Stage { 
+		WAITING,
+		PLAY
+	};
+	private int playSpeed = 1;
 	private Stage currentStage = Stage.WAITING; 
-	
-	public static final String EVENT_UPDATE = "e_update";
-	
+
 	@Override
 	public void create() {
 		this.client = new Client(1);
 		this.gameBoard = new BoardView();		
 
 		// Only load the textures once.
-		boardTexture = new Texture(Gdx.files.internal("textures/testTile.png"));
+		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
 		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -80,6 +81,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		deckView.setRoundTick(ROUNDTIME);
 //		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
 
+		
 		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(gameBoard, deckView);
 		Gdx.input.setInputProcessor(im);
@@ -89,35 +91,44 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * The main update loop.
 	 */
 	public void update() {
-		switch(currentStage) {
-		case STEP_ACTIONS:
-		case PLAY_ACTIONS:		
+		if(currentStage.equals(Stage.PLAY)) {
 			updateActions();
-			break;
-		case SKIP_ACTIONS:
-			skipActions();
-			break;
-		default:
-			// Do nothing...
 		}
 	}
-	
+
+	/*
+	 * Skips all actions on the current card
+	 */
+	private void skipCardActions() {
+		if((actions == null || actions.isEmpty()) && result.hasNext()) {
+			actions = result.getNextResult();
+		}
+		// Remove all actions
+		for(RobotView r : gameBoard.getRobots()) {
+			r.clearActions();
+		}
+		// Do all actions
+		for(GameAction a : actions) {
+			a.cleanUp(gameBoard.getRobots());
+		}
+		actions.clear();
+		// Check result
+		if(result.hasNext()) {
+			actions = result.getNextResult();
+		}else{
+			deckView.displayDrawCard();
+		}
+		gameBoard.stopAnimations();
+		currentStage = Stage.WAITING;
+	}
+
 	/*
 	 * Skips all actions
 	 */
-	private void skipActions() {
-		while(true) {
-			for(GameAction a : actions) {
-				a.cleanUp(gameBoard.getRobots());
-			}
-			if(result.hasNext()) {
-				actions = result.getNextResult();
-			}else{
-				break;
-			}
+	private void skipAllActions() {
+		while(actions == null || !actions.isEmpty()) {
+			skipCardActions();
 		}
-		currentStage = Stage.WAITING;
-		deckView.displayDrawCard();
 	}
 	
 	/*
@@ -125,9 +136,24 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
-		// TODO: make the code look better!
+		if(actions == null) {
+			actions = result.getNextResult();
+			return;
+		}
 		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
+				int phase = actions.get(0).getPhase();
+				if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
+					System.out.println("GAME OVER");
+					
+					currentStage = Stage.WAITING;
+					return;
+				}else if(phase == GameAction.SPECIAL_PHASE_CLIENT_WON) {
+					System.out.println("GAME WON");
+					
+					currentStage = Stage.WAITING;
+					return;
+				}	
 				actions.get(0).cleanUp(gameBoard.getRobots());
 				actions.remove(0);
 			}
@@ -145,7 +171,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				deckView.displayDrawCard();
 			}
 			// Otherwise, if playing, get the next list.
-			else if(currentStage.equals(Stage.PLAY_ACTIONS)) {
+			else if(currentStage.equals(Stage.PLAY)) {
 				actions = result.getNextResult();
 			}
 		}
@@ -153,23 +179,27 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		// TODO: clean this method.
+		// Play events:
 		if(event.getPropertyName().equals(DeckView.EVENT_PLAY)) {
-			currentStage = Stage.PLAY_ACTIONS;
-			actions = result.getNextResult();
-		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP)) {
-			currentStage = Stage.STEP_ACTIONS;
-			actions = result.getNextResult();
-		}else if(event.getPropertyName().equals(DeckView.EVENT_SKIP)) {
-			currentStage = Stage.SKIP_ACTIONS;
-			actions = result.getNextResult();
-		}else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
+			currentStage = Stage.PLAY;
+			playSpeed = 1;
+		}else if(event.getPropertyName().equals(DeckView.EVENT_PAUSE)) {
+			currentStage = Stage.WAITING;
+		}else if(event.getPropertyName().equals(DeckView.EVENT_FASTFORWARD)) {
+			currentStage = Stage.PLAY;
+			playSpeed = 2;
+		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP_ALL)) {
+			skipAllActions();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP_CARD)) {
+			skipCardActions();
+		}
+		
+		// Other events:
+		else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			// Displays the cards and waits for the timer task.
 			deckView.setDeckCards(client.loadCards(), cardTexture);
 			deckView.setCardTick(CARDTIME);
-			currentStage = Stage.CHOOSING_CARDS;
-		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)
-				&& currentStage.equals(Stage.CHOOSING_CARDS)) {
+		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
 			client.sendCard(deckView.getChosenCards());
 			deckView.displayWaiting();
 			currentStage = Stage.WAITING;

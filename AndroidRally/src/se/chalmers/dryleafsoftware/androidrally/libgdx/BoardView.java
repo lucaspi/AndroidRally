@@ -168,7 +168,7 @@ public class BoardView extends Stage {
 			@Override
 			public void buildGear(int x, int y, boolean cw) {
 				animated.add((AnimatedImage)setCommonValues(
-						new GearsView(new TextureRegion(texture, 320, 0, 64, 64), cw), x, y));
+						new GearsView(new TextureRegion(texture, 128, 384, 64, 64), cw), x, y));
 			}
 			@Override
 			public void buildConveyerBelt(int x, int y, int speed, int dir) {
@@ -192,7 +192,7 @@ public class BoardView extends Stage {
 			public void buildStartDock(int x, int y, int nbr) {
 				container.addActor(setCommonValues(
 						new DockView(new TextureRegion(
-								texture, 0, 128, 64, 64), nbr), x, y));
+								texture, 320, 0, 64, 64), nbr), x, y));
 				docks[nbr - 1] = new Vector2(40 * x, 640 - 40 * (y+1));
 			}
 			@Override
@@ -206,7 +206,7 @@ public class BoardView extends Stage {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
 				animated.add((AnimatedImage)setCommonValues(
-						new LaserView(new TextureRegion(texture, 0, 192, 64, 64), (dir + 2)%4), x, y));
+						new LaserView(new TextureRegion(texture, 0, 384, 64, 64), (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);

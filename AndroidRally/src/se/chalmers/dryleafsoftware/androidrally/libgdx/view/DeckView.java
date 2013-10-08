@@ -19,8 +19,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -37,8 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * 
  */
 public class DeckView extends Stage {
-
-	private final Texture buttonTexture;
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
@@ -52,18 +52,20 @@ public class DeckView extends Stage {
 	private final Table allPlayerInfo; // The panel with all the players' info
 	private final RegisterView registerView;
 
+	
+	public static final String EVENT_PAUSE = "pause";
 	/**
 	 * Specifying that the game should start.
 	 */
 	public static final String EVENT_PLAY = "play";
+	
+	public static final String EVENT_FASTFORWARD = "fast";
 	/**
 	 * Specifying that the next register's set of actions should display.
 	 */
-	public static final String EVENT_STEP = "step";
-	/**
-	 * Specifying that all the actions should be skipped.
-	 */
-	public static final String EVENT_SKIP = "skip";
+	public static final String EVENT_STEP_ALL = "stepAll";
+	
+	public static final String EVENT_STEP_CARD = "stepCard";
 	/**
 	 * Specifying that the player should be given new cards.
 	 */
@@ -94,8 +96,6 @@ public class DeckView extends Stage {
 		super();
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
-		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
 		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				
@@ -143,6 +143,8 @@ public class DeckView extends Stage {
 		registerView.setSize(upperArea.getWidth(), upperArea.getHeight());
 		upperArea.add(registerView);
 		
+		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
+		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		// TODO: Remove this dummy button!
 		TextButtonStyle style = new TextButtonStyle();	  
         style.up = new TextureRegionDrawable(
@@ -236,6 +238,8 @@ public class DeckView extends Stage {
 	 * Creates the panel with the [Draw Cards] button.
 	 */
 	private Table buildDrawCardPanel() {
+		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
+		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		TextButtonStyle style = new TextButtonStyle();	  
         style.up = new TextureRegionDrawable(
         		new TextureRegion(buttonTexture, 0, 0, 32, 32));
@@ -263,44 +267,78 @@ public class DeckView extends Stage {
 	 * Creates the panel with the [Play] [Step] [Skip] buttons.
 	 */
 	private Table buildPlayerPanel() {
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
-		
-		int internalPadding = 50, externalPadding = 10;
+		Texture buttons = new Texture(Gdx.files.internal("textures/playButtons.png"));
+		buttons.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        
+		int externalPadding = 0;
 		Table playPanel = new Table();
 		playPanel.setSize(480, 120);
-		TextButton play = new TextButton("Play", style);
-		play.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(play).pad(externalPadding); // Border
-    	TextButton step = new TextButton("Step", style);
-    	step.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(step).pad(externalPadding); // Border
-    	TextButton skip = new TextButton("Skip", style);
-    	skip.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(skip).pad(externalPadding); // Border
-    	
+		
+		// Create pause button
+		Button pause = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 0, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 0, 64, 64, 64)),
+				null));
+    	playPanel.add(pause).pad(externalPadding).maxSize(50, 50);
+    	pause.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_PAUSE, 0, 1);
+    		}
+    	});
+		
+    	// Create play button
+		Button play = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 64, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 64, 64, 64, 64)),
+				null));
+    	playPanel.add(play).pad(externalPadding).maxSize(50, 50);
     	play.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
     			pcs.firePropertyChange(EVENT_PLAY, 0, 1);
     		}
     	});
-    	step.addListener(new ClickListener() {
+    	
+    	// Create fast forward button
+    	Button fastForward = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 128, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 128, 64, 64, 64)),
+				null));
+    	playPanel.add(fastForward).pad(externalPadding).maxSize(50, 50);
+    	fastForward.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_STEP, 0, 1);
+    			pcs.firePropertyChange(EVENT_FASTFORWARD, 0, 1);
     		}
     	});
-    	skip.addListener(new ClickListener() {
+    	
+    	// Create button for skip single card
+    	Button skipCard = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 192, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 192, 64, 64, 64)),
+				null));
+    	playPanel.add(skipCard).pad(externalPadding).maxSize(50, 50);
+    	skipCard.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_SKIP, 0, 1);
+    			pcs.firePropertyChange(EVENT_STEP_CARD, 0, 1);
     		}
     	});
+    	
+    	// Create button for skip all cards
+    	Button skipAll = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 256, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 256, 64, 64, 64)),
+				null));
+    	playPanel.add(skipAll).pad(externalPadding).maxSize(50, 50);
+    	skipAll.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_STEP_ALL, 0, 1);
+    		}
+    	});
+    	
     	return playPanel;
 	}
 	
