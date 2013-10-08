@@ -33,7 +33,7 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 
-	private static final String testMap = "yxxxxxx16x16xxxxx5xxxxyxx06xxx27x37:06xxxx12xxxxx78:16xyxxxxx27x06xxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07:26:06x1xxxxx06xx16xyx06xx26x26x27x06xx103x1103x2103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07:06x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxx16xx16xxxx06xx68:16xyxxxxxxx17:16xx16:37xxxxxx88xyxxxxxxxxxxxx5xxxx";
+	private static final String testMap = "yxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxyxxx12xxxxx26x07x5x5x5x5x18xxyxxxxxxxxx26xxxxxxxyxxxxxxx38xx26xx17x17xxxxyxxxxxxxxx26xx36:06x36xxxxyxxxxxxxxx26xx06xxxxxyxxxxxxxxx26xx06xxxxxyxxxxxxxxx26xx06xxxxxyxxxx88x78x68x58x48x26x28x06xxxxxyxxxxxxxxxx36xxxxxxyxxxxxxxxxxxxxxxx";
 	
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
@@ -396,6 +396,9 @@ public class GameModel {
 						wallCollision = true;
 					}
 					checkGameStatus();
+					if (!r.isDead()) {
+						gameBoard.getTile(r.getX(), r.getY()).instantAction(r);
+					}
 					if(r.isDead()){
 						addRobotDeadMove(r);
 					}
