@@ -395,6 +395,10 @@ public class GameModel {
 						allMoves.remove(allMoves.size()-1);// It is always the last move which should be reversed.
 						wallCollision = true;
 					}
+					checkGameStatus();
+					if(r.isDead()){
+						addRobotDeadMove(r);
+					}
 				}
 			}
 		}else{// The robot can't walk through a wall
