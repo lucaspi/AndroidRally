@@ -7,6 +7,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CollisionMatrix;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltCurve;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
@@ -178,7 +179,11 @@ public class BoardView extends Stage {
 									conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
 									dir * 90, speed), x, y));
 				}else{
-					
+					animated.add((AnimatedImage)setCommonValues(
+							new ConveyorBeltCurve(new TextureRegion(
+									texture, 64, 128, 64, 64), 
+									speed, dir * 90, rot == 1 ? true : false),
+									x, y));
 				}
 			}
 			@Override
