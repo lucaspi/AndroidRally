@@ -58,11 +58,14 @@ public class ConveyorBelt implements BoardElement{
 	 */
 	@Override
 	public void action(Robot robot) {
-		robot.move(1, direction);
 		if(turn == TURN_LEFT){
 			robot.turn(TurnType.LEFT);
-		}else if(turn == TURN_RIGHT){
+			robot.move(1, (direction + 3) % 4);
+		} else if(turn == TURN_RIGHT){
 			robot.turn(TurnType.RIGHT);
+			robot.move(1, (direction + 1) % 4);
+		} else {
+			robot.move(1, direction);
 		}
 	}
 
