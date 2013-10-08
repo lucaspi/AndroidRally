@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.DeckView;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;

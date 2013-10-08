@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -9,7 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.view.PlayerInfoView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -43,7 +42,6 @@ public class DeckView extends Stage {
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
-	private final Register[] registers;
 	private int position;
 	private final CardListener cl;
 	private Table container;
@@ -52,6 +50,7 @@ public class DeckView extends Stage {
 	private final Table drawPanel; // The panel with [Draw cards]
 	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
 	private final Table allPlayerInfo; // The panel with all the players' info
+	private final RegisterView registerView;
 
 	/**
 	 * Specifying that the game should start.
@@ -140,13 +139,9 @@ public class DeckView extends Stage {
 		statusBar.setPosition(0, 240);
 		container.add(statusBar);
 		
-		registers = new Register[5];
-		for(int i = 0; i < 5; i++) {
-			registers[i] = new Register(compTexture, i);
-			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
-			upperArea.add(registers[i]);
-			
-		}
+		registerView = new RegisterView(compTexture);
+		registerView.setSize(upperArea.getWidth(), upperArea.getHeight());
+		upperArea.add(registerView);
 		
 		// TODO: Remove this dummy button!
 		TextButtonStyle style = new TextButtonStyle();	  
@@ -388,10 +383,7 @@ public class DeckView extends Stage {
 	private void setCards(String input, Texture texture, boolean onlyLocked) {
 		List<CardView> cards = new ArrayList<CardView>();
 		// Clear cards
-		for(Register r : registers) {
-			r.clear();
-			r.setLocked(false);
-		}
+		registerView.clear();
 				
 		String indata = input;
 		int i = 0;
@@ -422,8 +414,8 @@ public class DeckView extends Stage {
 			
 			if(data.length == 2) {
 				int lockPos = Integer.parseInt(data[0].substring(1));
-				registers[lockPos].setCard(cv);
-				registers[lockPos].setLocked(true);
+				registerView.getRegister(lockPos).setCard(cv);
+				registerView.getRegister(lockPos).displayOverlay(Register.PADLOCK);
 			}else if(!onlyLocked){
 				cards.add(cv);
 			}			
@@ -468,11 +460,7 @@ public class DeckView extends Stage {
 	 */
 	public void displayWaiting() {
 		lowerArea.clear();
-		for(Register r : registers) {
-			if(r.getCard() != null) {
-				r.removeListener(cardListener);
-			}
-		}
+		registerView.removeCardListener(cardListener);
 	}
 	
 	/**
@@ -488,9 +476,7 @@ public class DeckView extends Stage {
 	 * Displays the panel which should be visible after viewing the round results.
 	 */
 	public void displayDrawCard() {
-		for(Register r : registers) {
-			r.clear();
-		}
+		registerView.clear();
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
@@ -501,11 +487,7 @@ public class DeckView extends Stage {
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);
-		for(Register r : registers) {
-			if(r.getCard() != null) {
-				r.removeListener(cardListener);
-			}
-		}
+		registerView.removeCardListener(cardListener);
 	}
 	
 	/**
@@ -514,11 +496,7 @@ public class DeckView extends Stage {
 	 * @return
 	 */
 	public CardView[] getChosenCards() {
-		CardView[] cards = new CardView[registers.length];
-		for(int i = 0; i < registers.length; i++) {
-			cards[i] = registers[i].getCard();
-		}
-		return cards;
+		return registerView.getCards();
 	}
 
 	/**
@@ -583,23 +561,15 @@ public class DeckView extends Stage {
 	}
 	
 	private void choseCard(CardView card) {
-		for(int i = 0; i < registers.length; i++) {
-			if(registers[i].isEmpty()) {
-				registers[i].setCard(card);
-				deckCards.remove(card);
-				break;
-			}
+		if(registerView.addCard(card)) {
+			deckCards.remove(card);
 		}
 	}
 	
-	public void unChoseCard(CardView card) {
-		for(int i = 0; i < registers.length; i++) {
-			if(registers[i].getCard() == card) {
-				registers[i].clear();
-				lowerArea.add(card);
-				deckCards.add(card);
-				break;
-			}
+	private void unChoseCard(CardView card) {
+		if(registerView.removeCard(card)) {
+			lowerArea.add(card);
+			deckCards.add(card);
 		}
 	}
 	

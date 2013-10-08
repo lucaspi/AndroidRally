@@ -1,9 +1,11 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
+
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * Register used when programming a robot.
@@ -14,7 +16,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 public class Register extends Table {
 	
 	private CardView card;
-	private final Image padLock;
+//	private final Image padLock;
+	private final Image overlay;
+	private final TextureRegionDrawable padLock, grayed, current;
+	
+	public static final int NORMAL = 0,
+			PADLOCK = 1,
+			UNFOCUS = 2,
+			INFOCUS = 3;
 	
 	/**
 	 * Creates a new instance with the specifying texture and the specified number.
@@ -28,22 +37,34 @@ public class Register extends Table {
 		Image background = new Image(new TextureRegion(texture, 64 * i, 0, 64, 90));
 		background.setSize(78, 110);
 		
-		padLock = new Image(new TextureRegion(texture, 320, 0, 64, 90));
-		padLock.setSize(78, 110);
+		padLock = new TextureRegionDrawable(new TextureRegion(texture, 0, 90, 64, 90));
+		grayed = new TextureRegionDrawable(new TextureRegion(texture, 64, 0, 64, 90));
+		current = new TextureRegionDrawable(new TextureRegion(texture, 128, 0, 64, 90));
+		
+		overlay = new Image();
+		overlay.setSize(78, 110);
 		
 		this.setSize(background.getWidth(), background.getHeight());
 		this.add(background);
 	}
-	
-	/**
-	 * Sets if this register should display its padlock.
-	 * @param locked Set to <code>true</code> to display its padlock.
-	 */
-	public void setLocked(boolean locked) {
-		if(locked) {
-			add(padLock);
-		}else{
-			removeActor(padLock);
+
+	public void displayOverlay(int image) {
+		switch(image) {
+		case NORMAL:
+			removeActor(overlay);
+			break;
+		case PADLOCK:
+			overlay.setDrawable(padLock);
+			add(overlay);
+			break;
+		case INFOCUS:
+			overlay.setDrawable(current);
+			add(overlay);
+			break;
+		case UNFOCUS:
+			overlay.setDrawable(grayed);
+			add(overlay);
+			break;
 		}
 	}
 

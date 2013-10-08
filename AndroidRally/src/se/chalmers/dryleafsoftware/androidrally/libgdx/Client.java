@@ -13,6 +13,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.CardView;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

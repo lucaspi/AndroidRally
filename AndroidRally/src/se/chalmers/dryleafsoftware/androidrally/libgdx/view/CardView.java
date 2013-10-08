@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
