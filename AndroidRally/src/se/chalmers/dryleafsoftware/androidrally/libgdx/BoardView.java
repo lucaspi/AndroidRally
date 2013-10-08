@@ -171,11 +171,15 @@ public class BoardView extends Stage {
 						new GearsView(new TextureRegion(texture, 320, 0, 64, 64), cw), x, y));
 			}
 			@Override
-			public void buildConveyerBelt(int x, int y, int speed, int dir) {
-				animated.add((AnimatedImage)setCommonValues(
-						new ConveyorBeltView(new TextureRegion(
-								conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
-								dir * 90, speed), x, y));
+			public void buildConveyerBelt(int x, int y, int speed, int dir, int rot) {
+				if(rot == 0) {
+					animated.add((AnimatedImage)setCommonValues(
+							new ConveyorBeltView(new TextureRegion(
+									conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
+									dir * 90, speed), x, y));
+				}else{
+					
+				}
 			}
 			@Override
 			public void buildCheckPoint(int x, int y, int nbr) {
