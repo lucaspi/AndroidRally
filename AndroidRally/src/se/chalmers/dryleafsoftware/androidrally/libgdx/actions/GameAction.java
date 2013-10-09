@@ -18,6 +18,11 @@ public abstract class GameAction {
 	private int duration;
 	private long started;
 	private int phaseRound = PHASE_MOVE;
+	
+	/**
+	 * Static value specifying that a value should stay unchanged.
+	 */
+	public static final int UNCHANGED = -1;
 			
 	/**
 	 * When the robot is moving. (Default)
@@ -49,7 +54,7 @@ public abstract class GameAction {
 	public static final int PHASE_CHECKPOINT = 6;
 	
 	public static final int SPECIAL_PHASE_GAMEOVER = 101;
-	public static final int SPECIAL_PHASE_CLIENT_WON = 102;
+	public static final int SPECIAL_PHASE_WON = 102;
 		
 	/**
 	 * Creates a new instance which will work against the robot with the specified ID.

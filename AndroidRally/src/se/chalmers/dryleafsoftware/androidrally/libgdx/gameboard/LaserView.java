@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author
  *
  */
-public class LaserView extends AnimatedImage {
+public class LaserView extends AnimatedElement {
 	
 	private CollisionMatrix collisionMatrix;
 	private boolean hasCalc = false;

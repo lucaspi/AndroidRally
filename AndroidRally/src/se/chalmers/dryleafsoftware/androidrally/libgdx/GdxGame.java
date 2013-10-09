@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.DeckView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.MessageStage;
@@ -77,6 +78,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		for(RobotView player : players) {
 			gameBoard.addRobot(player);
 		}		
+		players.get(client.getRobotID()).addListener(
+				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
 		
 		this.deckView = new DeckView(players, client.getRobotID());
 		deckView.addListener(this);
@@ -86,8 +89,36 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 		
 		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(gameBoard, deckView, messageStage);
+		InputMultiplexer im = new InputMultiplexer(messageStage, gameBoard, deckView);
 		Gdx.input.setInputProcessor(im);
+	}
+	
+	/*
+	 * Handle the game when the client has died.
+	 */
+	private void handleGameOver() {
+		System.out.println("GAME OVER");
+		messageStage.dispGameOver(gameBoard.getRobots());
+		stopGame();
+	}
+	
+	/*
+	 * Will handle everything needed to stop the game from continuing.
+	 */
+	private void stopGame() {
+		deckView.setCardTick(-1);
+		deckView.setRoundTick(-1);
+		deckView.displayWaiting();
+		currentStage = Stage.WAITING;
+	}
+	
+	/*
+	 * Handle the game when someone won.
+	 */
+	private void handleGameWon() {
+		System.out.println("GAME WON");
+		messageStage.dispGameWon(gameBoard.getRobots());
+		stopGame();
 	}
 	
 	/**
@@ -140,14 +171,10 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		action.cleanUp(gameBoard.getRobots());
 		actions.remove(action);
 		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
-			System.out.println("GAME OVER");
-			messageStage.dispGameOver(gameBoard.getRobots());
-			currentStage = Stage.WAITING;
+			handleGameOver();
 			return;
-		}else if(phase == GameAction.SPECIAL_PHASE_CLIENT_WON) {
-			System.out.println("GAME WON");
-			messageStage.dispGameWon(gameBoard.getRobots());
-			currentStage = Stage.WAITING;
+		}else if(phase == GameAction.SPECIAL_PHASE_WON) {
+			handleGameWon();
 			return;
 		}	
 	}

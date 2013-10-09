@@ -33,7 +33,7 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 
-	private static final String testMap = "yxxxxxxxxxxxxxxxxyxx12xxxxxx16x16x16xxxxxxyxxxxxxxx37x37x37xxxxx32xyxxxxxx26x07x5x5xx18xxxxxyxxxxxxxxxxxxxxxxyxxxx28xx78xx88xxxxxxxxyxxxxxxxxxxxxxxxxyxxxx38xx68xxxxxxxx22xxyxxxxxxxxxxxxxxxxyxxxx48xx58xxxxxxxxxxyxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxx";
+	private static final String testMap = "yxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxyxxxxxx32xx22xx12xxx18xxxyxxxxxxxxxxxx36x28:36x36xxyxxxxxxxxxxxx1x38xxxyxxxxxxxxxxxx1x48xxxyxxxxxxxxxxxx1x58xxxyxxxxxxxxxxxxx68xxxyxxxxxxxxxxxxx78xxxyxxxxxxxxxxxxx88xxxyxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxx";
 	
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based

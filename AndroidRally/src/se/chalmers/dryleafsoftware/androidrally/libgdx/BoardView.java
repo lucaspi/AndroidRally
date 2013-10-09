@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedElement;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CollisionMatrix;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltCurve;
@@ -40,13 +40,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
  */
 public class BoardView extends Stage {
 
-	private List<RobotView> robots = new ArrayList<RobotView>();
-	private List<AnimatedImage> animated = new ArrayList<AnimatedImage>();
-	private Vector2[] docks = new Vector2[8];
+	private final List<RobotView> robots = new ArrayList<RobotView>();
+	private final List<AnimatedElement> animated = new ArrayList<AnimatedElement>();
+	private final Vector2[] docks = new Vector2[8];
 	private final Group container; 
 	private final Table scrollContainer;
 	private final ScrollPane pane;
 	private CollisionMatrix collisionMatrix;
+	private final List<CheckPointView> checkPoints = new ArrayList<CheckPointView>();
 			
 	/**
 	 * Creates a new instance of BoardView.
@@ -168,18 +169,18 @@ public class BoardView extends Stage {
 			}
 			@Override
 			public void buildGear(int x, int y, boolean cw) {
-				animated.add((AnimatedImage)setCommonValues(
-						new GearsView(new TextureRegion(texture, 128, 384, 64, 64), cw), x, y));
+				animated.add((AnimatedElement)setCommonValues(
+						new GearsView(new TextureRegion(texture, 0, 256, 64, 64), cw), x, y));
 			}
 			@Override
 			public void buildConveyerBelt(int x, int y, int speed, int dir, int rot) {
 				if(rot == 0) {
-					animated.add((AnimatedImage)setCommonValues(
+					animated.add((AnimatedElement)setCommonValues(
 							new ConveyorBeltView(new TextureRegion(
 									conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
 									dir * 90, speed), x, y));
 				}else{
-					animated.add((AnimatedImage)setCommonValues(
+					animated.add((AnimatedElement)setCommonValues(
 							new ConveyorBeltCurve(new TextureRegion(
 									texture, 64, 128, 64, 64), 
 									speed, dir * 90, rot == 1 ? true : false),
@@ -188,8 +189,9 @@ public class BoardView extends Stage {
 			}
 			@Override
 			public void buildCheckPoint(int x, int y, int nbr) {
-				container.addActor(setCommonValues(
-						new CheckPointView(new TextureRegion(texture, 192, 0, 64, 64), nbr), x, y));
+				CheckPointView cv = new CheckPointView(nbr);
+				container.addActor(setCommonValues(cv, x, y));
+				checkPoints.add(cv);
 			}
 			@Override
 			public void buildRepair(int x, int y) {
@@ -214,8 +216,8 @@ public class BoardView extends Stage {
 			public void buildLaser(int x, int y, int dir) {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
-				animated.add((AnimatedImage)setCommonValues(
-						new LaserView(new TextureRegion(texture, 0, 384, 64, 64), (dir + 2)%4), x, y));
+				animated.add((AnimatedElement)setCommonValues(
+						new LaserView(new TextureRegion(texture, 128, 320, 64, 64), (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
@@ -233,7 +235,7 @@ public class BoardView extends Stage {
 			}
 		};
 				
-		for(AnimatedImage i : animated) {
+		for(AnimatedElement i : animated) {
 			container.addActor(i);
 		}
 		
@@ -241,6 +243,10 @@ public class BoardView extends Stage {
 		for(Image i : overlay) {
 			container.addActor(i);
 		}
+	}
+	
+	public List<CheckPointView> getCheckPoints() {
+		return this.checkPoints;
 	}
 
 	/**
@@ -251,12 +257,17 @@ public class BoardView extends Stage {
 		if(subPhase == GameAction.PHASE_LASER) {
 			collisionMatrix.clearDynamic();
 			for(RobotView robot : robots) {
-				animated.add(robot.getLaser());
-				container.addActor(robot.getLaser());
-				collisionMatrix.setDynamic((int)(robot.getX()/40), 15 - (int)(robot.getY()/40));
+				if(robot.isDead()) {
+					animated.remove(robot.getLaser());
+					container.removeActor(robot.getLaser());
+				}else{
+					animated.add(robot.getLaser());
+					container.addActor(robot.getLaser());
+					collisionMatrix.setDynamic((int)(robot.getX()/40), 15 - (int)(robot.getY()/40));
+				}
 			}
 		}
-		for(AnimatedImage a : animated) {
+		for(AnimatedElement a : animated) {
 			a.enable(subPhase);
 			if(subPhase == GameAction.PHASE_LASER && a instanceof LaserView) {
 				((LaserView)a).setCollisionMatrix(collisionMatrix);
@@ -268,7 +279,7 @@ public class BoardView extends Stage {
 	 * Stops all animations.
 	 */
 	public void stopAnimations() {
-		for(AnimatedImage a : animated) {
+		for(AnimatedElement a : animated) {
 			a.disable();
 		}
 	}

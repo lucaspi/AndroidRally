@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class ConveyorBeltView extends AnimatedImage {
+public class ConveyorBeltView extends AnimatedElement {
 	
 	private float scrollTimer = 0;
 	private final TextureRegion texture;

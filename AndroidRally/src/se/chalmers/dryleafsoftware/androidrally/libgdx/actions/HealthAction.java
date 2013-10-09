@@ -15,11 +15,6 @@ public class HealthAction extends GameAction {
 	private final int damage, lives;
 	
 	/**
-	 * Static value specifying that a value should stay unchanged.
-	 */
-	public static final int UNCHANGED = -1;
-	
-	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
 	 * @param robotID The ID of the robot to handle.
 	 * @param damage The damage to set to the robot. Supports UNCHANGED.

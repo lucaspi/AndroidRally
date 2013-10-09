@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class GearsView extends AnimatedImage {
+public class GearsView extends AnimatedElement {
 
 	private int direction = -1;
 	

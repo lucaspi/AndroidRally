@@ -2,7 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class ConveyorBeltCurve extends AnimatedImage {
+public class ConveyorBeltCurve extends AnimatedElement {
 	
 	private int direction = -1;
 	

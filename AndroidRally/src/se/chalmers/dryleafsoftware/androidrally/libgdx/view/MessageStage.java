@@ -68,7 +68,7 @@ public class MessageStage extends Stage {
 		gameWonPanel.debug();
 		
 		TextButton gameWonButton = new TextButton("GAME WON BY SOMEONE ! ! !", style);
-		gameWonPanel.add(gameOverButton); // Border
+		gameWonPanel.add(gameWonButton); // Border
         gameWonButton.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -77,13 +77,40 @@ public class MessageStage extends Stage {
     	});       
 	}
 	
+	/**
+	 * Will show the game over screen.
+	 * @param robots The robots in the game.
+	 */
 	public void dispGameOver(List<RobotView> robots) {
-		System.out.println("Displaying game over");
+		System.out.println("Game over");
+		int scorePos = 0;
+		for(RobotView r : robots) {
+			if(r.isGameDead()) {
+				scorePos++;
+			}
+		}
+		System.out.println("You were the " + convertToText(scorePos+1) + "!");
 		container.add(gameOverPanel);
 	}
 	
+	private String convertToText(int i) {
+		return new String[] {"first", "second", 
+				"third", "fourth", "fifth", 
+				"sixth", "seventh", "eighth"}[i-1];
+	}
+	
+	/**
+	 * Will show the screen which tells the user who won.
+	 * @param robots The robots in the game.
+	 */
 	public void dispGameWon(List<RobotView> robots) {
-		System.out.println("Displaying game won");
+		System.out.println("Displaying game won");		
+		for(RobotView r : robots) {
+			if(r.hasFinished()) {
+				System.out.println("Player " + r.getName() +" just won!");
+				break;
+			}
+		}
 		container.add(gameWonPanel);
 	}
 }

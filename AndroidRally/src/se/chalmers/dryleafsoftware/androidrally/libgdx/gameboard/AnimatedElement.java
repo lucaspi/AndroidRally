@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
  * @author
  *
  */
-public abstract class AnimatedImage extends Image {
+public abstract class AnimatedElement extends Image {
 
 	private boolean enabled = false;
 	private int[] phaseMask = new int[]{0};
@@ -18,7 +18,7 @@ public abstract class AnimatedImage extends Image {
 	 * Creates a new instance which will use the specified texture when rendering.
 	 * @param texture The texture to use when rendering.
 	 */
-	public AnimatedImage(TextureRegion texture) {
+	public AnimatedElement(TextureRegion texture) {
 		super(texture);
 	}
 	
