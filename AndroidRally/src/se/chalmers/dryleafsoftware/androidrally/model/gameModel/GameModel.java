@@ -137,6 +137,9 @@ public class GameModel {
 		}
 	}
 	
+	/*
+	 * Handles all checkPoints reached and repair/damage done during a round.
+	 */
 	private void handleImmobileActions(){
 		int[] oldCheckPointReached = new int[robots.size()];
 		int[] oldRobotHealth = new int[robots.size()];
@@ -196,7 +199,11 @@ public class GameModel {
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
-				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				if(robots.get(i).getHealth() == Robot.STARTING_HEALTH){// if damage has changed and health == starting health -> robot has died
+					allMoves.add("#" + i + ":" + "1" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				}else{
+					allMoves.add("#" + i + ":" + "0" + + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				}
 			}
 		}
 	}
@@ -220,6 +227,9 @@ public class GameModel {
 		return false;
 	}
 
+	/*
+	 * This method will only give proper answers if the robot moves one step in X-axis or Y-axis, not both.
+	 */
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
 			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall()){
