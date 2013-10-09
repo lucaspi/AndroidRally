@@ -37,6 +37,7 @@ public class SingleAction extends GameAction {
 				Actions.moveTo(posX * 40,  640 - (posY+1) * 40, getDuration() / 1000f),
 				Actions.rotateBy(getValidDir((int) robots.get(getRobotID()).getRotation(), -dir * 90),
 						getDuration() / 1000f)));
+		
 	}
 	
 	@Override

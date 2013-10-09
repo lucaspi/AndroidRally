@@ -19,6 +19,11 @@ public class HolderAction extends GameAction {
 	public HolderAction(int duration) {
 		super(-1, duration);
 	}
+	
+	public HolderAction(int duration, int phase) {
+		this(duration);
+		this.setMoveRound(phase);
+	}
 
 	@Override
 	public void action(List<RobotView> robots) {

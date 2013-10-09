@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 public class SpecialAction extends GameAction {
 
 	public static enum Special {
-		RESPAWN, HOLE
+		RESPAWN, HOLE, LASER_HIT, EXPLODE
 	};
 
 	private final Action action;
@@ -43,6 +43,16 @@ public class SpecialAction extends GameAction {
 		case HOLE:
 			action = Actions.parallel(Actions.fadeOut(1),
 					Actions.scaleTo(0.3f, 0.3f, 1));
+			instantAction = Actions.fadeOut(0);
+			break;
+		case LASER_HIT:
+			action = Actions.rotateBy(360*3, 1);
+			setDuration(0);
+			instantAction = Actions.rotateBy(0, 0);
+			break;
+		case EXPLODE:
+			action = Actions.parallel(Actions.fadeOut(1),
+					Actions.scaleTo(1.8f, 1.8f, 1));
 			instantAction = Actions.fadeOut(0);
 			break;
 		default:

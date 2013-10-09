@@ -36,6 +36,7 @@ public class RobotView extends Image  {
 	private int damage = 0, lives = MAX_LIVES;
 	private final int robotID;
 	private final LaserView laser;
+	private boolean hasFinished = false;
 
 	/**
 	 * Creates a new instance of a robot with the specified ID-number.
@@ -61,6 +62,18 @@ public class RobotView extends Image  {
 		laser.setOrigin(20, 20);
 		laser.setRotation(getRotation());
 		return laser;
+	}
+	
+	public boolean hasFinished() {
+		return hasFinished;
+	}
+	
+	public boolean isGameDead() {
+		return lives <= 0;
+	}
+	
+	public void setHasFinished(boolean hasFinished) {
+		this.hasFinished = hasFinished;
 	}
 	
 	/**

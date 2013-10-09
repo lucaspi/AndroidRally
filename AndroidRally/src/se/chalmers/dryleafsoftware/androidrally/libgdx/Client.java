@@ -1,7 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
@@ -13,7 +12,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.CardView;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -105,13 +104,20 @@ public class Client {
 						String[] data = parallel[i].split(":");
 						HealthAction ha = new HealthAction(
 								Integer.parseInt(data[0]),
-								Integer.parseInt(data[1].substring(1)),
-								Integer.parseInt(data[1].substring(0, 1)));
+								Integer.parseInt(data[1].substring(2)),
+								Integer.parseInt(data[1].substring(1, 2)));
 						multi.add(ha);
+						result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
+								SpecialAction.Special.LASER_HIT));
+						if(data[1].substring(0, 1).equals("1")) { // Robot should explode
+							result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
+									SpecialAction.Special.EXPLODE));
+						}
 					}
 					multi.setDuration(1000);
 					multi.setMoveRound(GameAction.PHASE_LASER);
 					result.addAction(multi);
+					System.out.println("Robot hit");
 				}else if(phase == GameAction.PHASE_RESPAWN) {
 					for(int i = 1; i < parallel.length; i++) {
 						SingleAction a = createSingleAction(parallel[i]);
@@ -123,6 +129,10 @@ public class Client {
 					}
 				}else if(phase == GameAction.PHASE_CHECKPOINT) {
 					// TODO: checkpoint action!
+					for(int i = 1; i < parallel.length; i++) {
+						String[] data = parallel[i].split(":");
+						System.out.println("Robot: " + data[0] + ", reached checkpoint: " + data[1]);
+					}
 				}else{
 					GameAction action;
 					// If no actions follows:
@@ -138,16 +148,20 @@ public class Client {
 					action.setMoveRound(phase);
 					result.addAction(action);
 				}
-			}else if(parallel[0].equals("F")) {
+			}else if(parallel[0].equals("F")) { // When a player falls
 				String[] data = parallel[1].split(":");
 				result.addAction(new HealthAction(Integer.parseInt(data[0]), 0, 
 						Integer.parseInt(data[1])));
 				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
 						SpecialAction.Special.HOLE));	
-			}else if(parallel[0].equals("L")) {
-				// TODO: lose
-			}else if(parallel[0].equals("W")) {
-				// TODO: win
+			}else if(parallel[0].equals("L")) { // When a player lose.
+				if(Integer.parseInt(parallel[1]) == robotID) {
+					result.addAction(new HolderAction(0, HolderAction.SPECIAL_PHASE_GAMEOVER));
+				}
+			}else if(parallel[0].equals("W")) { // When a player has won.
+				if(Integer.parseInt(parallel[1]) == robotID) {
+					result.addAction(new HolderAction(0, HolderAction.SPECIAL_PHASE_CLIENT_WON));
+				}
 			}
 			// Generic multiaction
 			else if(parallel.length > 1){
@@ -196,8 +210,8 @@ public class Client {
 		System.out.println("To client: \"" + controller.getNbrOfPlayers() + "\"");
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
-			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 64, 64, 64),
-					new LaserView(new TextureRegion(texture, 64, 192, 64, 64), 0));
+			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
+					new LaserView(new TextureRegion(texture, 64, 384, 64, 64), 0));
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);

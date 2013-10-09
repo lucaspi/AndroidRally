@@ -68,7 +68,7 @@ public class LaserView extends AnimatedImage {
 		int x = (int) (getX() / 40);
 		int y = 15 - (int) (getY() / 40);
 		int dir = ((int)(getRotation() / -90) + 4) % 4;
-		if(!outer && collisionMatrix.isBlocked(x, y)) {
+		if((!outer && collisionMatrix.isBlocked(x, y)) || !collisionMatrix.validPos(x, y)) {
 			return 0;
 		}
 		switch(dir) {
