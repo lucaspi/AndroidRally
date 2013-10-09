@@ -140,10 +140,10 @@ public class Robot {
 	 */
 	public void damage(int damage) {
 		this.damage += damage;
-		if (damage > STARTING_HEALTH) {
+		if (this.damage > STARTING_HEALTH) {
 			die();
-		}else if(damage < 0){
-			damage = 0;
+		}else if(this.damage < 0){
+			this.damage = 0;
 		}
 	}
 
