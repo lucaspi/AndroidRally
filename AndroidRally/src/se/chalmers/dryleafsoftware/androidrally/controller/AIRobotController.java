@@ -16,12 +16,13 @@ public class AIRobotController {
 	public void makeMove(Robot robot) {
 		List<Card> cards = robot.getCards();
 		
-		
+		for (int i = 0; i < cards.size(); i++) {
+			
+		}
 		
 		
 	}
 	
-	//Return array with xy[0] as coordinate x and xy[1] as coordinate y.
 	private int[] nextCheckPoint(Robot robot) {
 		int[] xy = new int[]{};
 		for(int i = 0; i < 1; i++) {
