@@ -31,6 +31,15 @@ public class AIRobotController {
 		return new int[][]{};
 	}
 	
+	private int getDistanceToNextCheckPoint(Robot robot){
+		int distance = 0;
+		int[] nextCheckPoint = nextCheckPoint();
+		distance = Math.abs(robot.getX() - nextCheckPoint[0]);
+		distance += Math.abs(robot.getY() - nextCheckPoint[1]);
+		return distance;
+	}
+	
+	
 	
 	
 	
