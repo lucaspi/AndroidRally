@@ -9,6 +9,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.BoardElement;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Turn;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Hole;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -39,6 +40,9 @@ public class AIRobotController {
 		List<Move> moveForwardCards = new ArrayList<Move>();
 		List<Move> moveBackwardCards = new ArrayList<Move>();
 		List<Turn> turnCards = new ArrayList<Turn>();
+		List<Turn> leftTurnCards = new ArrayList<Turn>();
+		List<Turn> rightTurnCards = new ArrayList<Turn>();
+		List<Turn> uTurnCards = new ArrayList<Turn>();
 
 		boolean isRightDirection = false;
 		for (Integer direction : getDirections(robot)) { //kolla efter om roboten står i rätt riktning
@@ -66,13 +70,37 @@ public class AIRobotController {
 		else { //annars, försök vrida i rätt riktning
 			for (Card card : cards) {
 				if (card instanceof Turn) {
-					turnCards.add((Turn)card);
+					if(((Turn)card).getTurn() == TurnType.LEFT){
+						leftTurnCards.add((Turn)card);
+					}else if(((Turn)card).getTurn() == TurnType.RIGHT){
+						rightTurnCards.add((Turn)card);
+					}else {
+						uTurnCards.add((Turn)card);
+					}
 				}
 			}
 			if (turnCards.size() != 0) { //om man har snurrkort
-				//TODO implement
-			}
-			else { //har man inga snurrkort slumpas ett kort
+				int turnDifference = Math.abs(getDirections(robot).get(0).intValue() - 
+						robot.getDirection());
+				if(turnDifference == 1){
+					if(leftTurnCards.size() != 0){
+						chosenCards.add(leftTurnCards.get(0));
+						cards.remove(leftTurnCards.get(0));
+					}
+				}else if(turnDifference == 2){
+					if(uTurnCards.size() != 0){
+						chosenCards.add(uTurnCards.get(0));
+						cards.remove(uTurnCards.get(0));
+					}
+				}else if(turnDifference == 3){
+					if(rightTurnCards.size() != 0){
+						chosenCards.add(rightTurnCards.get(0));
+						cards.remove(rightTurnCards.get(0));
+					}
+				}// TODO if card added -> placeCards
+				// kolla getDirections.get(2)
+				
+			} else { //har man inga snurrkort slumpas ett kort
 				randomizeCard(robot, cards);
 			}
 			placeCards(robot, cards);
