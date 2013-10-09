@@ -1,7 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
@@ -11,11 +10,9 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SpecialAction.Special;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.CardView;
-import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -107,11 +104,15 @@ public class Client {
 						String[] data = parallel[i].split(":");
 						HealthAction ha = new HealthAction(
 								Integer.parseInt(data[0]),
-								Integer.parseInt(data[1].substring(1)),
-								Integer.parseInt(data[1].substring(0, 1)));
+								Integer.parseInt(data[1].substring(2)),
+								Integer.parseInt(data[1].substring(1, 2)));
 						multi.add(ha);
 						result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
 								SpecialAction.Special.LASER_HIT));
+						if(data[1].substring(0, 1).equals("1")) { // Robot should explode
+							result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
+									SpecialAction.Special.EXPLODE));
+						}
 					}
 					multi.setDuration(1000);
 					multi.setMoveRound(GameAction.PHASE_LASER);

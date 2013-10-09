@@ -15,6 +15,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 /**
@@ -85,7 +86,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 		
 		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(gameBoard, deckView);
+		InputMultiplexer im = new InputMultiplexer(gameBoard, deckView, messageStage);
 		Gdx.input.setInputProcessor(im);
 	}
 	
@@ -136,6 +137,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	
 	private void cleanAndRemove(GameAction action) {
 		int phase = action.getPhase();
+		action.cleanUp(gameBoard.getRobots());
+		actions.remove(action);
 		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
 			System.out.println("GAME OVER");
 			messageStage.dispGameOver(gameBoard.getRobots());
@@ -147,8 +150,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			currentStage = Stage.WAITING;
 			return;
 		}	
-		action.cleanUp(gameBoard.getRobots());
-		actions.remove(action);
 	}
 	
 	/*
@@ -223,6 +224,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	public void dispose() {
 		gameBoard.dispose();
 		deckView.dispose();
+		messageStage.dispose();
 	}
 
 	@Override
@@ -237,8 +239,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.draw();
 		update();
 		
-//		Table.drawDebug(deckView);
-//		Table.drawDebug(gameBoard);
+		Table.drawDebug(deckView);
+		Table.drawDebug(gameBoard);
+		Table.drawDebug(messageStage);
 	}
 
 	@Override

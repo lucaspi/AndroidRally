@@ -43,7 +43,7 @@ public class DeckView extends Stage {
 	private List<CardView> deckCards = new ArrayList<CardView>();
 	private int position;
 	private final CardListener cl;
-	private Table container;
+	private final Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
