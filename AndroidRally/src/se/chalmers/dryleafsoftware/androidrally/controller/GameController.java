@@ -25,7 +25,7 @@ public class GameController implements PropertyChangeListener {
 	private String mapAsString;
 
 
-	public GameController(int nbrOfPlayers) {
+	public GameController(int nbrOfPlayers, int hoursEachRound, int cardTimerSeconds) {
 		this.nbrOfPlayers = String.valueOf(nbrOfPlayers);
 		isRunRunning = false;
 		gameModel = new GameModel(this, nbrOfPlayers);
@@ -35,10 +35,10 @@ public class GameController implements PropertyChangeListener {
 		timer = new Timer();
 		cardTimer = new CardTimer[nbrOfPlayers];
 		for (int i = 0; i < nbrOfPlayers; i++) {
-			cardTimer[i] = new CardTimer(30, i); //let the time be a variable
+			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
-		hoursEachRound = 24;
+		this.hoursEachRound = hoursEachRound;
 	}
 
 	private void handleRemainingRobots() {
