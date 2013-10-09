@@ -65,10 +65,9 @@ public class GameBoard {
 	 */
 	public GameBoard(String map) {
 		nbrOfCheckPoints = 0;
+		lasers = new ArrayList<Laser>();
 		createBoard(map);
 		this.map = map;
-		lasers = new ArrayList<Laser>();
-		
 	}
 	
 	/**
@@ -169,8 +168,9 @@ public class GameBoard {
 							tiles[x][y].addBoardElement(new Wrench(1));
 						}else if(tile == TILE_WALL || tile == TILE_LASER) {
 							setWallOnTile(tileData / 10, x, y);
-						}else if(tile == TILE_LASER){
-							lasers.add(new Laser(x, y, tileData / 10));
+							if(tile == TILE_LASER){
+								lasers.add(new Laser(x, y, ((tileData / 10) + 2) % 4)); //set direction of laser correct
+							}
 						}else if(tile == TILE_START){
 							startingPosition[tileData / 10 - 1][0] = x;
 							startingPosition[tileData / 10 - 1][1] = y;

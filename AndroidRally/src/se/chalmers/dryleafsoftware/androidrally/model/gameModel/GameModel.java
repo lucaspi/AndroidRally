@@ -33,7 +33,7 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 
-	private static final String testMap = "yxxxxxx16x16xxxxx5xxxxyxx06xxx27x37:06xxxx12xxxxx78:16xyxxxxx27x06xxxxxxx06xx58:16xyx06xxxxxxx32xx22xx4xxx38xyx06xxxxx27x07:26:06x1xxxxx06xx16xyx06xx26x26x27x06xx103x103x103x103x103xxx18:16xyxxx16x16xxxx203x203x203x203x203xxx28:16xyxxxxxx16x07:06x1xxxxx06xxxyxxx06xxxxxxxxx14xxx48:16xyxxx06xxxx16xx16xxxx06xx68:16xyxxxxxxx17:16xx16:37xxxxxx88xyxxxxxxxxxxxx5xxxx";
+	private static final String testMap = "yxxxxxxxxxxxxxxxxyxx12xxxxxx16x16x16xxxxxxyxxxxxxxx37x37x37xxxxx32xyxxxxxx26x07x5x5xx18xxxxxyxxxxxxxxxxxxxxxxyxxxx28xx78xx88xxxxxxxxyxxxxxxxxxxxxxxxxyxxxx38xx68xxxxxxxx22xxyxxxxxxxxxxxxxxxxyxxxx48xx58xxxxxxxxxxyxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxx";
 	
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
@@ -137,15 +137,21 @@ public class GameModel {
 		}
 	}
 	
+	/*
+	 * Handles all checkPoints reached and repair/damage done during a round.
+	 */
 	private void handleImmobileActions(){
-	    int[] oldCheckPointReached = new int[robots.size()];
+		int[] oldCheckPointReached = new int[robots.size()];
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
+			oldRobotHealth[i] = robots.get(i).getHealth();
+			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
+		}
+		fireAllLasers();
+		for(int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
 				continue;
 			}
-			oldRobotHealth[i] = robots.get(i).getHealth();
-			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
 			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 					robots.get(i).getY()).getBoardElements();
 			if(boardElements != null && boardElements.size() > 0){
@@ -156,7 +162,6 @@ public class GameModel {
 				}
 			}
 		}
-	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
 		addCheckPointReached(oldCheckPointReached);
 	}
@@ -194,7 +199,11 @@ public class GameModel {
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
-				allMoves.add("#" + i + ":" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				if(robots.get(i).getHealth() == Robot.STARTING_HEALTH){// if damage has changed and health == starting health -> robot has died
+					allMoves.add("#" + i + ":" + "1" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				}else{
+					allMoves.add("#" + i + ":" + "0" + + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
+				}
 			}
 		}
 	}
@@ -218,6 +227,9 @@ public class GameModel {
 		return false;
 	}
 
+	/*
+	 * This method will only give proper answers if the robot moves one step in X-axis or Y-axis, not both.
+	 */
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
 			if(y >= 0 && !gameBoard.getTile(x, y).getNorthWall()){
@@ -256,35 +268,47 @@ public class GameModel {
 		return true;
 	}
 
-	private void fireLaser(int x, int y, int direction){
+	private void fireRobotLaser(int x, int y, int direction){
+		if(canMove(x, y, direction)) {
+			if (direction == GameBoard.NORTH) {
+				fireLaser(x, y-1, direction);
+			} else if (direction == GameBoard.EAST) {
+				fireLaser(x+1, y, direction);
+			} else if (direction == GameBoard.SOUTH) {
+				fireLaser(x, y+1, direction);
+			} else if (direction == GameBoard.WEST) {
+				fireLaser(x-1, y, direction);
+			}
+		}
+	}
+	
+	private void fireLaser(int x, int y, int direction) {
 		boolean robotIsHit = false;
-		boolean noWall = true;
-		if(noWall = canMove(x, y, direction)){
-			if(direction == GameBoard.NORTH){
-				while(y >= 0 && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					y--;
-					robotIsHit = isRobotHit(x, y);
-				}
+		boolean isNoWall = true;
+		if(direction == GameBoard.NORTH){
+			while(y >= 0 && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				y--;
+			}
 
-			}else if(direction == GameBoard.EAST){
-				while(x < gameBoard.getWidth() && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					x++;
-					robotIsHit = isRobotHit(x, y);
-				}
-			}else if(direction == GameBoard.SOUTH){
-				while(y < gameBoard.getHeight() && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					y++;
-					robotIsHit = isRobotHit(x, y);
-				}
-			}else if(direction == GameBoard.WEST){
-				while(x >= 0 && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					x--;
-					robotIsHit = isRobotHit(x, y);
-				}
+		}else if(direction == GameBoard.EAST){
+			while(x < gameBoard.getWidth() && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				x++;
+			}
+		}else if(direction == GameBoard.SOUTH){
+			while(y < gameBoard.getHeight() && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				y++;
+			}
+		}else if(direction == GameBoard.WEST){
+			while(x >= 0 && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				x--;
 			}
 		}
 	}
@@ -312,7 +336,7 @@ public class GameModel {
 			x = robot.getX();
 			y = robot.getY();
 			direction = robot.getDirection();
-			fireLaser(x, y, direction);
+			fireRobotLaser(x, y, direction);
 		}
 	}
 
@@ -394,6 +418,13 @@ public class GameModel {
 						robot.setY(robot.getY() + (oldY - robot.getY()));
 						allMoves.remove(allMoves.size()-1);// It is always the last move which should be reversed.
 						wallCollision = true;
+					}
+					checkGameStatus();
+					if (!r.isDead()) {
+						gameBoard.getTile(r.getX(), r.getY()).instantAction(r);
+					}
+					if(r.isDead()){
+						addRobotDeadMove(r);
 					}
 				}
 			}
