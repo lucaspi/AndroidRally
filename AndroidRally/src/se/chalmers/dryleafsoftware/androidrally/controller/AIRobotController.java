@@ -51,11 +51,10 @@ public class AIRobotController {
 				if (card instanceof Move) {
 					if (((Move)card).getDistance() > 0) {
 						moveForwardCards.add((Move)card);
-
 					}
 				}
 			}
-			if (moveForwardCards.size() != 0) {
+			if (moveForwardCards.size() != 0) { //ta det största "gå framåt"-kortet
 				Collections.sort(moveForwardCards);
 				chosenCards.add(moveForwardCards.get(0));
 				cards.remove(moveForwardCards.get(0));
@@ -67,14 +66,17 @@ public class AIRobotController {
 		else { //annars, försök vrida i rätt riktning
 			for (Card card : cards) {
 				if (card instanceof Turn) {
-					//TODO fixa
-				} else { //har man inga snurrkort slumpas ett kort
-					randomizeCard(robot, cards);
+					turnCards.add((Turn)card);
 				}
-				placeCards(robot, cards);
 			}
+			if (turnCards.size() != 0) { //om man har snurrkort
+				//TODO implement
+			}
+			else { //har man inga snurrkort slumpas ett kort
+				randomizeCard(robot, cards);
+			}
+			placeCards(robot, cards);
 		}
-
 	}
 
 	private int[] nextCheckPoint(Robot robot) {
