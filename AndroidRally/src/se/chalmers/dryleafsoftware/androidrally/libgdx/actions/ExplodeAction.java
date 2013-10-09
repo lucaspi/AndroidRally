@@ -14,33 +14,27 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
  * @author 
  *
  */
-public class ExplodeAction extends GameAction {
+public class ExplodeAction extends AnimationAction {
 
-	private final AnimatedImage animation;
-	
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
 	 * @param robotID The ID of the robot to handle.
 	 */
 	public ExplodeAction(int robotID, Texture texture) {
-		super(robotID, 1000);
-		this.animation = new AnimatedImage(texture, 1, 1, 1000);
+		super(robotID, 1000, new AnimatedImage(texture, 1, 1, 1000));
 	}
 
 	@Override
 	public void action(List<RobotView> robots) {
-		start();
-		robots.get(getRobotID()).addAction(Actions.parallel(
-				Actions.fadeOut(getDuration() / 1000f),
-				Actions.scaleTo(1.8f, 1.8f, getDuration() / 1000f)));
+		super.action(robots);
+		robots.get(getRobotID()).addAction(Actions.fadeOut(getDuration() / 1000f));
 	}
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
+		super.cleanUp(robots);
 		robots.get(getRobotID()).setDead(true);
-		robots.get(getRobotID()).addAction(Actions.parallel(
-				Actions.fadeOut(0),
-				Actions.scaleTo(1.8f, 1.8f, 0)));
+		robots.get(getRobotID()).addAction(Actions.fadeOut(0));
 	}
 
 }

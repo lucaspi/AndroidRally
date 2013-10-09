@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.CheckPointAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.ExplodeAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.FallAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HealthAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.HolderAction;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.LaserHitAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.MultiAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.RespawnAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.SingleAction;
@@ -119,7 +119,9 @@ public class Client {
 								Integer.parseInt(data[1].substring(2)),
 								Integer.parseInt(data[1].substring(1, 2)));
 						multi.add(ha);
-						multi.add(new LaserHitAction(Integer.parseInt(data[0]), damageAnim));
+//						multi.add(new LaserHitAction(Integer.parseInt(data[0]), damageAnim));
+						multi.add(new AnimationAction(Integer.parseInt(data[0]), 1000, 
+								new AnimatedImage(damageAnim, 4, 2, 1000)));
 //						result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
 //								SpecialAction.Special.LASER_HIT));
 						if(data[1].substring(0, 1).equals("1")) { // Robot should explode
