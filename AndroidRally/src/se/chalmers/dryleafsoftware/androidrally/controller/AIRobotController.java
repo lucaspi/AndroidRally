@@ -108,75 +108,80 @@ public class AIRobotController {
 			directions.add(new Integer(GameBoard.NORTH));
 		}
 		removeBadDirections(robot, directions);
-//		
+		
+		if(directions.size() == 2){
+			if(Math.abs(dx) < Math.abs(dy)){
+				directions.add(directions.remove(0));
+			}
+		}
 		return directions;
 	}
 	
-	private void removeDirection(List<Integer> directions, int direction){
+	private void removeDirection(List<Integer> directions, Integer indexToRemove){
 		if(directions.size() == 1){
-			directions.add(new Integer((direction + 1) % 4));
-			directions.add(new Integer((direction + 3) % 4));
+			directions.add(new Integer((directions.get(indexToRemove) + 1) % 4));
+			directions.add(new Integer((directions.get(indexToRemove) + 3) % 4));
 		}
-		directions.remove(0);
+		directions.remove(indexToRemove);
 	}
 	
 	private List<Integer> removeBadDirections(Robot robot, List<Integer> directions){
 		int x = robot.getX();
 		int y = robot.getY();
-		for(Integer i : directions){
-			if(i.intValue() == GameBoard.NORTH){
+		for(int i = 0; i < directions.size(); i++){
+			if(directions.get(i).intValue() == GameBoard.NORTH){
 				for(int j = 0; j < 3; j++){
 					if((y-j) >= 0){
 						for(BoardElement boardElement : gb.getTile(x, (y-j)).getBoardElements()){
 							if(boardElement instanceof Hole){
-								removeDirection(directions, i.intValue());
+								removeDirection(directions, i);
 								break;
 							}
 						}
 					}else{
-						removeDirection(directions, i.intValue());
+						removeDirection(directions, i);
 						break;
 					}
 				}
-			}else if(i.intValue() == GameBoard.EAST){
+			}else if(directions.get(i).intValue() == GameBoard.EAST){
 				for(int j = 0; j < 3; j++){
 					if((x+j) <= gb.getWidth()){
 						for(BoardElement boardElement : gb.getTile((x+j), y).getBoardElements()){
 							if(boardElement instanceof Hole){
-								removeDirection(directions, i.intValue());
+								removeDirection(directions, i);
 								break;
 							}
 						}
 					}else{
-						removeDirection(directions, i.intValue());
+						removeDirection(directions, i);
 						break;
 					}
 				}
-			}else if(i.intValue() == GameBoard.SOUTH){
+			}else if(directions.get(i).intValue() == GameBoard.SOUTH){
 				for(int j = 0; j < 3; j++){
 					if((y+j) <= gb.getHeight()){
 						for(BoardElement boardElement : gb.getTile(x, (y+j)).getBoardElements()){
 							if(boardElement instanceof Hole){
-								removeDirection(directions, i.intValue());
+								removeDirection(directions, i);
 								break;
 							}
 						}
 					}else{
-						removeDirection(directions, i.intValue());
+						removeDirection(directions, i);
 						break;
 					}
 				}
-			}else if(i.intValue() == GameBoard.WEST){
+			}else if(directions.get(i).intValue() == GameBoard.WEST){
 				for(int j = 0; j < 3; j++){
 					if((x-j) >= 0){
 						for(BoardElement boardElement : gb.getTile((x-j), y).getBoardElements()){
 							if(boardElement instanceof Hole){
-								removeDirection(directions, i.intValue());
+								removeDirection(directions, i);
 								break;
 							}
 						}
 					}else{
-						removeDirection(directions, i.intValue());
+						removeDirection(directions, i);
 						break;
 					}
 				}
