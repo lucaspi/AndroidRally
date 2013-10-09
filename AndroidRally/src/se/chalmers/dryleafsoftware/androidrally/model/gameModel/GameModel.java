@@ -138,14 +138,17 @@ public class GameModel {
 	}
 	
 	private void handleImmobileActions(){
-	    int[] oldCheckPointReached = new int[robots.size()];
+		int[] oldCheckPointReached = new int[robots.size()];
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
+			oldRobotHealth[i] = robots.get(i).getHealth();
+			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
+		}
+		fireAllLasers();
+		for(int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
 				continue;
 			}
-			oldRobotHealth[i] = robots.get(i).getHealth();
-			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
 			List<BoardElement> boardElements = gameBoard.getTile(robots.get(i).getX(), 
 					robots.get(i).getY()).getBoardElements();
 			if(boardElements != null && boardElements.size() > 0){
@@ -156,7 +159,6 @@ public class GameModel {
 				}
 			}
 		}
-	    fireAllLasers();
 		addDamageToAllMoves(oldRobotHealth);
 		addCheckPointReached(oldCheckPointReached);
 	}
