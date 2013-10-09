@@ -21,9 +21,13 @@ public class AIRobotController {
 		
 	}
 	
-	private int[] nextCheckPoint() {
-		
-		return new int[]{};
+	//Return array with xy[0] as coordinate x and xy[1] as coordinate y.
+	private int[] nextCheckPoint(Robot robot) {
+		int[] xy = new int[]{};
+		for(int i = 0; i < 1; i++) {
+			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i]; //TODO will crash game if game is over and continues
+		}
+		return xy;
 	}
 	
 	private int[][] findPath() {
