@@ -99,7 +99,6 @@ public class AIRobotController {
 	}
 
 	private List<Integer> getDirections(Robot robot){
-		List<Card> cards = robot.getCards();
 		List<Integer> directions = new ArrayList<Integer>();
 		int dx = getDX(robot);
 		int dy = getDY(robot);
