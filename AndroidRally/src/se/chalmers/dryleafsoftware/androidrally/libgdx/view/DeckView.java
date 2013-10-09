@@ -291,7 +291,6 @@ public class DeckView extends Stage {
 		Texture buttons = new Texture(Gdx.files.internal("textures/playButtons.png"));
 		buttons.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         
-		int externalPadding = 0;
 		Table playPanel = new Table();
 		playPanel.setSize(480, 120);
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.DeckView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.view.MessageStage;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -14,7 +15,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 /**
@@ -33,6 +33,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		
 	private BoardView gameBoard;
 	private DeckView deckView;
+	private MessageStage messageStage;
 	
 	// Time to choose cards.
 	private static final int CARDTIME = 40;
@@ -60,7 +61,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	@Override
 	public void create() {
 		this.client = new Client(1);
-		this.gameBoard = new BoardView();		
+		this.gameBoard = new BoardView();	
+		this.messageStage = new MessageStage();
 
 		// Only load the textures once.
 		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
@@ -145,12 +147,12 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				int phase = actions.get(0).getPhase();
 				if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
 					System.out.println("GAME OVER");
-					
+					messageStage.dispGameOver(gameBoard.getRobots());
 					currentStage = Stage.WAITING;
 					return;
 				}else if(phase == GameAction.SPECIAL_PHASE_CLIENT_WON) {
 					System.out.println("GAME WON");
-					
+					messageStage.dispGameWon(gameBoard.getRobots());
 					currentStage = Stage.WAITING;
 					return;
 				}	
@@ -226,6 +228,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		gameBoard.draw();
 		deckView.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		deckView.draw();
+		messageStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		messageStage.draw();
 		update();
 		
 //		Table.drawDebug(deckView);
