@@ -273,8 +273,7 @@ public class DeckView extends Stage {
     	drawPanel.setSize(480, 120);
     	TextButton draw = new TextButton("Draw Cards", style);
     	draw.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	drawPanel.add(draw).pad(externalPadding); // Border
-    	
+    	drawPanel.add(draw).pad(externalPadding); // Border    	
     	draw.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -360,6 +359,10 @@ public class DeckView extends Stage {
     	});
     	
     	return playPanel;
+	}
+	
+	public boolean isCardTimerOn() {
+		return cardTick > 0;
 	}
 	
 	/*

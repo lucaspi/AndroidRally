@@ -25,6 +25,7 @@ public class RespawnAction extends GameAction {
 	@Override
 	public void action(List<RobotView> robots) {
 		start();
+		robots.get(getRobotID()).setDead(false);
 		robots.get(getRobotID()).addAction(Actions.parallel(
 				Actions.fadeIn(getDuration() / 1000f), 
 				Actions.scaleTo(1, 1, getDuration() / 1000f)));
