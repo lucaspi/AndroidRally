@@ -16,21 +16,21 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class AIRobotController {
 	private GameBoard gb;
 	private List<Card> chosenCards;
-			
+
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
 	}
-	
+
 	public void makeMove(Robot robot) {
 		List<Card> cards = new ArrayList<Card>();
 		chosenCards = new ArrayList<Card>();
 		cards.addAll(robot.getCards());
 		placeCards(robot, cards);
-		
-		
-		
+
+
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void placeCards(Robot robot, List<Card> cards) {
 		if (robot.haveSentCards()) {
@@ -40,9 +40,13 @@ public class AIRobotController {
 		List<Move> moveBackwardCards = new ArrayList<Move>();
 		List<Turn> turnCards = new ArrayList<Turn>();
 		
-		for (int i = 0; i < cards.size(); i++) { //bläddra igenom alla korten
-
-			if (true) {//står i rätt riktning
+		boolean isRightDirection = false;
+		for (Integer direction : getDirections(robot)) { //kolla efter om roboten står i rätt riktning
+			if (robot.getDirection() == direction) {
+				isRightDirection = true;
+			}
+		}
+		if (isRightDirection) {//står roboten i rätt riktning händer detta
 				for (Card card : cards) {
 					if (card instanceof Move) {
 						if (((Move)card).getDistance() > 0) {
@@ -56,21 +60,23 @@ public class AIRobotController {
 					chosenCards.add(moveForwardCards.get(0));
 					cards.remove(moveForwardCards.get(0));
 				} else { //har man inga "gå framåt"-kort slumpas ett kort
-					Random rand = new Random();
-					int index = rand.nextInt(cards.size());
-					Card randChosenCard = cards.get(index);
-					chosenCards.add(randChosenCard);
-					cards.remove(index);
+					randomizeCard(robot, cards);
 				}
 				placeCards(robot, cards);
 			}
-			else { //försök vrida i rätt riktning
-				
+			else { //annars, försök vrida i rätt riktning
+				for (Card card : cards) {
+					if (card instanceof Turn) {
+						//TODO fixa
+					} else { //har man inga snurrkort slumpas ett kort
+						randomizeCard(robot, cards);
+					}
+					placeCards(robot, cards);
+				}
 			}
 
-		}
 	}
-	
+
 	private int[] nextCheckPoint(Robot robot) {
 		int[] xy = new int[]{};
 		for(int i = 0; i < 1; i++) {
@@ -78,7 +84,7 @@ public class AIRobotController {
 		}
 		return xy;
 	}
-	
+
 	private int getDistanceToNextCheckPoint(Robot robot){
 		int distance = 0;
 		int[] nextCheckPoint = nextCheckPoint(robot);
@@ -86,12 +92,12 @@ public class AIRobotController {
 		distance += Math.abs(robot.getY() - nextCheckPoint[1]);
 		return distance;
 	}
-	
+
 	private Card nextCard(Robot robot){
-		
+
 		return null;
 	}
-	
+
 	private List<Integer> getDirections(Robot robot){
 		List<Card> cards = robot.getCards();
 		List<Integer> directions = new ArrayList<Integer>();
@@ -108,10 +114,10 @@ public class AIRobotController {
 			directions.add(new Integer(GameBoard.NORTH));
 		}
 		removeBadDirections(robot, directions);
-//		
+		//		
 		return directions;
 	}
-	
+
 	private void removeDirection(List<Integer> directions, int direction){
 		if(directions.size() == 1){
 			directions.add(new Integer((direction + 1) % 4));
@@ -119,7 +125,7 @@ public class AIRobotController {
 		}
 		directions.remove(0);
 	}
-	
+
 	private List<Integer> removeBadDirections(Robot robot, List<Integer> directions){
 		int x = robot.getX();
 		int y = robot.getY();
@@ -184,7 +190,7 @@ public class AIRobotController {
 		}
 		return directions;
 	}
-	
+
 	private int getDX(Robot robot){
 		return (robot.getX() - nextCheckPoint(robot)[0]);
 	}
@@ -192,10 +198,19 @@ public class AIRobotController {
 	private int getDY(Robot robot){
 		return (robot.getY() - nextCheckPoint(robot)[1]);
 	}
-	
-	
-	
-	
-	
-	
+
+
+	private void randomizeCard(Robot robot, List<Card> cards) {
+		Random rand = new Random();
+		int index = rand.nextInt(cards.size());
+		Card randChosenCard = cards.get(index);
+		chosenCards.add(randChosenCard);
+		cards.remove(index);
+		if (chosenCards.size() == 5) {
+			robot.setSentCards(true);
+		}
+	}
+
+
+
 }
