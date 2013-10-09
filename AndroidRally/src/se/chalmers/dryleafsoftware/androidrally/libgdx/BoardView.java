@@ -7,6 +7,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CollisionMatrix;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltCurve;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
@@ -171,11 +172,19 @@ public class BoardView extends Stage {
 						new GearsView(new TextureRegion(texture, 128, 384, 64, 64), cw), x, y));
 			}
 			@Override
-			public void buildConveyerBelt(int x, int y, int speed, int dir) {
-				animated.add((AnimatedImage)setCommonValues(
-						new ConveyorBeltView(new TextureRegion(
-								conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
-								dir * 90, speed), x, y));
+			public void buildConveyerBelt(int x, int y, int speed, int dir, int rot) {
+				if(rot == 0) {
+					animated.add((AnimatedImage)setCommonValues(
+							new ConveyorBeltView(new TextureRegion(
+									conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
+									dir * 90, speed), x, y));
+				}else{
+					animated.add((AnimatedImage)setCommonValues(
+							new ConveyorBeltCurve(new TextureRegion(
+									texture, 64, 128, 64, 64), 
+									speed, dir * 90, rot == 1 ? true : false),
+									x, y));
+				}
 			}
 			@Override
 			public void buildCheckPoint(int x, int y, int nbr) {

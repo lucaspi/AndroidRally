@@ -193,8 +193,9 @@ public class Client {
 	 * @return A list of the client's cards.
 	 */
 	public String loadCards() {	
-		System.out.println("To client: \"" + controller.getCards(robotID) + "\"");
-		return controller.getCards(robotID);
+		String temp = controller.getCards(robotID);
+		System.out.println("To client: \"" + temp + "\"");
+		return temp;
 	}
 	
 	/**

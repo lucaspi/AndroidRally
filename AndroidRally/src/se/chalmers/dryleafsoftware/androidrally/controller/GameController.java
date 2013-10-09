@@ -12,7 +12,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
-// TODO handle all sort of indata, i.e. handle exceptions if client sends incorrect data.
 
 public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
@@ -40,16 +39,6 @@ public class GameController implements PropertyChangeListener {
 			cardTimer[i].addPropertyChangeListener(this);
 		}
 		hoursEachRound = 24;
-	}
-	
-	/**
-	 * DO NOT USE!!!!!!!!!!!!!!!!!!
-	 * TODO: remove
-	 * @return
-	 */
-	public GameModel getModel() {
-		// TODO: remove
-		return this.gameModel;
 	}
 
 	private void handleRemainingRobots() {
@@ -101,7 +90,7 @@ public class GameController implements PropertyChangeListener {
 	 * separate document.
 	 * @return a String containing data of the locked cards.
 	 */
-	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) { //TODO ClientID?
+	public synchronized void setChosenCardsToRobot(int robotID, String chosenCards) {
 		cardTimer[robotID].cancelTask();
 		if(!gameModel.getRobots().get(robotID).hasLost()){
 			try {

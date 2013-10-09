@@ -110,10 +110,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			r.clearActions();
 		}
 		// Do all actions
-		for(GameAction a : actions) {
-			a.cleanUp(gameBoard.getRobots());
+		int i = actions.size();
+		while(i > 0) {
+			cleanAndRemove(actions.get(0));
+			i--;
 		}
-		actions.clear();
 		// Check result
 		if(result.hasNext()) {
 			actions = result.getNextResult();
@@ -133,6 +134,23 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}
 	}
 	
+	private void cleanAndRemove(GameAction action) {
+		int phase = action.getPhase();
+		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
+			System.out.println("GAME OVER");
+			messageStage.dispGameOver(gameBoard.getRobots());
+			currentStage = Stage.WAITING;
+			return;
+		}else if(phase == GameAction.SPECIAL_PHASE_CLIENT_WON) {
+			System.out.println("GAME WON");
+			messageStage.dispGameWon(gameBoard.getRobots());
+			currentStage = Stage.WAITING;
+			return;
+		}	
+		action.cleanUp(gameBoard.getRobots());
+		actions.remove(action);
+	}
+	
 	/*
 	 * Updates the actions.
 	 */
@@ -144,20 +162,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}
 		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
 			if(actions.get(0).isDone()) {
-				int phase = actions.get(0).getPhase();
-				if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
-					System.out.println("GAME OVER");
-					messageStage.dispGameOver(gameBoard.getRobots());
-					currentStage = Stage.WAITING;
-					return;
-				}else if(phase == GameAction.SPECIAL_PHASE_CLIENT_WON) {
-					System.out.println("GAME WON");
-					messageStage.dispGameWon(gameBoard.getRobots());
-					currentStage = Stage.WAITING;
-					return;
-				}	
-				actions.get(0).cleanUp(gameBoard.getRobots());
-				actions.remove(0);
+				cleanAndRemove(actions.get(0));
 			}
 			gameBoard.stopAnimations();
 			if(!actions.isEmpty()) {

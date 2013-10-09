@@ -259,33 +259,34 @@ public class GameModel {
 	private void fireLaser(int x, int y, int direction){
 		boolean robotIsHit = false;
 		boolean noWall = true;
-		if(direction == GameBoard.NORTH){
-			while(y >= 0 && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				y--;
-				robotIsHit = isRobotHit(x, y);
-			}
+		if(noWall = canMove(x, y, direction)){
+			if(direction == GameBoard.NORTH){
+				while(y >= 0 && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					y--;
+					robotIsHit = isRobotHit(x, y);
+				}
 
-		}else if(direction == GameBoard.EAST){
-			while(x < gameBoard.getWidth() && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				x++;
-				robotIsHit = isRobotHit(x, y);
-			}
-		}else if(direction == GameBoard.SOUTH){
-			while(y < gameBoard.getHeight() && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				y++;
-				robotIsHit = isRobotHit(x, y);
-			}
-		}else if(direction == GameBoard.WEST){
-			while(x >= 0 && !robotIsHit && noWall){
-				noWall = canMove(x, y, direction);
-				x--;
-				robotIsHit = isRobotHit(x, y);
+			}else if(direction == GameBoard.EAST){
+				while(x < gameBoard.getWidth() && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					x++;
+					robotIsHit = isRobotHit(x, y);
+				}
+			}else if(direction == GameBoard.SOUTH){
+				while(y < gameBoard.getHeight() && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					y++;
+					robotIsHit = isRobotHit(x, y);
+				}
+			}else if(direction == GameBoard.WEST){
+				while(x >= 0 && !robotIsHit && noWall){
+					noWall = canMove(x, y, direction);
+					x--;
+					robotIsHit = isRobotHit(x, y);
+				}
 			}
 		}
-
 	}
 
 
@@ -348,7 +349,7 @@ public class GameModel {
 						robots.get(i).setY(oldPositions[i][1]);
 						robots.get(j).setX(oldPositions[j][0]);
 						robots.get(j).setY(oldPositions[j][1]);
-
+						
 						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
 						// for the code to work.
 						for(int k = 1; k<=nbrOfMovedRobots; k++){
@@ -386,13 +387,20 @@ public class GameModel {
 					r.setX(r.getX() - (oldX - robot.getX()));
 					r.setY(r.getY() - (oldY - robot.getY()));
 					addSimultaneousMove(r);
-
+//TODO fix so that robots fall down when they're pushed over the egde (maybe into a hole aswell?)
 					// Check if other Robot collides
 					if(handleCollision(r, robot.getX(), robot.getY())){// true if r walks into a wall
 						robot.setX(robot.getX() + (oldX - robot.getX()));
 						robot.setY(robot.getY() + (oldY - robot.getY()));
 						allMoves.remove(allMoves.size()-1);// It is always the last move which should be reversed.
 						wallCollision = true;
+					}
+					checkGameStatus();
+					if (!r.isDead()) {
+						gameBoard.getTile(r.getX(), r.getY()).instantAction(r);
+					}
+					if(r.isDead()){
+						addRobotDeadMove(r);
 					}
 				}
 			}
@@ -495,8 +503,8 @@ public class GameModel {
 				robots.get(i).die();
 				if(robots.get(i).hasLost()){
 					--robotsPlaying;
+					if(isGameOver(i))return true;
 				}
-				if(isGameOver(i))return true;
 			}
 		}
 		return false;
