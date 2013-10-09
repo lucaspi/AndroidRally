@@ -1,29 +1,74 @@
 package se.chalmers.dryleafsoftware.androidrally.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.BoardElement;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Move;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.Turn;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.Hole;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 public class AIRobotController {
 	private GameBoard gb;
+	private List<Card> chosenCards;
 			
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
 	}
 	
 	public void makeMove(Robot robot) {
-		List<Card> cards = robot.getCards();
+		List<Card> cards = new ArrayList<Card>();
+		chosenCards = new ArrayList<Card>();
+		cards.addAll(robot.getCards());
+		placeCards(robot, cards);
 		
-		for (int i = 0; i < cards.size(); i++) {
-			
+		
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void placeCards(Robot robot, List<Card> cards) {
+		if (robot.haveSentCards()) {
+			return;
 		}
+		List<Move> moveForwardCards = new ArrayList<Move>();
+		List<Move> moveBackwardCards = new ArrayList<Move>();
+		List<Turn> turnCards = new ArrayList<Turn>();
 		
-		
+		for (int i = 0; i < cards.size(); i++) { //bläddra igenom alla korten
+
+			if (true) {//står i rätt riktning
+				for (Card card : cards) {
+					if (card instanceof Move) {
+						if (((Move)card).getDistance() > 0) {
+							moveForwardCards.add((Move)card);
+
+						}
+					}
+				}
+				if (moveForwardCards.size() != 0) {
+					Collections.sort(moveForwardCards);
+					chosenCards.add(moveForwardCards.get(0));
+					cards.remove(moveForwardCards.get(0));
+				} else { //har man inga "gå framåt"-kort slumpas ett kort
+					Random rand = new Random();
+					int index = rand.nextInt(cards.size());
+					Card randChosenCard = cards.get(index);
+					chosenCards.add(randChosenCard);
+					cards.remove(index);
+				}
+				placeCards(robot, cards);
+			}
+			else { //försök vrida i rätt riktning
+				
+			}
+
+		}
 	}
 	
 	private int[] nextCheckPoint(Robot robot) {
