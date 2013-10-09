@@ -33,7 +33,8 @@ public class AIRobotController {
 
 	@SuppressWarnings("unchecked")
 	private void placeCards(Robot robot, List<Card> cards) {
-		if (robot.haveSentCards()) {
+		if (chosenCards.size() == 5) {
+			robot.setSentCards(true);
 			return;
 		}
 		List<Move> moveForwardCards = new ArrayList<Move>();
@@ -214,9 +215,6 @@ public class AIRobotController {
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
-		if (chosenCards.size() == 5) {
-			robot.setSentCards(true);
-		}
 	}
 
 
