@@ -2,6 +2,8 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Representing the map. Holds all tiles and lasers.
@@ -14,6 +16,7 @@ public class GameBoard {
 	private String map;
 	private int longestConveyorBelt = 0;
 	private int nbrOfCheckPoints;
+	private Map<Integer, int[]> checkPoints;
 	/*
 	 * Max 8 players.
 	 */
@@ -66,6 +69,7 @@ public class GameBoard {
 	public GameBoard(String map) {
 		nbrOfCheckPoints = 0;
 		lasers = new ArrayList<Laser>();
+		checkPoints = new TreeMap<Integer, int[]>();
 		createBoard(map);
 		this.map = map;
 	}
@@ -163,6 +167,7 @@ public class GameBoard {
 							tiles[x][y].addBoardElement(new ConveyorBelt(tileData / 100, ((tileData / 10)%10)));
 						}else if(tile == TILE_CHECKPOINT) {
 							tiles[x][y].addBoardElement(new CheckPoint(tileData / 10));
+							checkPoints.put(tileData/10, new int[]{x,y});
 							nbrOfCheckPoints++;
 						}else if(tile == TILE_REPAIR) {
 							tiles[x][y].addBoardElement(new Wrench(1));
@@ -213,5 +218,9 @@ public class GameBoard {
 		
 	public int getNbrOfCheckPoints() {
 		return nbrOfCheckPoints;
+	}
+
+	public Map<Integer, int[]> getCheckPoints() {
+		return checkPoints;
 	}
 }

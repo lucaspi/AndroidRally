@@ -16,14 +16,19 @@ public class AIRobotController {
 	public void makeMove(Robot robot) {
 		List<Card> cards = robot.getCards();
 		
-		
+		for (int i = 0; i < cards.size(); i++) {
+			
+		}
 		
 		
 	}
 	
-	private int[] nextCheckPoint() {
-		
-		return new int[]{};
+	private int[] nextCheckPoint(Robot robot) {
+		int[] xy = new int[]{};
+		for(int i = 0; i < 1; i++) {
+			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i]; //TODO will crash game if game is over and continues
+		}
+		return xy;
 	}
 	
 	private int[][] findPath() {
