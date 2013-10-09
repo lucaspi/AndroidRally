@@ -1,0 +1,82 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingBottom="@dimen/activity_vertical_margin"
+	android:paddingLeft="@dimen/activity_horizontal_margin"
+	android:paddingRight="@dimen/activity_horizontal_margin"
+	android:paddingTop="@dimen/activity_vertical_margin"
+	tools:context=".GameConfigurationActivity" >
+
+	<ImageButton
+		android:id="@+id/startGame"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentTop="true"
+		android:onClick="startGame"
+		android:src="@drawable/ic_launcher" />
+
+	<TextView
+		android:id="@+id/roundTimeText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@+id/startGame"
+		android:text="@string/round_time"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
+	<LinearLayout
+		android:id="@+id/roundTime"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_below="@+id/roundTimeText" >
+
+		<SeekBar
+			android:id="@+id/roundTimeBar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1.11" />
+
+		<TextView
+			android:id="@+id/roundTimeTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:text="@string/round_time_default" />
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/cardTimeText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@+id/roundTime"
+		android:text="@string/card_time"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
+	<LinearLayout
+		android:id="@+id/LinearLayout01"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_below="@+id/cardTimeText" >
+
+		<SeekBar
+			android:id="@+id/cardTimeBar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1.11" />
+
+		<TextView
+			android:id="@+id/cardTimeTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:text="@string/card_time_default" />
+	</LinearLayout>
+
+</RelativeLayout>
