@@ -33,7 +33,7 @@ public class GameModel {
 	private int robotsPlaying;
 	private boolean isGameOver;
 
-	private static final String testMap = "yxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxyxxx12xxxxx26x07x5x5x5x5x18xxyxxxxxxxxx26xxxxxxxyxxxxxxx38xx26xx17x17xxxxyxxxxxxxxx26xx36:06x36xxxxyxxxxxxxxx26xx06xxxxxyxxxxxxxxx26xx06xxxxxyxxxxxxxxx26xx06xxxxxyxxxx88x78x68x58x48x26x28x06xxxxxyxxxxxxxxxx36xxxxxxyxxxxxxxxxxxxxxxx";
+	private static final String testMap = "yxxxxxxxxxxxxxxxxyxx12xxxxxx16x16x16xxxxxxyxxxxxxxx37x37x37xxxxx32xyxxxxxx26x07xxxx18xxxxxyxxxxxxxxxxxxxxxxyxxxx28xx78xx88xxxxxxxxyxxxxxxxxxxxxxxxxyxxxx38xx68xxxxxxxx22xxyxxxxxxxxxxxxxxxxyxxxx48xx58xxxxxxxxxxyxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxx";
 	
 	/**
 	 * Creates a game board of size 12x16 tiles. Also creates robots based
@@ -256,35 +256,47 @@ public class GameModel {
 		return true;
 	}
 
-	private void fireLaser(int x, int y, int direction){
+	private void fireRobotLaser(int x, int y, int direction){
+		if(canMove(x, y, direction)) {
+			if (direction == GameBoard.NORTH) {
+				fireLaser(x, y-1, direction);
+			} else if (direction == GameBoard.EAST) {
+				fireLaser(x+1, y, direction);
+			} else if (direction == GameBoard.SOUTH) {
+				fireLaser(x, y+1, direction);
+			} else if (direction == GameBoard.WEST) {
+				fireLaser(x-1, y, direction);
+			}
+		}
+	}
+	
+	private void fireLaser(int x, int y, int direction) {
 		boolean robotIsHit = false;
-		boolean noWall = true;
-		if(noWall = canMove(x, y, direction)){
-			if(direction == GameBoard.NORTH){
-				while(y >= 0 && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					y--;
-					robotIsHit = isRobotHit(x, y);
-				}
+		boolean isNoWall = true;
+		if(direction == GameBoard.NORTH){
+			while(y >= 0 && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				y--;
+			}
 
-			}else if(direction == GameBoard.EAST){
-				while(x < gameBoard.getWidth() && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					x++;
-					robotIsHit = isRobotHit(x, y);
-				}
-			}else if(direction == GameBoard.SOUTH){
-				while(y < gameBoard.getHeight() && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					y++;
-					robotIsHit = isRobotHit(x, y);
-				}
-			}else if(direction == GameBoard.WEST){
-				while(x >= 0 && !robotIsHit && noWall){
-					noWall = canMove(x, y, direction);
-					x--;
-					robotIsHit = isRobotHit(x, y);
-				}
+		}else if(direction == GameBoard.EAST){
+			while(x < gameBoard.getWidth() && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				x++;
+			}
+		}else if(direction == GameBoard.SOUTH){
+			while(y < gameBoard.getHeight() && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				y++;
+			}
+		}else if(direction == GameBoard.WEST){
+			while(x >= 0 && !robotIsHit && isNoWall){
+				robotIsHit = isRobotHit(x, y);
+				isNoWall = canMove(x, y, direction);
+				x--;
 			}
 		}
 	}
@@ -312,7 +324,7 @@ public class GameModel {
 			x = robot.getX();
 			y = robot.getY();
 			direction = robot.getDirection();
-			fireLaser(x, y, direction);
+			fireRobotLaser(x, y, direction);
 		}
 	}
 
