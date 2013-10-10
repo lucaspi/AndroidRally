@@ -106,12 +106,16 @@ public class AIRobotController {
 							cardAdded = true;
 						}
 					}
-					if(cardAdded){
-						placeCards(robot, cards);
-						return;
-					}else{
-						randomizedTurnCard(robot, cards);
+					if(!cardAdded){
+						for(Card card : cards){
+							if(!(card instanceof Move)){
+								chosenCards.add(card);
+								cards.remove(card);
+							}
+						}
 					}
+					placeCards(robot, cards);
+					return;
 				}
 				
 			} else { //har man inga snurrkort slumpas ett kort
@@ -258,11 +262,5 @@ public class AIRobotController {
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
 	}
-	
-	private void randomizedTurnCard(Robot robot, List<Card> cards){
-		
-	}
-
-
 
 }
