@@ -140,8 +140,8 @@ public class GameModel {
 	/*
 	 * Handles all checkPoints reached and repair/damage done during a round.
 	 */
+	private void handleImmobileActions(){
 		int[] oldCheckPointReached = new int[robots.size()];
-		private void handleImmobileActions(){
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			oldRobotHealth[i] = robots.get(i).getHealth();
