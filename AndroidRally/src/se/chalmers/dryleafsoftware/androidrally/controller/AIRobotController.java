@@ -48,7 +48,6 @@ public class AIRobotController {
 			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
 		}
 		List<Move> moveForwardCards = new ArrayList<Move>();
-		List<Move> moveBackwardCards = new ArrayList<Move>();
 		List<Turn> turnCards = new ArrayList<Turn>();
 		List<Turn> leftTurnCards = new ArrayList<Turn>();
 		List<Turn> rightTurnCards = new ArrayList<Turn>();
@@ -149,7 +148,7 @@ public class AIRobotController {
 			if(((Turn)card).getTurn() == TurnType.LEFT){
 				direction = (direction + 3) % 4;
 			}else if(((Turn)card).getTurn() == TurnType.RIGHT){
-				direction = (direction + 2) % 4;
+				direction = (direction + 1) % 4;
 			}else{ // UTurn
 				direction = (direction + 2) % 4;
 			}
@@ -164,27 +163,19 @@ public class AIRobotController {
 		return xy;
 	}
 
-	private int getDistanceToNextCheckPoint(Robot robot){
-		int distance = 0;
-		int[] nextCheckPoint = nextCheckPoint(robot);
-		distance = Math.abs(robot.getX() - nextCheckPoint[0]);
-		distance += Math.abs(robot.getY() - nextCheckPoint[1]);
-		return distance;
-	}
-
 	private List<Integer> getDirections(){
 		List<Integer> directions = new ArrayList<Integer>();
 		int dx = getDX();
 		int dy = getDY();
 		if(dx < 0){
-			directions.add(new Integer(GameBoard.EAST));
+			directions.add(Integer.valueOf(GameBoard.EAST));
 		}else if(dx > 0){
-			directions.add(new Integer(GameBoard.WEST));
+			directions.add(Integer.valueOf(GameBoard.WEST));
 		}
 		if(dy < 0){
-			directions.add(new Integer(GameBoard.SOUTH));
+			directions.add(Integer.valueOf(GameBoard.SOUTH));
 		}else if(dy > 0){
-			directions.add(new Integer(GameBoard.NORTH));
+			directions.add(Integer.valueOf(GameBoard.NORTH));
 		}
 		removeBadDirections(directions);
 
@@ -199,8 +190,8 @@ public class AIRobotController {
 
 	private void removeDirection(List<Integer> directions, Integer indexToRemove){
 		if(directions.size() == 1){
-			directions.add(new Integer((directions.get(indexToRemove) + 1) % 4));
-			directions.add(new Integer((directions.get(indexToRemove) + 3) % 4));
+			directions.add(Integer.valueOf((directions.get(indexToRemove) + 1) % 4));
+			directions.add(Integer.valueOf((directions.get(indexToRemove) + 3) % 4));
 		}
 		directions.remove(indexToRemove);
 	}
