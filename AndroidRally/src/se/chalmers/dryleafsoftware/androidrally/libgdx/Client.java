@@ -45,7 +45,7 @@ public class Client {
 	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
-		this.controller = new GameController(8, 24, 40); 
+		this.controller = new GameController(1,7, 24, 40, null);
 		this.clientID = clientID;
 		this.robotID = 0;
 		controller.newRound();

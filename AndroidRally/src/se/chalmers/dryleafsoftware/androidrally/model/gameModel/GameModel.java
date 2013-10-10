@@ -36,33 +36,29 @@ public class GameModel {
 	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxx36x36:37xxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26x17xx1x103x103x103x103x103xxxxyxxxx26x36xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
 	
 	/**
-	 * Creates a game board of size 12x16 tiles. Also creates robots based
-	 * on the amount of players. Creates a deck with cards that is shuffled.
-	 * 
-	 * @param pcl a PropertyChangeListener listening for event with propertyNames
-	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
-	 * @param nbrOfPlayers the number of players in the game including CPU:s
+	 * Only for testing!!
+ 	 * @param nbrOfRobots players + bots
 	 */
-	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers) {
-		this(nbrOfPlayers, testMap);
+	public GameModel(int nbrOfRobots) {
+		this(nbrOfRobots, testMap);
 	}
 
+
 	/**
-	 * Only for testing!!
-	 * @param pcl a PropertyChangeListener listening for event with propertyNames
-	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
-	 * @param nbrOfPlayers
-	 * @param testMap
+	 * Creates a game board of size 12x16 tiles. Also creates robots based
+	 * on the amount of players. Creates a deck with cards that is shuffled.
+	 * @param nbrOfRobots players + bots
+	 * @param map, a map in String format
 	 */
-	public GameModel(int nbrOfPlayers, String map) {
+	public GameModel(int nbrOfRobots, String map) {
 		gameBoard = new GameBoard(map);
 		isGameOver = false;
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
-		for (int i = 0; i < nbrOfPlayers; i++) {
+		for (int i = 0; i < nbrOfRobots; i++) {
 			robots.add(new Robot(startingPositions[i][0], startingPositions[i][1]));
 		}
-		robotsPlaying = nbrOfPlayers;
+		robotsPlaying = nbrOfRobots;
 		deck = new Deck();
 	}
 
@@ -221,7 +217,7 @@ public class GameModel {
 
 	private boolean isRobotHit(int x, int y){
 		for(Robot robot : this.robots){
-			if(robot.getX() == x && robot.getY() == y){
+			if(!robot.isDead() && robot.getX() == x && robot.getY() == y){
 				robot.damage(1);
 				return true;
 			}
@@ -408,7 +404,7 @@ public class GameModel {
 		boolean wallCollision = false;
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
-				// Do any robot stand on the same tile as another the robot from the parameters.
+				// Do any robot stand on the same tile as the robot from the parameters.
 				if(!r.isDead() && robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
@@ -654,6 +650,11 @@ public class GameModel {
 	public List<Robot> getRobots(){
 		return robots;
 	}
+
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
+
 
 	public boolean isGameOver() {
 		return isGameOver;
