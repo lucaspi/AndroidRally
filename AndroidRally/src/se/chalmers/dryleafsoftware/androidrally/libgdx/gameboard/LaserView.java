@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
-import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

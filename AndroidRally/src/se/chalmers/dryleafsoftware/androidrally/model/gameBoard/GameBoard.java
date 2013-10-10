@@ -21,6 +21,7 @@ public class GameBoard {
 	 * Max 8 players.
 	 */
 	private int[][] startingPosition = new int[8][2];
+	private int nbrOfPlayers;
 	
 	public static final int EAST = 1;
 	public static final int WEST = 3;
@@ -68,6 +69,7 @@ public class GameBoard {
 	 */
 	public GameBoard(String map) {
 		nbrOfCheckPoints = 0;
+		nbrOfPlayers = 0;
 		lasers = new ArrayList<Laser>();
 		checkPoints = new TreeMap<Integer, int[]>();
 		createBoard(map);
@@ -179,6 +181,7 @@ public class GameBoard {
 						}else if(tile == TILE_START){
 							startingPosition[tileData / 10 - 1][0] = x;
 							startingPosition[tileData / 10 - 1][1] = y;
+							nbrOfPlayers++;
 						}
 					} // loop - elements
 				} // if
@@ -222,5 +225,9 @@ public class GameBoard {
 
 	public Map<Integer, int[]> getCheckPoints() {
 		return checkPoints;
+	}
+
+	public int getNbrOfPlayers() {
+		return nbrOfPlayers;
 	}
 }

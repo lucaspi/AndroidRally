@@ -7,13 +7,12 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.AnimatedElement;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CollisionMatrix;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltCurve;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.ConveyorBeltView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.GearsView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
-import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 
 import com.badlogic.gdx.Gdx;
@@ -173,19 +172,11 @@ public class BoardView extends Stage {
 						new GearsView(new TextureRegion(texture, 0, 256, 64, 64), cw), x, y));
 			}
 			@Override
-			public void buildConveyerBelt(int x, int y, int speed, int dir, int rot) {
-				if(rot == 0) {
-					animated.add((AnimatedElement)setCommonValues(
-							new ConveyorBeltView(new TextureRegion(
-									conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
-									dir * 90, speed), x, y));
-				}else{
-					animated.add((AnimatedElement)setCommonValues(
-							new ConveyorBeltCurve(new TextureRegion(
-									texture, 64, 128, 64, 64), 
-									speed, dir * 90, rot == 1 ? true : false),
-									x, y));
-				}
+			public void buildConveyerBelt(int x, int y, int speed, int dir) {
+				animated.add((AnimatedElement)setCommonValues(
+						new ConveyorBeltView(new TextureRegion(
+								conveyerTexture, 64 * (speed - 1), 0, 64, 64), 
+								dir * 90, speed), x, y));
 			}
 			@Override
 			public void buildCheckPoint(int x, int y, int nbr) {

@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.sharred;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 /**
  * This class helps with the loading of a map.
@@ -66,8 +66,7 @@ public abstract class MapBuilder {
 							buildGear(x, y, tileData / 10 == 0 ? false : true);	
 							break;
 						case TILE_CONVEYORBELT:
-							buildConveyerBelt(x, y, (tileData / 100) % 10, (tileData / 10) % 10,
-									tileData / 1000);
+							buildConveyerBelt(x, y, (tileData / 100) % 10, (tileData / 10) % 10);
 							break;
 						case TILE_CHECKPOINT:
 							buildCheckPoint(x, y, tileData / 10);
@@ -122,9 +121,8 @@ public abstract class MapBuilder {
 	 * @param y The Y-coordinate of the conveyer belt.
 	 * @param speed The speed of the conveyer belt.
 	 * @param dir The direction of the conveyer belt.
-	 * @param ror The direction to rotate. 0 = straight, 1 = right, 2 = left.
 	 */
-	public abstract void buildConveyerBelt(int x, int y, int speed, int dir, int rot);
+	public abstract void buildConveyerBelt(int x, int y, int speed, int dir);
 	/**
 	 * Creates a new checkpoint.
 	 * @param x The X-coordinate of the checkpoint.
