@@ -30,6 +30,7 @@ public class AIRobotController {
 		List<Card> cards = new ArrayList<Card>();
 		chosenCards = new ArrayList<Card>();
 		cards.addAll(robot.getCards());
+		System.out.println("makeMove cardsize" + cards.size());
 		x = robot.getX();
 		y = robot.getY();
 		direction = robot.getDirection();
@@ -54,11 +55,21 @@ public class AIRobotController {
 			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
 		}
 		List<Move> moveForwardCards = new ArrayList<Move>();
-		List<Turn> turnCards = new ArrayList<Turn>();
 		List<Turn> leftTurnCards = new ArrayList<Turn>();
 		List<Turn> rightTurnCards = new ArrayList<Turn>();
 		List<Turn> uTurnCards = new ArrayList<Turn>();
-
+		
+		for (Card card : cards) {
+			if (card instanceof Turn) {
+				if(((Turn)card).getTurn() == TurnType.LEFT){
+					leftTurnCards.add((Turn)card);
+				}else if(((Turn)card).getTurn() == TurnType.RIGHT){
+					rightTurnCards.add((Turn)card);
+				}else {
+					uTurnCards.add((Turn)card);
+				}
+			}
+		}
 		for (Card card : cards) {
 			if (card instanceof Move) {
 				if (((Move)card).getDistance() > 0) {
@@ -81,23 +92,13 @@ public class AIRobotController {
 				cards.remove(moveForwardCards.get(0));
 			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(cards);
+				return;
 			}
 			placeCards(cards);
 			return;
 		}
 		else { // If the robot is turned towards a wrong direction.
-			for (Card card : cards) {
-				if (card instanceof Turn) {
-					if(((Turn)card).getTurn() == TurnType.LEFT){
-						leftTurnCards.add((Turn)card);
-					}else if(((Turn)card).getTurn() == TurnType.RIGHT){
-						rightTurnCards.add((Turn)card);
-					}else {
-						uTurnCards.add((Turn)card);
-					}
-				}
-			}
-			if (turnCards.size() != 0) { // Try turn towards a correct direction
+			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
 				for(Integer i : getDirections()){
 					boolean cardAdded = false;
 					int turnDifference = Math.abs(i.intValue() - 
@@ -122,10 +123,11 @@ public class AIRobotController {
 						}
 					}
 					if(!cardAdded){
-						for(Card card : cards){
-							if(!(card instanceof Move)){
-								chosenCards.add(card);
-								cards.remove(card);
+						for(int j = 0; j<cards.size(); j++){
+							if(!(cards.get(j) instanceof Move)){
+								chosenCards.add(cards.get(j));
+								cards.remove(cards.get(j));
+								j--;
 							}
 						}
 					}
@@ -135,6 +137,7 @@ public class AIRobotController {
 				
 			} else { // No turn cards -> random card
 				randomizeCard(cards);
+				return;
 			}
 			placeCards(cards);
 			return;
@@ -293,7 +296,9 @@ public class AIRobotController {
 
 	private void randomizeCard(List<Card> cards) {
 		Random rand = new Random();
+		System.out.println(cards.size() + " random " + cards.size());
 		int index = rand.nextInt(cards.size());
+		System.out.println(" index: " + index);
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
