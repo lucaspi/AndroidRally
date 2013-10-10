@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

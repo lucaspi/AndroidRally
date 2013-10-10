@@ -8,14 +8,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".GameActivity" >
 
-	<ImageButton
+	<ImageView
         android:id="@+id/startConfigurationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_launcher"
+        android:src="@drawable/set_up_game"
+        android:contentDescription="@string/set_up_button"
         android:onClick="startConfiguration" />
 
     <TextView
