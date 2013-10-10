@@ -107,7 +107,7 @@ public class DeckView extends Stage {
 		setCamera(cardCamera);
 		
 		// Set background image
-		Image deck = new Image(new TextureRegion(deckTexture, 0f, 0f, 1f, 1f));
+		Image deck = new Image(new TextureRegion(deckTexture, 0, 0, 480, 320));
 		deck.setPosition(0, 0);
 		deck.setSize(480, 320);
 		addActor(deck);
@@ -273,8 +273,7 @@ public class DeckView extends Stage {
     	drawPanel.setSize(480, 120);
     	TextButton draw = new TextButton("Draw Cards", style);
     	draw.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	drawPanel.add(draw).pad(externalPadding); // Border
-    	
+    	drawPanel.add(draw).pad(externalPadding); // Border    	
     	draw.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -360,6 +359,10 @@ public class DeckView extends Stage {
     	});
     	
     	return playPanel;
+	}
+	
+	public boolean isCardTimerOn() {
+		return cardTick > 0;
 	}
 	
 	/*

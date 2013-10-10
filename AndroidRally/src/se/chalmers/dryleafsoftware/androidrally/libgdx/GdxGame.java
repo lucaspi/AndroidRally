@@ -12,7 +12,9 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.view.MessageStage;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -65,6 +67,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		this.client = new Client(1);
 		this.gameBoard = new BoardView();	
 		this.messageStage = new MessageStage();
+		
+		messageStage.addListener(this);
 
 		// Only load the textures once.
 		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
@@ -89,8 +93,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 		
 		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(messageStage, gameBoard, deckView);
+		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
 		Gdx.input.setInputProcessor(im);
+		Gdx.input.setCatchBackKey(true);
 	}
 	
 	/*
@@ -106,6 +111,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Will handle everything needed to stop the game from continuing.
 	 */
 	private void stopGame() {
+		gameBoard.stopAnimations();
+		result.clear();
+		actions.clear();
 		deckView.setCardTick(-1);
 		deckView.setRoundTick(-1);
 		deckView.displayWaiting();
@@ -143,15 +151,10 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}
 		// Do all actions
 		int i = actions.size();
-		while(i > 0) {
-			cleanAndRemove(actions.get(0));
-			i--;
-		}
-		// Check result
-		if(result.hasNext()) {
-			actions = result.getNextResult();
-		}else{
-			deckView.displayDrawCard();
+		while(i-- > 0) {
+			if(!cleanAndRemove(actions.get(0))) {
+				return;
+			}
 		}
 		gameBoard.stopAnimations();
 		currentStage = Stage.WAITING;
@@ -166,25 +169,36 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}
 	}
 	
-	private void cleanAndRemove(GameAction action) {
+	/*
+	 * Will return true as long as the game should continue.
+	 */
+	private boolean cleanAndRemove(GameAction action) {
 		int phase = action.getPhase();
 		action.cleanUp(gameBoard.getRobots());
 		actions.remove(action);
 		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
 			handleGameOver();
-			return;
+			return false;
 		}else if(phase == GameAction.SPECIAL_PHASE_WON) {
 			handleGameWon();
-			return;
-		}	
+			return false;
+		}else if(actions.isEmpty()) {
+			if(result.hasNext()) {
+				actions = result.getNextResult();
+			}else{
+				currentStage = Stage.WAITING;
+				deckView.displayDrawCard();
+			}
+		}
+		return true;
 	}
-	
+
 	/*
 	 * Updates the actions.
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
-		if(actions == null) {
+		if((actions == null || actions.isEmpty()) && result.hasNext()) {
 			actions = result.getNextResult();
 			return;
 		}
@@ -196,18 +210,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			if(!actions.isEmpty()) {
 				actions.get(0).action(gameBoard.getRobots());
 				gameBoard.setAnimate(actions.get(0).getPhase());
-			}
-		}
-		// Get next list of actions
-		else if(actions.isEmpty()) {
-			// If no more: wait
-			if(!result.hasNext()) {
-				currentStage = Stage.WAITING;
-				deckView.displayDrawCard();
-			}
-			// Otherwise, if playing, get the next list.
-			else if(currentStage.equals(Stage.PLAY)) {
-				actions = result.getNextResult();
 			}
 		}
 	}
@@ -244,6 +246,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			deckView.displayPlayOptions();
 			result = client.getRoundResult();
 			deckView.setRoundTick(ROUNDTIME);
+		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
+			Gdx.app.exit();
 		}
 	}
 
@@ -282,4 +286,46 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	@Override
 	public void resume() {
 	}
+	
+	private InputProcessor inputProcess = new InputProcessor() {
+		@Override
+		public boolean keyDown(int arg0) {
+			if(arg0 == Keys.BACK || arg0 == Keys.BACKSPACE){
+				if(deckView.isCardTimerOn()) {
+					messageStage.dispCloseMessage();
+				}else{
+					Gdx.app.exit();
+				}
+			}
+			return false;
+		}
+		@Override
+		public boolean keyTyped(char arg0) {
+			return false;
+		}
+		@Override
+		public boolean keyUp(int arg0) {
+			return false;
+		}
+		@Override
+		public boolean mouseMoved(int arg0, int arg1) {
+			return false;
+		}
+		@Override
+		public boolean scrolled(int arg0) {
+			return false;
+		}
+		@Override
+		public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
+			return false;
+		}
+		@Override
+		public boolean touchDragged(int arg0, int arg1, int arg2) {
+			return false;
+		}
+		@Override
+		public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
+			return false;
+		}
+	};
 }

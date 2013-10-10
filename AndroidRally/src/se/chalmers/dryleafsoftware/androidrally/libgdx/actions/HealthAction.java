@@ -14,6 +14,9 @@ public class HealthAction extends GameAction {
 
 	private final int damage, lives;
 	
+	public static final int DECREASE_ONE = -2;
+	public static final int INCREASE_ONE = -3;
+	
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
 	 * @param robotID The ID of the robot to handle.
@@ -34,11 +37,27 @@ public class HealthAction extends GameAction {
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
+		RobotView robot = robots.get(getRobotID());
 		if(damage != UNCHANGED) {
-			robots.get(getRobotID()).setDamage(damage);
+			if(damage == INCREASE_ONE) {
+				robot.setDamage(robot.getDamage() + 1);
+			}else if(damage == DECREASE_ONE) {
+				robot.setDamage(robot.getDamage() - 1);
+			}else{			
+				robots.get(getRobotID()).setDamage(damage);
+			}
 		}
 		if(lives != UNCHANGED) {
-			robots.get(getRobotID()).setLives(lives);
+			if(lives == INCREASE_ONE) {
+				robot.setLives(robot.getLives() + 1);
+			}else if(lives == DECREASE_ONE) {
+				robot.setLives(robot.getLives() - 1);
+			}else{			
+				robot.setLives(lives);
+			}
+		}
+		if(robots.get(getRobotID()).getLives() == 0) {
+			robots.get(getRobotID()).setDead(true);
 		}
 	}
 }
