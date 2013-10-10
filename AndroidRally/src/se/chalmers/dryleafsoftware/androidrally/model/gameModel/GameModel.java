@@ -385,7 +385,7 @@ public class GameModel {
 						if(robotIMove){
 							handleCollision.add(robots.get(i));
 						}else if(robotJMove){
-							handleCollision.add(robots.get(j));
+//							handleCollision.add(robots.get(j));
 						}
 					}
 				}
