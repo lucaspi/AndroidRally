@@ -215,7 +215,9 @@ public class GameController implements PropertyChangeListener {
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
-			aiRobotController.makeMove(gameModel.getRobots().get(i));
+			if (!gameModel.getRobots().get(i).hasLost()) {
+				aiRobotController.makeMove(gameModel.getRobots().get(i));
+			}
 		}
 	}
 	
