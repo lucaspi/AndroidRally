@@ -95,12 +95,10 @@ public class AIRobotController {
 			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(cards);
 			}
-			placeCards(cards);
-		}
-		else { // If the robot is turned towards a wrong direction.
+		} else { // If the robot is turned towards a wrong direction.
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
+				boolean cardAdded = false;
 				for(Integer i : getDirections()){
-					boolean cardAdded = false;
 					int turnDifference = Math.abs(i.intValue() - 
 							direction);
 					if(turnDifference == 1){
@@ -108,35 +106,42 @@ public class AIRobotController {
 							chosenCards.add(leftTurnCards.get(0));
 							cards.remove(leftTurnCards.get(0));
 							cardAdded = true;
+							break;
 						}
 					}else if(turnDifference == 2){
 						if(uTurnCards.size() != 0){
 							chosenCards.add(uTurnCards.get(0));
 							cards.remove(uTurnCards.get(0));
 							cardAdded = true;
+							break;
 						}
 					}else if(turnDifference == 3){
 						if(rightTurnCards.size() != 0){
 							chosenCards.add(rightTurnCards.get(0));
 							cards.remove(rightTurnCards.get(0));
 							cardAdded = true;
+							break;
+						}
+					}
+				}
+				if(!cardAdded){
+					for(int j = 0; j<cards.size(); j++){
+						if(!(cards.get(j) instanceof Move)){
+							chosenCards.add(cards.get(j));
+							cards.remove(cards.get(j));
+							cardAdded = true;
+							break;
 						}
 					}
 					if(!cardAdded){
-						for(int j = 0; j<cards.size(); j++){
-							if(!(cards.get(j) instanceof Move)){
-								chosenCards.add(cards.get(j));
-								cards.remove(cards.get(j));
-								break;
-							}
-						}
+						randomizeCard(cards);
 					}
 				}
 			} else { // No turn cards -> random card
 				randomizeCard(cards);
 			}
-			placeCards(cards);
 		}
+		placeCards(cards);
 	}
 	
 	private void changeCalculatedPosition(Card card){
@@ -293,6 +298,15 @@ public class AIRobotController {
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
+
+//		
+//		for(int j = 0; j<cards.size(); j++){
+//			if(!(cards.get(j) instanceof Move)){
+//				chosenCards.add(cards.get(j));
+//				cards.remove(cards.get(j));
+//				break;
+//			}
+//		}
 	}
 
 }
