@@ -5,9 +5,13 @@ import java.beans.PropertyChangeListener;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -30,7 +34,7 @@ public class LifeView extends Table implements PropertyChangeListener {
 	public LifeView(Texture texture, RobotView playerData) {
 		super();
 		playerData.addListener(this);		
-		add(new Image(playerData.getDrawable())).maxSize(40, 40);		
+		add(new Image(playerData.getDrawable())).maxSize(40, 40).left();		
 		notLife = new TextureRegion(texture, 424, 14, 24, 24);
 		gotLife = new TextureRegion(texture, 400, 14, 24, 24);
 		for (int i = 0; i < lifeIndicator.length; i++) {
@@ -38,6 +42,11 @@ public class LifeView extends Table implements PropertyChangeListener {
 			add(lifeIndicator[i]);
 		}
 		setLives(playerData.getLives());
+		Label name = new Label(playerData.getName(), new LabelStyle(new BitmapFont(), Color.WHITE));
+		name.setPosition(10, 0);
+		name.setWrap(true);
+		row();
+		add(name).left();
 	}
 	
 	private void setLives(int lives) {

@@ -39,6 +39,10 @@ public class DamageView extends Table implements PropertyChangeListener {
 			damageIndicator[i] = new Image(notDamage);
 			add(damageIndicator[i]);
 		}
+		row();
+		for(int i = 0; i < 5; i++) {
+			add(new Image(new TextureRegion(texture, 400 + i * 20, 38, 20, 30)));
+		}
 		setDamage(playerData.getDamage());
 	}
 	

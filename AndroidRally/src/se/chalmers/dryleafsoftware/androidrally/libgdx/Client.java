@@ -226,7 +226,8 @@ public class Client {
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
-					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), "Player " + i);
+					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
+					"Player " + i);
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);

@@ -284,9 +284,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.draw();
 		update();
 		
-		Table.drawDebug(deckView);
-		Table.drawDebug(gameBoard);
-		Table.drawDebug(messageStage);
+//		Table.drawDebug(deckView);
+//		Table.drawDebug(gameBoard);
+//		Table.drawDebug(messageStage);
 	}
 
 	@Override

@@ -150,27 +150,27 @@ public class DeckView extends Stage {
 				null);
 		style.font = new BitmapFont();
 				
-		// TODO: Remove this dummy button!
-        TextButton dummy = new TextButton("Force round", style);
-        dummy.setPosition(0, 60);
-        dummy.setSize(100, 20);
-        statusBar.add(dummy); // Border
-        dummy.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-    		}
-    	});
-        TextButton dummy2 = new TextButton("Send cards", style);
-        dummy2.setPosition(100, 60);
-        dummy2.setSize(100, 20);
-        statusBar.add(dummy2); // Border
-        dummy2.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-    		}
-    	});
+//		// TODO: Remove this dummy button!
+//        TextButton dummy = new TextButton("Force round", style);
+//        dummy.setPosition(280, 60);
+//        dummy.setSize(100, 20);
+//        statusBar.add(dummy); // Border
+//        dummy.addListener(new ClickListener() {
+//    		@Override
+//    		public void clicked(InputEvent event, float x, float y) {
+//    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+//    		}
+//    	});
+//        TextButton dummy2 = new TextButton("Send cards", style);
+//        dummy2.setPosition(380, 60);
+//        dummy2.setSize(100, 20);
+//        statusBar.add(dummy2); // Border
+//        dummy2.addListener(new ClickListener() {
+//    		@Override
+//    		public void clicked(InputEvent event, float x, float y) {
+//    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+//    		}
+//    	});
         
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
@@ -229,8 +229,8 @@ public class DeckView extends Stage {
     	
     	DamageView dv = new DamageView(compTexture, robots.get(robotID));
     	LifeView lv = new LifeView(compTexture, robots.get(robotID));
-    	lv.setPosition(0, 20);
-    	lv.setSize(120, 40);
+    	lv.setPosition(0, 0);
+    	lv.setSize(120, 80);
     	lv.debug();
     	dv.setPosition(280, 20);
     	dv.setSize(200, 40);
