@@ -20,6 +20,7 @@ public class AIRobotController {
 	private int x;
 	private int y;
 	private int direction;
+	private int[] nextCheckpoint;
 
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
@@ -29,18 +30,22 @@ public class AIRobotController {
 		List<Card> cards = new ArrayList<Card>();
 		chosenCards = new ArrayList<Card>();
 		cards.addAll(robot.getCards());
-		placeCards(robot, cards);
 		x = robot.getX();
 		y = robot.getY();
 		direction = robot.getDirection();
+		nextCheckpoint = nextCheckPoint(robot);
+		placeCards(cards);
+		robot.setChosenCards(chosenCards);
+		robot.setSentCards(true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void placeCards(Robot robot, List<Card> cards) {
+	private void placeCards(List<Card> cards) {
 		if (chosenCards.size() == 5) {
-			robot.setChosenCards(chosenCards);
-			robot.setSentCards(true);
 			return;
+		}
+		if(chosenCards.size() != 0){
+			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
 		}
 		List<Move> moveForwardCards = new ArrayList<Move>();
 		List<Move> moveBackwardCards = new ArrayList<Move>();
@@ -50,8 +55,8 @@ public class AIRobotController {
 		List<Turn> uTurnCards = new ArrayList<Turn>();
 
 		boolean isRightDirection = false;
-		for (Integer direction : getDirections(robot)) { // Check if the robot stand in a correct direction
-			if (robot.getDirection() == direction) {
+		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
+			if (this.direction == direction) {
 				isRightDirection = true;
 			}
 		}
@@ -68,9 +73,9 @@ public class AIRobotController {
 				chosenCards.add(moveForwardCards.get(0));
 				cards.remove(moveForwardCards.get(0));
 			} else { // if there are no move forwards cards -> random card 
-				randomizeCard(robot, cards);
+				randomizeCard(cards);
 			}
-			placeCards(robot, cards);
+			placeCards(cards);
 			return;
 		}
 		else { // If the robot is turned towards a wrong direction.
@@ -86,10 +91,10 @@ public class AIRobotController {
 				}
 			}
 			if (turnCards.size() != 0) { // Try turn towards a correct direction
-				for(Integer i : getDirections(robot)){
+				for(Integer i : getDirections()){
 					boolean cardAdded = false;
 					int turnDifference = Math.abs(i.intValue() - 
-							robot.getDirection());
+							direction);
 					if(turnDifference == 1){
 						if(leftTurnCards.size() != 0){
 							chosenCards.add(leftTurnCards.get(0));
@@ -117,16 +122,37 @@ public class AIRobotController {
 							}
 						}
 					}
-					placeCards(robot, cards);
+					placeCards(cards);
 					return;
 				}
 				
 			} else { // No turn cards -> random card
-				randomizeCard(robot, cards);
-				return;
+				randomizeCard(cards);
 			}
-			placeCards(robot, cards);
+			placeCards(cards);
 			return;
+		}
+	}
+	
+	private void changeCalculatedPosition(Card card){
+		if(card instanceof Move){
+			if(direction == GameBoard.NORTH){
+				y = y - ((Move)card).getDistance();
+			}else if(direction == GameBoard.EAST){
+				x = x + ((Move)card).getDistance();
+			}else if(direction == GameBoard.SOUTH){
+				y = y + ((Move)card).getDistance();
+			}else if(direction == GameBoard.WEST){
+				x = x - ((Move)card).getDistance();
+			}
+		}else if(card instanceof Turn){
+			if(((Turn)card).getTurn() == TurnType.LEFT){
+				direction = (direction + 3) % 4;
+			}else if(((Turn)card).getTurn() == TurnType.RIGHT){
+				direction = (direction + 2) % 4;
+			}else{ // UTurn
+				direction = (direction + 2) % 4;
+			}
 		}
 	}
 
@@ -146,15 +172,10 @@ public class AIRobotController {
 		return distance;
 	}
 
-	private Card nextCard(Robot robot){
-
-		return null;
-	}
-
-	private List<Integer> getDirections(Robot robot){
+	private List<Integer> getDirections(){
 		List<Integer> directions = new ArrayList<Integer>();
-		int dx = getDX(robot);
-		int dy = getDY(robot);
+		int dx = getDX();
+		int dy = getDY();
 		if(dx < 0){
 			directions.add(new Integer(GameBoard.EAST));
 		}else if(dx > 0){
@@ -165,7 +186,7 @@ public class AIRobotController {
 		}else if(dy > 0){
 			directions.add(new Integer(GameBoard.NORTH));
 		}
-		removeBadDirections(robot, directions);
+		removeBadDirections(directions);
 
 
 		if(directions.size() == 2){
@@ -184,9 +205,7 @@ public class AIRobotController {
 		directions.remove(indexToRemove);
 	}
 
-	private List<Integer> removeBadDirections(Robot robot, List<Integer> directions){
-		int x = robot.getX();
-		int y = robot.getY();
+	private List<Integer> removeBadDirections(List<Integer> directions){
 		for(int i = 0; i < directions.size(); i++){
 			if(directions.get(i).intValue() == GameBoard.NORTH){
 				for(int j = 0; j < 3; j++){
@@ -257,16 +276,16 @@ public class AIRobotController {
 		return directions;
 	}
 
-	private int getDX(Robot robot){
-		return (robot.getX() - nextCheckPoint(robot)[0]);
+	private int getDX(){
+		return (x - nextCheckpoint[0]);
 	}
 
-	private int getDY(Robot robot){
-		return (robot.getY() - nextCheckPoint(robot)[1]);
+	private int getDY(){
+		return (y - nextCheckpoint[1]);
 	}
 
 
-	private void randomizeCard(Robot robot, List<Card> cards) {
+	private void randomizeCard(List<Card> cards) {
 		Random rand = new Random();
 		int index = rand.nextInt(cards.size());
 		Card randChosenCard = cards.get(index);
