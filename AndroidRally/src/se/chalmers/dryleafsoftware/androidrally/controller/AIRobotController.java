@@ -48,6 +48,8 @@ public class AIRobotController {
 
 	@SuppressWarnings("unchecked")
 	private void placeCards(List<Card> cards) {
+		System.out.println("placeCArd");
+		System.out.println("placeCard " + chosenCards.size());
 		if (chosenCards.size() == 5) {
 			return;
 		}
@@ -92,10 +94,8 @@ public class AIRobotController {
 				cards.remove(moveForwardCards.get(0));
 			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(cards);
-				return;
 			}
 			placeCards(cards);
-			return;
 		}
 		else { // If the robot is turned towards a wrong direction.
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
@@ -127,20 +127,15 @@ public class AIRobotController {
 							if(!(cards.get(j) instanceof Move)){
 								chosenCards.add(cards.get(j));
 								cards.remove(cards.get(j));
-								j--;
+								break;
 							}
 						}
 					}
-					placeCards(cards);
-					return;
 				}
-				
 			} else { // No turn cards -> random card
 				randomizeCard(cards);
-				return;
 			}
 			placeCards(cards);
-			return;
 		}
 	}
 	
@@ -215,7 +210,6 @@ public class AIRobotController {
 			if(directions.get(i).intValue() == GameBoard.NORTH){
 				for(int j = 0; j < 3; j++){
 					if((y-j) >= 0){
-						System.out.println("NORTH x: " + x + " Y: " + y + " J: " + j);
 						if (gb.getTile(x, y-j).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile(x, (y-j)).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -232,7 +226,6 @@ public class AIRobotController {
 			}else if(directions.get(i).intValue() == GameBoard.EAST){
 				for(int j = 0; j < 3; j++){
 					if((x+j) <= gb.getWidth()){
-						System.out.println("EAST x: " + x + " Y: " + y +" J: " + j);
 						if (gb.getTile(x+j, y).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile((x+j), y).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -249,7 +242,6 @@ public class AIRobotController {
 			}else if(directions.get(i).intValue() == GameBoard.SOUTH){
 				for(int j = 0; j < 3; j++){
 					if((y+j) <= gb.getHeight()){
-						System.out.println("SOUTH x: " + x + " Y: " + y + " J: " + j);
 						if (gb.getTile(x, y+j).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile(x, (y+j)).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -266,7 +258,6 @@ public class AIRobotController {
 			}else if(directions.get(i).intValue() == GameBoard.WEST){
 				for(int j = 0; j < 3; j++){
 					if((x-j) >= 0){
-						System.out.println("WEST x: " + x + " Y: " + y + " J: " + j);
 						if (gb.getTile(x-j, y).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile((x-j), y).getBoardElements()){
 								if(boardElement instanceof Hole){
