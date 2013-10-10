@@ -59,12 +59,6 @@ public class AIRobotController {
 		List<Turn> rightTurnCards = new ArrayList<Turn>();
 		List<Turn> uTurnCards = new ArrayList<Turn>();
 
-		boolean isRightDirection = false;
-		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
-			if (this.direction == direction) {
-				isRightDirection = true;
-			}
-		}
 		for (Card card : cards) {
 			if (card instanceof Move) {
 				if (((Move)card).getDistance() > 0) {
@@ -73,6 +67,13 @@ public class AIRobotController {
 			}
 		}
 		Collections.sort(moveForwardCards);
+		
+		boolean isRightDirection = false;
+		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
+			if (this.direction == direction) {
+				isRightDirection = true;
+			}
+		}
 		if (isRightDirection) {
 			
 			if (moveForwardCards.size() != 0) { // Move forward as long as possible
