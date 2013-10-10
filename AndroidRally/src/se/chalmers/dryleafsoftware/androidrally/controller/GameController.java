@@ -21,14 +21,20 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	private String nbrOfPlayers;
+	private String nbrOfRobots;
 	private String mapAsString;
+	private AIRobotController aiRobotController;
+	private int nbrOfHumanPlayers;
+	private int nbrOfBots;
 
-
-	public GameController(int nbrOfPlayers, int hoursEachRound, int cardTimerSeconds) {
-		this.nbrOfPlayers = String.valueOf(nbrOfPlayers);
+	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
+		this.nbrOfHumanPlayers = nbrOfHumanPlayers;
+		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
-		gameModel = new GameModel(this, nbrOfPlayers);
+		gameModel = new GameModel(nbrOfHumanPlayers + nbrOfBots);
+		this.nbrOfRobots = String.valueOf(gameModel.getRobots().size());
+		
+		aiRobotController = new AIRobotController(gameModel.getGameBoard());
 		
 		mapAsString = gameModel.getMap();
 		
@@ -40,8 +46,8 @@ public class GameController implements PropertyChangeListener {
 		this.hoursEachRound = hoursEachRound;
 		
 		timer = new Timer();
-		cardTimer = new CardTimer[nbrOfPlayers];
-		for (int i = 0; i < nbrOfPlayers; i++) {
+		cardTimer = new CardTimer[Integer.parseInt(nbrOfRobots)];
+		for (int i = 0; i < Integer.parseInt(nbrOfRobots); i++) {
 			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
@@ -208,6 +214,9 @@ public class GameController implements PropertyChangeListener {
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
+		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
+			aiRobotController.makeMove(gameModel.getRobots().get(i));
+		}
 	}
 	
 	public String getMap() {
@@ -215,7 +224,7 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	public String getNbrOfPlayers() {
-		return nbrOfPlayers;
+		return nbrOfRobots;
 	}
 	
 	/**
