@@ -90,8 +90,11 @@ public class AIRobotController {
 		if (isRightDirection) {
 			
 			if (moveForwardCards.size() != 0) { // Move forward as long as possible
-				chosenCards.add(moveForwardCards.get(0));
-				cards.remove(moveForwardCards.get(0));
+				if(direction == GameBoard.NORTH || direction == GameBoard.SOUTH){
+					addMoveCard(getDY());
+				}else{
+					addMoveCard(getDX());
+				}
 			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(cards);
 			}
@@ -281,6 +284,18 @@ public class AIRobotController {
 		return directions;
 	}
 
+	private void addMoveCard(int distance){
+		for(Move card : moveForwardCard){// the list is sorted with longest distance first.
+			if(card.getDistance() <= distance){
+				chosenCards.add(card);{
+					removeCard(card);
+					return;
+				}
+			}
+		}
+		randomizeCard();
+	}
+	
 	private int getDX(){
 		return (x - nextCheckpoint[0]);
 	}
@@ -291,6 +306,7 @@ public class AIRobotController {
 
 
 	private void randomizeCard(List<Card> cards) {
+		// TODO first turncards then low movement cards
 		Random rand = new Random();
 		System.out.println(cards.size() + " random " + cards.size());
 		int index = rand.nextInt(cards.size());
@@ -298,15 +314,6 @@ public class AIRobotController {
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
-
-//		
-//		for(int j = 0; j<cards.size(); j++){
-//			if(!(cards.get(j) instanceof Move)){
-//				chosenCards.add(cards.get(j));
-//				cards.remove(cards.get(j));
-//				break;
-//			}
-//		}
 	}
 
 }
