@@ -47,12 +47,12 @@ public class AIRobotController {
 		List<Turn> uTurnCards = new ArrayList<Turn>();
 
 		boolean isRightDirection = false;
-		for (Integer direction : getDirections(robot)) { //kolla efter om roboten står i rätt riktning
+		for (Integer direction : getDirections(robot)) { // Check if the robot stand in a correct direction
 			if (robot.getDirection() == direction) {
 				isRightDirection = true;
 			}
 		}
-		if (isRightDirection) {//står roboten i rätt riktning händer detta
+		if (isRightDirection) {
 			for (Card card : cards) {
 				if (card instanceof Move) {
 					if (((Move)card).getDistance() > 0) {
@@ -60,17 +60,17 @@ public class AIRobotController {
 					}
 				}
 			}
-			if (moveForwardCards.size() != 0) { //ta det största "gå framåt"-kortet
+			if (moveForwardCards.size() != 0) { // Move forward as long as possible
 				Collections.sort(moveForwardCards);
 				chosenCards.add(moveForwardCards.get(0));
 				cards.remove(moveForwardCards.get(0));
-			} else { //har man inga "gå framåt"-kort slumpas ett kort
+			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(robot, cards);
 			}
 			placeCards(robot, cards);
 			return;
 		}
-		else { //annars, försök vrida i rätt riktning
+		else { // If the robot is turned towards a wrong direction.
 			for (Card card : cards) {
 				if (card instanceof Turn) {
 					if(((Turn)card).getTurn() == TurnType.LEFT){
@@ -82,7 +82,7 @@ public class AIRobotController {
 					}
 				}
 			}
-			if (turnCards.size() != 0) { //om man har snurrkort
+			if (turnCards.size() != 0) { // Try turn towards a correct direction
 				for(Integer i : getDirections(robot)){
 					boolean cardAdded = false;
 					int turnDifference = Math.abs(i.intValue() - 
@@ -118,7 +118,7 @@ public class AIRobotController {
 					return;
 				}
 				
-			} else { //har man inga snurrkort slumpas ett kort
+			} else { // No turn cards -> random card
 				randomizeCard(robot, cards);
 				return;
 			}

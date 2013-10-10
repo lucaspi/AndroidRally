@@ -148,11 +148,6 @@ public class GameModel {
 			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
 		}
 		fireAllLasers();
-		for(Robot robot : robots){
-			if(robot.isDead()){
-				addRobotDeadMove(robot);
-			}
-		}
 		if (checkGameStatus())return;
 		
 		for(int i = 0; i < robots.size(); i++){
