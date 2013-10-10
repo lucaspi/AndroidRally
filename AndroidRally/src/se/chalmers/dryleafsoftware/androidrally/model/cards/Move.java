@@ -6,7 +6,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  * Move extends the class Card.
  * {@inheritDoc}
  */
-public class Move extends Card {
+public class Move extends Card implements Comparable {
 	private int distance;
 	
 	/**
@@ -32,5 +32,10 @@ public class Move extends Card {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		return this.getDistance() - ((Move)o).getDistance();
 	}
 }

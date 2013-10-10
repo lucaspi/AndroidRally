@@ -140,14 +140,21 @@ public class GameModel {
 	/*
 	 * Handles all checkPoints reached and repair/damage done during a round.
 	 */
-	private void handleImmobileActions(){
 		int[] oldCheckPointReached = new int[robots.size()];
+		private void handleImmobileActions(){
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			oldRobotHealth[i] = robots.get(i).getHealth();
 			oldCheckPointReached[i] = robots.get(i).getLastCheckPoint();
 		}
 		fireAllLasers();
+		for(Robot robot : robots){
+			if(robot.isDead()){
+				addRobotDeadMove(robot);
+			}
+		}
+		if (checkGameStatus())return;
+		
 		for(int i = 0; i < robots.size(); i++){
 			if (robots.get(i).isDead()) {
 				continue;
@@ -503,6 +510,7 @@ public class GameModel {
 				currentCards.get(indexOfHighestPriority)[i] = null;
 			}
 			activateBoardElements();
+			if (checkGameStatus())return;
 		}
 
 		allMoves.add(";B7");// B7 = robot respawn actions.
