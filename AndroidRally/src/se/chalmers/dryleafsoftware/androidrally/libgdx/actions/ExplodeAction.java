@@ -21,7 +21,7 @@ public class ExplodeAction extends AnimationAction {
 	 * @param robotID The ID of the robot to handle.
 	 */
 	public ExplodeAction(int robotID, Texture texture) {
-		super(robotID, 1000, new AnimatedImage(texture, 1, 1, 1000));
+		super(robotID, 1000, new AnimatedImage(texture, 4, 2, 1000));
 	}
 
 	@Override

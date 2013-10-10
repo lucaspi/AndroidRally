@@ -111,23 +111,25 @@ public class Client {
 			}else if(parallel[0].substring(0, 1).equals("B")) {
 				int phase = Integer.parseInt(parallel[0].substring(1));	
 				if(phase == GameAction.PHASE_LASER) { 
-					MultiAction multi = new MultiAction();
+					MultiAction multiDamage = new MultiAction();
+					result.addAction(multiDamage);
+					MultiAction multiExplode = new MultiAction();
+					result.addAction(multiExplode);
 					for(int i = 1; i < parallel.length; i++) {
 						String[] data = parallel[i].split(":");
 						HealthAction ha = new HealthAction(
 								Integer.parseInt(data[0]),
 								Integer.parseInt(data[1].substring(2)),
 								Integer.parseInt(data[1].substring(1, 2)));
-						multi.add(ha);
-						multi.add(new AnimationAction(Integer.parseInt(data[0]), 1000, 
+						multiDamage.add(ha);
+						multiDamage.add(new AnimationAction(Integer.parseInt(data[0]), 1000, 
 								new AnimatedImage(damageAnim, 4, 2, 1000)));
 						if(data[1].substring(0, 1).equals("1")) { // Robot should explode
-							multi.add(new ExplodeAction(Integer.parseInt(data[0]), explodeAnim));
+							multiExplode.add(new ExplodeAction(Integer.parseInt(data[0]), explodeAnim));
 						}
 					}
-					multi.setDuration(1000);
-					multi.setMoveRound(GameAction.PHASE_LASER);
-					result.addAction(multi);
+					multiDamage.setDuration(1000);
+					multiDamage.setMoveRound(GameAction.PHASE_LASER);
 					System.out.println("Robot hit");
 				}else if(phase == GameAction.PHASE_RESPAWN) {
 					for(int i = 1; i < parallel.length; i++) {
