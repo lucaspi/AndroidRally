@@ -107,7 +107,7 @@ public class DeckView extends Stage {
 		setCamera(cardCamera);
 		
 		// Set background image
-		Image deck = new Image(new TextureRegion(deckTexture, 0f, 0f, 1f, 1f));
+		Image deck = new Image(new TextureRegion(deckTexture, 0, 0, 480, 320));
 		deck.setPosition(0, 0);
 		deck.setSize(480, 320);
 		addActor(deck);

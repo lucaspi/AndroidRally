@@ -119,15 +119,10 @@ public class Client {
 								Integer.parseInt(data[1].substring(2)),
 								Integer.parseInt(data[1].substring(1, 2)));
 						multi.add(ha);
-//						multi.add(new LaserHitAction(Integer.parseInt(data[0]), damageAnim));
 						multi.add(new AnimationAction(Integer.parseInt(data[0]), 1000, 
 								new AnimatedImage(damageAnim, 4, 2, 1000)));
-//						result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
-//								SpecialAction.Special.LASER_HIT));
 						if(data[1].substring(0, 1).equals("1")) { // Robot should explode
 							multi.add(new ExplodeAction(Integer.parseInt(data[0]), explodeAnim));
-//							result.addAction(new SpecialAction(Integer.parseInt(data[0]), 
-//									SpecialAction.Special.EXPLODE));
 						}
 					}
 					multi.setDuration(1000);
@@ -139,10 +134,9 @@ public class Client {
 						SingleAction a = createSingleAction(parallel[i]);
 						a.setDuration(0);
 						result.addAction(a);
-						result.addAction(new RespawnAction(Integer.parseInt(parallel[i].substring(0, 1))));
-//						result.addAction(
-//								new SpecialAction(Integer.parseInt(parallel[i].substring(0, 1)), 
-//								SpecialAction.Special.RESPAWN));	
+						int id = Integer.parseInt(parallel[i].substring(0, 1));
+						result.addAction(new RespawnAction(id));
+//						result.addAction(new HealthAction(id, 0, HealthAction.DECREASE_ONE));
 					}
 				}else if(phase == GameAction.PHASE_CHECKPOINT) {
 					// TODO: checkpoint action!
@@ -172,8 +166,6 @@ public class Client {
 				result.addAction(new HealthAction(Integer.parseInt(data[0]), 0, 
 						Integer.parseInt(data[1])));
 				result.addAction(new FallAction(Integer.parseInt(data[0]), 1000));
-//				result.addAction(new SpecialAction(Integer.parseInt(data[0]),
-//						SpecialAction.Special.HOLE));	
 			}else if(parallel[0].equals("L")) { // When a player lose.
 				if(Integer.parseInt(parallel[1]) == robotID) {
 					result.addAction(new HolderAction(0, HolderAction.SPECIAL_PHASE_GAMEOVER));

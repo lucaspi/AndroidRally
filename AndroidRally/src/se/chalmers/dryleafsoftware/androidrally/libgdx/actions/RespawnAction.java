@@ -33,8 +33,9 @@ public class RespawnAction extends GameAction {
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
-		robots.get(getRobotID()).setDead(false);
-		robots.get(getRobotID()).addAction(Actions.parallel(
+		RobotView robot = robots.get(getRobotID());
+		robot.setDead(false);
+		robot.addAction(Actions.parallel(
 				Actions.fadeIn(0), 
 				Actions.scaleTo(1, 1, 0)));
 	}

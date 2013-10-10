@@ -29,19 +29,19 @@ public class MessageStage extends Stage {
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	private final Table container;
-	private final Table messagePanel;
-	private final Label message;
 	private final Image backGroundImage;
 	private final Image inputCatcher;
 	private final TextButtonStyle buttonStyle;
 	private final Table exitPanel;
+	private final Texture backGround;
+	private final LabelStyle labelStyle;
 	
 	public static final String EVENT_OK = "messageOk";
 	
 	public MessageStage() {
 		super();
 		
-		Texture backGround = new Texture(Gdx.files.internal("textures/messageBackGround.png"));
+		backGround = new Texture(Gdx.files.internal("textures/messageBackGround.png"));
 		backGround.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		// Default camera
@@ -59,6 +59,8 @@ public class MessageStage extends Stage {
 				null);
 		buttonStyle.font = new BitmapFont();
 		
+		labelStyle = new LabelStyle(new BitmapFont(), Color.WHITE);		
+		
 		this.container = new Table();
 		container.debug();
 		container.setSize(480, 800);
@@ -73,26 +75,7 @@ public class MessageStage extends Stage {
 				
 		backGroundImage = new Image(new TextureRegion(backGround));
 		backGroundImage.addListener(gl);
-		
-		this.messagePanel = new Table();
-		messagePanel.setSize(280, 200);
-		messagePanel.setPosition(100, 500);
-		messagePanel.debug();
-		
-		LabelStyle labelStyle = new LabelStyle(new BitmapFont(), Color.WHITE);				
-		message = new Label("", labelStyle);
-		messagePanel.add(message);     
-		
-        TextButton gameOverButton = new TextButton("Return to menu", buttonStyle);
-        messagePanel.row();
-        messagePanel.add(gameOverButton); // Border
-        gameOverButton.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_OK, 0, 1);
-    		}
-    	});
-        
+		        
         exitPanel = new Table();
         exitPanel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
         exitPanel.setVisible(true);
@@ -100,6 +83,14 @@ public class MessageStage extends Stage {
         exitPanel.setPosition(100, 500);
         exitPanel.debug();
         exitPanel.setLayoutEnabled(false);
+        
+        Label label = new Label("If you exit now you will not be able to change your cards."
+        		+ "Do you want to exit anyway?", labelStyle);
+        Table labelContainer = new Table();
+        labelContainer.debug();
+        labelContainer.setSize(200, 200);
+        labelContainer.add(label);
+        exitPanel.add(labelContainer);
         
         TextButton exit = new TextButton("Yes", buttonStyle);
         exit.setSize(100, 30);
@@ -138,8 +129,29 @@ public class MessageStage extends Stage {
 	 */
 	public void dispGameOver(List<RobotView> robots) {
 		closeAll();
-		setInputCatcher(messagePanel.getX(), messagePanel.getY(), 
-				messagePanel.getWidth(), messagePanel.getHeight());	
+		
+		Table panel = new Table();
+		panel.setSize(280, 200);
+		panel.setPosition(100, 500);
+		panel.debug();
+		panel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
+		panel.setVisible(true);
+			
+		Label message = new Label("", labelStyle);
+		panel.add(message);     
+		
+        TextButton gameOverButton = new TextButton("Return to menu", buttonStyle);
+        panel.row();
+        panel.add(gameOverButton); // Border
+        gameOverButton.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_OK, 0, 1);
+    		}
+    	});
+		
+		setInputCatcher(panel.getX(), panel.getY(), 
+				panel.getWidth(), panel.getHeight());	
 		
 		int scorePos = 0;
 		for(RobotView r : robots) {
@@ -148,9 +160,9 @@ public class MessageStage extends Stage {
 			}
 		}
 		message.setText("You were the " + convertToText(scorePos+1) + " to die!");
-		messagePanel.layout();
+		panel.layout();
 		
-		container.add(messagePanel);
+		container.add(panel);
 	}
 	
 	public void dispCloseMessage() {
@@ -181,8 +193,30 @@ public class MessageStage extends Stage {
 	 */
 	public void dispGameWon(List<RobotView> robots) {
 		closeAll();
-		setInputCatcher(messagePanel.getX(), messagePanel.getY(), 
-				messagePanel.getWidth(), messagePanel.getHeight());	
+		
+		Table panel = new Table();
+		panel.setSize(280, 200);
+		panel.setPosition(100, 500);
+		panel.debug();
+		panel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
+		panel.setVisible(true);
+		
+		LabelStyle labelStyle = new LabelStyle(new BitmapFont(), Color.WHITE);				
+		Label message = new Label("", labelStyle);
+		panel.add(message);     
+		
+        TextButton gameOverButton = new TextButton("Return to menu", buttonStyle);
+        panel.row();
+        panel.add(gameOverButton); // Border
+        gameOverButton.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_OK, 0, 1);
+    		}
+    	});
+		
+		setInputCatcher(panel.getX(), panel.getY(), 
+				panel.getWidth(), panel.getHeight());	
 		
 		for(RobotView r : robots) {
 			if(r.hasFinished()) {
@@ -190,7 +224,7 @@ public class MessageStage extends Stage {
 				break;
 			}
 		}				
-		messagePanel.layout();
-		container.add(messagePanel);
+		panel.layout();
+		container.add(panel);
 	}
 }
