@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 public class GameConfigurationActivity extends Activity {
 
-	private TextView roundTimeText, cardTimeText;
-	private SeekBar roundTimeBar, cardTimeBar;
+	private TextView roundTimeText, cardTimeText, playersText;
+	private SeekBar roundTimeBar, cardTimeBar, playersBar;
 	private BarListener barListener;
 
 	@Override
@@ -28,10 +28,17 @@ public class GameConfigurationActivity extends Activity {
 		barListener = new BarListener();
 		roundTimeBar.setOnSeekBarChangeListener(barListener);
 		roundTimeBar.setMax(23); // 1-24 hours with 1 hour steps
-		roundTimeBar.setProgress(11); //Set to default 12 (11th step)
+		roundTimeBar.setProgress(11); //Set to default 12 (12th step)
 		cardTimeBar.setOnSeekBarChangeListener(barListener);
 		cardTimeBar.setMax(11); //15-180 seconds with 15 second steps
 		cardTimeBar.setProgress(2); // Set to default 45 seconds (3rd step)
+		
+		//Number of players chooser
+		playersBar = (SeekBar) findViewById(R.id.playersBar);
+		playersText = (TextView) findViewById(R.id.playersTextView);
+		playersBar.setMax(7); //1-8 bots
+		playersBar.setProgress(3); //Set to default 4 bots (4th step)
+		playersBar.setOnSeekBarChangeListener(barListener);
 	}
 
 	/**
@@ -55,6 +62,8 @@ public class GameConfigurationActivity extends Activity {
 				} else if (seekBar.equals(cardTimeBar)) {
 					progress *= 15;
 					cardTimeText.setText("" + progress + " seconds");
+				} else if (seekBar.equals(playersBar)) {
+					playersText.setText("" + progress + " bots");
 				}
 			}
 		}

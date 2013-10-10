@@ -8,22 +8,24 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context=".GameConfigurationActivity" >
 
-	<ImageButton
-		android:id="@+id/startGame"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentTop="true"
-		android:onClick="startGame"
-		android:src="@drawable/ic_launcher" />
+    <ImageView
+    	android:id="@+id/startButton"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentLeft="true"
+    	android:layout_alignParentRight="true"
+    	android:layout_alignParentTop="true"
+    	android:clickable="true"
+    	android:contentDescription="@string/start_button"
+    	android:onClick="startGame"
+    	android:src="@drawable/start_button" />
 
 	<TextView
 		android:id="@+id/roundTimeText"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
-		android:layout_below="@+id/startGame"
+		android:layout_below="@id/startButton"
 		android:text="@string/round_time"
 		android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -37,7 +39,7 @@
 
 		<SeekBar
 			android:id="@+id/roundTimeBar"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1.11" />
 
@@ -68,7 +70,7 @@
 
 		<SeekBar
 			android:id="@+id/cardTimeBar"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1.11" />
 
@@ -77,6 +79,37 @@
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
 			android:text="@string/card_time_default" />
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/playersText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@+id/LinearLayout01"
+		android:text="@string/players_text"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
+	<LinearLayout
+		android:id="@+id/LinearLayout02"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_below="@+id/playersText" >
+
+		<SeekBar
+			android:id="@+id/playersBar"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1.11" />
+
+		<TextView
+			android:id="@+id/playersTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:text="@string/number_of_players_default" />
 	</LinearLayout>
 
 </RelativeLayout>
