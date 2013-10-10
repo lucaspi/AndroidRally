@@ -217,12 +217,21 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void newRound() {
 		System.out.println("------------------------newRound---------------------------");
+		
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
 			if (!gameModel.getRobots().get(i).hasLost()) {
 				aiRobotController.makeMove(gameModel.getRobots().get(i));
+				gameModel.getRobots().get(i).fillEmptyCardRegisters();
+				gameModel.getRobots().get(i).setSentCards(true);
+				gameModel.getRobots().get(i).setLastChosenCards(getCurrentChosenCards(i));
+				cardTimer[i].cancelTask();
+				nbrOfRobotsDone++;
+				for(Card c : gameModel.getRobots().get(i).getChosenCards()){
+					System.out.println("newRound cards: " + c.getPriority());
+				}
 			}
 		}
 	}

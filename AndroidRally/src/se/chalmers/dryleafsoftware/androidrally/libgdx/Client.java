@@ -45,7 +45,7 @@ public class Client {
 	 * @param clientID The ID number of the player.
 	 */
 	public Client(int clientID) {
-		this.controller = new GameController(1,7, 24, 40, null);
+		this.controller = new GameController(1,1, 24, 40, null);
 		this.clientID = clientID;
 		this.robotID = 0;
 		controller.newRound();
@@ -81,7 +81,7 @@ public class Client {
 		}	
 		System.out.println("From client: \"" + sb.toString() + "\"");
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
-		for(int i = 0; i < 8; i++) {
+		for(int i = 0; i < 0; i++) {
 			if(i != robotID) {
 				controller.setChosenCardsToRobot(i, "-1:-1:-1:-1:-1"); // TODO: remove
 			}
