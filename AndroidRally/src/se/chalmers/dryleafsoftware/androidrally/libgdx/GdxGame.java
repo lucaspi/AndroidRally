@@ -102,7 +102,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Handle the game when the client has died.
 	 */
 	private void handleGameOver() {
-		System.out.println("GAME OVER");
 		messageStage.dispGameOver(gameBoard.getRobots());
 		stopGame();
 	}
@@ -124,7 +123,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Handle the game when someone won.
 	 */
 	private void handleGameWon() {
-		System.out.println("GAME WON");
 		messageStage.dispGameWon(gameBoard.getRobots());
 		stopGame();
 	}
@@ -208,8 +206,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			}
 			gameBoard.stopAnimations();
 			if(!actions.isEmpty()) {
+				actions.get(0).setDuration(actions.get(0).getDuration() / playSpeed);
 				actions.get(0).action(gameBoard.getRobots());
-				gameBoard.setAnimate(actions.get(0).getPhase());
+				gameBoard.setAnimate(actions.get(0).getPhase(), playSpeed);
 			}
 		}
 	}
