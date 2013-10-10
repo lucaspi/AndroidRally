@@ -605,6 +605,10 @@ public class DeckView extends Stage {
 	public int getPositionX() {
 		return this.position;
 	}
+	
+	public RegisterView getRegisters() {
+		return this.registerView;
+	}
 
 	/**
 	 * Gives the total width it takes to render the cards not yet added to a

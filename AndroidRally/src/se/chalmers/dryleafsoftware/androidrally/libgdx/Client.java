@@ -37,6 +37,7 @@ public class Client {
 	// TODO: the client must somehow know which robotID the player has.
 	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
 	private final int clientID, robotID;
+	private int roundID = 0;
 	// TODO: load the clientID from the user's phone's data.
 	// TODO: save the clientID when assigned one from the server.
 		
@@ -92,7 +93,7 @@ public class Client {
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public RoundResult getRoundResult() {		
+	public RoundResult getRoundResult() {	
 		RoundResult result = new RoundResult();	
 		String indata = controller.getRoundResults();		
 		String[] allActions = indata.split(";");

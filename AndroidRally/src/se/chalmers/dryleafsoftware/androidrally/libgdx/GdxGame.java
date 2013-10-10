@@ -94,8 +94,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		deckView.addListener(this);
 		deckView.displayDrawCard();
 		deckView.setRoundTick(roundTime);
-//		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
-
 		
 		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
@@ -148,11 +146,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	}
 
 	/*
-	 * Skips all actions on the current card
+	 * Skips all actions on the current card and then waits.
 	 */
 	private void skipCardActions() {
 		if((actions == null || actions.isEmpty()) && result.hasNext()) {
-			actions = result.getNextResult();
+			nextCard();
 		}
 		// Remove all actions
 		for(RobotView r : gameBoard.getRobots()) {
@@ -193,13 +191,19 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			return false;
 		}else if(actions.isEmpty()) {
 			if(result.hasNext()) {
-				actions = result.getNextResult();
+				nextCard();
 			}else{
 				currentStage = Stage.WAITING;
+				deckView.getRegisters().clearHighLight();
 				deckView.displayDrawCard();
 			}
 		}
 		return true;
+	}
+	
+	private void nextCard() {
+		actions = result.getNextResult();
+		deckView.getRegisters().nextHighLight();
 	}
 
 	/*
@@ -208,7 +212,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private void updateActions() {
 		// Remove and continue if last action complete.
 		if((actions == null || actions.isEmpty()) && result.hasNext()) {
-			actions = result.getNextResult();
+			nextCard();
 			return;
 		}
 		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
