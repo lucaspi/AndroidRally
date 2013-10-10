@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
@@ -49,6 +51,7 @@ public class DeckView extends Stage {
 	private final Table drawPanel; // The panel with [Draw cards]
 	private final Table allPlayerInfo; // The panel with all the players' info
 	private final RegisterView registerView;
+	private final TextButtonStyle buttonStyle;
 
 	
 	public static final String EVENT_PAUSE = "pause";
@@ -142,35 +145,34 @@ public class DeckView extends Stage {
 		registerView.setSize(upperArea.getWidth(), upperArea.getHeight());
 		upperArea.add(registerView);
 		
-		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
-		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		TextButtonStyle style = new TextButtonStyle(
-				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 0, 32, 32)),
-				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 32, 32, 32)),
-				null);
-		style.font = new BitmapFont();
+		NinePatchDrawable buttonTexture = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patch.png")), 4, 4, 4, 4));
+		NinePatchDrawable buttonTexturePressed = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patchpressed.png")), 4, 4, 4, 4));
+		buttonStyle = new TextButtonStyle(buttonTexture, buttonTexturePressed, null);
+		buttonStyle.font = new BitmapFont();
 				
-//		// TODO: Remove this dummy button!
-//        TextButton dummy = new TextButton("Force round", style);
-//        dummy.setPosition(280, 60);
-//        dummy.setSize(100, 20);
-//        statusBar.add(dummy); // Border
-//        dummy.addListener(new ClickListener() {
-//    		@Override
-//    		public void clicked(InputEvent event, float x, float y) {
-//    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-//    		}
-//    	});
-//        TextButton dummy2 = new TextButton("Send cards", style);
-//        dummy2.setPosition(380, 60);
-//        dummy2.setSize(100, 20);
-//        statusBar.add(dummy2); // Border
-//        dummy2.addListener(new ClickListener() {
-//    		@Override
-//    		public void clicked(InputEvent event, float x, float y) {
-//    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-//    		}
-//    	});
+		// TODO: Remove this dummy button!
+        TextButton dummy = new TextButton("Force round", buttonStyle);
+        dummy.setPosition(280, 60);
+        dummy.setSize(100, 20);
+        statusBar.add(dummy); // Border
+        dummy.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+    		}
+    	});
+        TextButton dummy2 = new TextButton("Send cards", buttonStyle);
+        dummy2.setPosition(380, 60);
+        dummy2.setSize(100, 20);
+        statusBar.add(dummy2); // Border
+        dummy2.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+    		}
+    	});
         
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
@@ -210,7 +212,7 @@ public class DeckView extends Stage {
     	statusCenter.row();
     	
     	
-        final TextButton showPlayers = new TextButton("Info", style);
+        final TextButton showPlayers = new TextButton("Info", buttonStyle);
         statusCenter.add(showPlayers).minWidth(75);
         showPlayers.addListener(new ClickListener() {
         	private boolean dispOpp = false;
@@ -232,7 +234,7 @@ public class DeckView extends Stage {
     	lv.setPosition(0, 0);
     	lv.setSize(120, 80);
     	lv.debug();
-    	dv.setPosition(280, 20);
+    	dv.setPosition(290, 20);
     	dv.setSize(200, 40);
     	dv.debug();
     	statusBar.add(dv);
@@ -258,22 +260,13 @@ public class DeckView extends Stage {
 	/*
 	 * Creates the panel with the [Draw Cards] button.
 	 */
-	private Table buildDrawCardPanel() {
-		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
-		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
-		
+	private Table buildDrawCardPanel() {		
 		int internalPadding = 50, externalPadding = 10;
 		Table drawPanel = new Table();
     	drawPanel.setSize(480, 120);
-    	TextButton draw = new TextButton("Draw Cards", style);
+    	TextButton draw = new TextButton("Draw Cards", buttonStyle);
     	draw.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	drawPanel.add(draw).pad(externalPadding); // Border    	
+    	drawPanel.add(draw).pad(externalPadding).minHeight(30); // Border    	
     	draw.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {

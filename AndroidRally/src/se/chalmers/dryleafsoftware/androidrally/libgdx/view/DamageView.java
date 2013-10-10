@@ -23,6 +23,7 @@ public class DamageView extends Table implements PropertyChangeListener {
 	
 	private final TextureRegion notDamage;
 	private final TextureRegion takenDamage;
+	private final Image[] lockedCard;
 	
 	/**
 	 * Creates a new instance which will display the specified robot's data using the 
@@ -32,16 +33,25 @@ public class DamageView extends Table implements PropertyChangeListener {
 	 */
 	public DamageView(Texture texture, RobotView playerData) {
 		super();
+		setLayoutEnabled(false);
 		playerData.addListener(this);
 		notDamage = new TextureRegion(texture, 420, 0, 20, 14);
 		takenDamage = new TextureRegion(texture, 400, 0, 20, 14);		
 		for(int i = 0; i < damageIndicator.length; i++) {
 			damageIndicator[i] = new Image(notDamage);
+			damageIndicator[i].setPosition(20 * i, 30);
 			add(damageIndicator[i]);
 		}
 		row();
+		lockedCard = new Image[5];
 		for(int i = 0; i < 5; i++) {
-			add(new Image(new TextureRegion(texture, 400 + i * 20, 38, 20, 30)));
+			Image image = new Image(new TextureRegion(texture, 400 + i * 20, 38, 20, 30));
+			image.setPosition(20 * i, 0);
+			add(image);
+			lockedCard[i] = new Image(new TextureRegion(texture, 380, 38, 20, 30));
+			lockedCard[i].setPosition(20 * i, 0);
+			lockedCard[i].setVisible(false);
+			add(lockedCard[i]);
 		}
 		setDamage(playerData.getDamage());
 	}
@@ -54,6 +64,9 @@ public class DamageView extends Table implements PropertyChangeListener {
 			}else{
 				damageIndicator[damageIndicator.length - 1 - i].
 				setDrawable(new TextureRegionDrawable(notDamage));
+			}
+			if(i < 5) {
+				lockedCard[i].setVisible(damageIndicator.length - i <= damage);
 			}
 		}
 	}
