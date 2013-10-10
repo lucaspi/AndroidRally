@@ -21,45 +21,25 @@ public class AIRobotController {
 	private int y;
 	private int direction;
 	private int[] nextCheckpoint;
+	private List<Card> cards;
+	List<Move> moveForwardCards;
+	List<Turn> leftTurnCards;
+	List<Turn> rightTurnCards;
+	List<Turn> uTurnCards;
 
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
 	}
 
 	public void makeMove(Robot robot) {
-		List<Card> cards = new ArrayList<Card>();
+		cards = new ArrayList<Card>();
+		moveForwardCards = new ArrayList<Move>();
+		leftTurnCards = new ArrayList<Turn>();
+		rightTurnCards = new ArrayList<Turn>();
+		uTurnCards = new ArrayList<Turn>();
 		chosenCards = new ArrayList<Card>();
+		
 		cards.addAll(robot.getCards());
-		System.out.println("makeMove cardsize" + cards.size());
-		x = robot.getX();
-		y = robot.getY();
-		direction = robot.getDirection();
-		nextCheckpoint = nextCheckPoint(robot);
-		placeCards(cards);
-		robot.setChosenCards(chosenCards);
-		for(int i = 0; i < cards.size(); i++){
-			System.out.println("Card nr: " + i + " " + cards.get(i).getPriority());
-		}
-		for(int i = 0; i < chosenCards.size(); i++){
-			System.out.println("ChosenCard nr: " + i + " " + chosenCards.get(i).getPriority());
-			System.out.println("ChosenCard nr: " + i + " " + robot.getChosenCards()[i].getPriority());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void placeCards(List<Card> cards) {
-		System.out.println("placeCArd");
-		System.out.println("placeCard " + chosenCards.size());
-		if (chosenCards.size() == 5) {
-			return;
-		}
-		if(chosenCards.size() != 0){
-			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
-		}
-		List<Move> moveForwardCards = new ArrayList<Move>();
-		List<Turn> leftTurnCards = new ArrayList<Turn>();
-		List<Turn> rightTurnCards = new ArrayList<Turn>();
-		List<Turn> uTurnCards = new ArrayList<Turn>();
 		
 		for (Card card : cards) {
 			if (card instanceof Turn) {
@@ -81,6 +61,32 @@ public class AIRobotController {
 		}
 		Collections.sort(moveForwardCards);
 		
+		x = robot.getX();
+		y = robot.getY();
+		direction = robot.getDirection();
+		nextCheckpoint = nextCheckPoint(robot);
+		placeCards();
+		robot.setChosenCards(chosenCards);
+		for(int i = 0; i < cards.size(); i++){
+			System.out.println("Card nr: " + i + " " + cards.get(i).getPriority());
+		}
+		for(int i = 0; i < chosenCards.size(); i++){
+			System.out.println("ChosenCard nr: " + i + " " + chosenCards.get(i).getPriority());
+			System.out.println("ChosenCard nr: " + i + " " + robot.getChosenCards()[i].getPriority());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void placeCards() {
+		System.out.println("placeCArd");
+		System.out.println("placeCard " + chosenCards.size());
+		if (chosenCards.size() == 5) {
+			return;
+		}
+		if(chosenCards.size() != 0){
+			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
+		}
+		
 		boolean isRightDirection = false;
 		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
 			if (this.direction == direction) {
@@ -91,7 +97,7 @@ public class AIRobotController {
 			
 			if (moveForwardCards.size() != 0) { // Move forward as long as possible
 				chosenCards.add(moveForwardCards.get(0));
-				cards.remove(moveForwardCards.get(0));
+				removeCardFromLists(moveForwardCards.get(0));
 			} else { // if there are no move forwards cards -> random card 
 				randomizeCard(cards);
 			}
@@ -104,21 +110,21 @@ public class AIRobotController {
 					if(turnDifference == 1){
 						if(leftTurnCards.size() != 0){
 							chosenCards.add(leftTurnCards.get(0));
-							cards.remove(leftTurnCards.get(0));
+							removeCardFromLists(leftTurnCards.get(0));
 							cardAdded = true;
 							break;
 						}
 					}else if(turnDifference == 2){
 						if(uTurnCards.size() != 0){
 							chosenCards.add(uTurnCards.get(0));
-							cards.remove(uTurnCards.get(0));
+							removeCardFromLists(uTurnCards.get(0));
 							cardAdded = true;
 							break;
 						}
 					}else if(turnDifference == 3){
 						if(rightTurnCards.size() != 0){
 							chosenCards.add(rightTurnCards.get(0));
-							cards.remove(rightTurnCards.get(0));
+							removeCardFromLists(rightTurnCards.get(0));
 							cardAdded = true;
 							break;
 						}
@@ -128,7 +134,7 @@ public class AIRobotController {
 					for(int j = 0; j<cards.size(); j++){
 						if(!(cards.get(j) instanceof Move)){
 							chosenCards.add(cards.get(j));
-							cards.remove(cards.get(j));
+							removeCardFromLists(cards.get(j));
 							cardAdded = true;
 							break;
 						}
@@ -141,7 +147,7 @@ public class AIRobotController {
 				randomizeCard(cards);
 			}
 		}
-		placeCards(cards);
+		placeCards();
 	}
 	
 	private void changeCalculatedPosition(Card card){
@@ -289,6 +295,23 @@ public class AIRobotController {
 		return (y - nextCheckpoint[1]);
 	}
 
+	//Removes a card from cards. It removes it from moveForwardCards and so on if they are found there
+	private void removeCardFromLists(Card card) {
+		cards.remove(card);
+		if (card instanceof Move) {
+			if (((Move)card).getDistance() > 0) {
+				moveForwardCards.remove(card);
+			}
+		} else if (card instanceof Turn) {
+			if (((Turn) card).getTurn() == TurnType.LEFT) {
+				leftTurnCards.remove(card);
+			} else if (((Turn) card).getTurn() == TurnType.UTURN) {
+				uTurnCards.remove(card);
+			} else if (((Turn) card).getTurn() == TurnType.RIGHT) {
+				rightTurnCards.remove(card);
+			}
+		}
+	}
 
 	private void randomizeCard(List<Card> cards) {
 		Random rand = new Random();
@@ -297,7 +320,7 @@ public class AIRobotController {
 		System.out.println(" index: " + index);
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
-		cards.remove(index);
+		removeCardFromLists(randChosenCard);
 
 //		
 //		for(int j = 0; j<cards.size(); j++){
