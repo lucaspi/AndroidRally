@@ -221,7 +221,7 @@ public class GameModel {
 
 	private boolean isRobotHit(int x, int y){
 		for(Robot robot : this.robots){
-			if(robot.getX() == x && robot.getY() == y){
+			if(!robot.isDead() && robot.getX() == x && robot.getY() == y){
 				robot.damage(1);
 				return true;
 			}
@@ -408,7 +408,7 @@ public class GameModel {
 		boolean wallCollision = false;
 		if(canMove(oldX, oldY, robot.getX(), robot.getY())){
 			for(Robot r : robots){
-				// Do any robot stand on the same tile as another the robot from the parameters.
+				// Do any robot stand on the same tile as the robot from the parameters.
 				if(!r.isDead() && robot != r && robot.getX() == r.getX() && robot.getY() == r.getY()){
 					// Push other Robot
 					r.setX(r.getX() - (oldX - robot.getX()));
