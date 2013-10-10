@@ -140,8 +140,8 @@ public class GameModel {
 	/*
 	 * Handles all checkPoints reached and repair/damage done during a round.
 	 */
+	private void handleImmobileActions(){
 		int[] oldCheckPointReached = new int[robots.size()];
-		private void handleImmobileActions(){
 		int[] oldRobotHealth = new int[robots.size()];
 		for (int i = 0; i < robots.size(); i++){
 			oldRobotHealth[i] = robots.get(i).getHealth();
@@ -205,7 +205,7 @@ public class GameModel {
 	private void addDamageToAllMoves(int[] oldRobotHealth){
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
-			if(!robots.get(i).isDead() && robots.get(i).getHealth() != oldRobotHealth[i]){
+			if(robots.get(i).getHealth() != oldRobotHealth[i]){
 				if(robots.get(i).getHealth() == Robot.STARTING_HEALTH){// if damage has changed and health == starting health -> robot has died
 					allMoves.add("#" + i + ":" + "1" + robots.get(i).getLife() + (Robot.STARTING_HEALTH - robots.get(i).getHealth()));
 				}else{
