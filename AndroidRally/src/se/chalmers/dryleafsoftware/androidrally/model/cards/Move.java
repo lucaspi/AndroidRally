@@ -36,6 +36,6 @@ public class Move extends Card implements Comparable {
 
 	@Override
 	public int compareTo(Object o) {
-		return this.getDistance() - ((Move)o).getDistance();
+		return ((Move)o).getDistance() - this.getDistance();
 	}
 }
