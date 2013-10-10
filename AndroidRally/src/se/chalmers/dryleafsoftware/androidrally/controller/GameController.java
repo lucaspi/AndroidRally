@@ -28,6 +28,13 @@ public class GameController implements PropertyChangeListener {
 	private int nbrOfBots;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
+		nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
+		nbrOfHumanPlayers = Math.max(nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
+		nbrOfBots = Math.min(nbrOfBots, 8 - nbrOfHumanPlayers);
+		nbrOfBots = Math.max(nbrOfBots, 0);
+		if (nbrOfHumanPlayers == 1 && nbrOfBots == 0) { //if only 1 player there has to be 1 bot
+			nbrOfBots = 1;
+		}
 		this.nbrOfHumanPlayers = nbrOfHumanPlayers;
 		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
