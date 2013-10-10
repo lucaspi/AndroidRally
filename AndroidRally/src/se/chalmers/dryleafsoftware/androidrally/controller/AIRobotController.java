@@ -125,8 +125,8 @@ public class AIRobotController {
 	}
 
 	private int[] nextCheckPoint(Robot robot) {
-		int[] xy = new int[]{};
-		for(int i = 0; i < 1; i++) {
+		int[] xy = new int[2];
+		for(int i = 0; i <= 1; i++) {
 			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i]; //TODO will crash game if game is over and continues
 		}
 		return xy;
