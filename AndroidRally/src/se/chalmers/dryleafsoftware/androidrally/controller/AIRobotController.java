@@ -27,9 +27,6 @@ public class AIRobotController {
 		chosenCards = new ArrayList<Card>();
 		cards.addAll(robot.getCards());
 		placeCards(robot, cards);
-
-
-
 	}
 
 	@SuppressWarnings("unchecked")

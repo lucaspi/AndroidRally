@@ -36,33 +36,29 @@ public class GameModel {
 	private static final String testMap = "yxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxyxxxxxx32xx22xx12xxx18xxxyxxxxxxxxxxxx36x28:36x36xxyxxxxxxxxxxxx1x38xxxyxxxxxxxxxxxx1x48xxxyxxxxxxxxxxxx1x58xxxyxxxxxxxxxxxxx68xxxyxxxxxxxxxxxxx78xxxyxxxxxxxxxxxxx88xxxyxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxx";
 	
 	/**
-	 * Creates a game board of size 12x16 tiles. Also creates robots based
-	 * on the amount of players. Creates a deck with cards that is shuffled.
-	 * 
-	 * @param pcl a PropertyChangeListener listening for event with propertyNames
-	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
-	 * @param nbrOfPlayers the number of players in the game including CPU:s
+	 * Only for testing!!
+ 	 * @param nbrOfRobots players + bots
 	 */
-	public GameModel(PropertyChangeListener pcl, int nbrOfPlayers) {
-		this(nbrOfPlayers, testMap);
+	public GameModel(int nbrOfRobots) {
+		this(nbrOfRobots, testMap);
 	}
 
+
 	/**
-	 * Only for testing!!
-	 * @param pcl a PropertyChangeListener listening for event with propertyNames
-	 * gotten by static Strings ROBOT_WON and ROBOT_LOST
-	 * @param nbrOfPlayers
-	 * @param testMap
+	 * Creates a game board of size 12x16 tiles. Also creates robots based
+	 * on the amount of players. Creates a deck with cards that is shuffled.
+	 * @param nbrOfRobots players + bots
+	 * @param map, a map in String format
 	 */
-	public GameModel(int nbrOfPlayers, String map) {
+	public GameModel(int nbrOfRobots, String map) {
 		gameBoard = new GameBoard(map);
 		isGameOver = false;
 		robots = new ArrayList<Robot>();
 		int[][] startingPositions = gameBoard.getStartingPositions();
-		for (int i = 0; i < nbrOfPlayers; i++) {
+		for (int i = 0; i < nbrOfRobots; i++) {
 			robots.add(new Robot(startingPositions[i][0], startingPositions[i][1]));
 		}
-		robotsPlaying = nbrOfPlayers;
+		robotsPlaying = nbrOfRobots;
 		deck = new Deck();
 	}
 
@@ -654,6 +650,11 @@ public class GameModel {
 	public List<Robot> getRobots(){
 		return robots;
 	}
+
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
+
 
 	public boolean isGameOver() {
 		return isGameOver;
