@@ -17,6 +17,9 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class AIRobotController {
 	private GameBoard gb;
 	private List<Card> chosenCards;
+	private int x;
+	private int y;
+	private int direction;
 
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
@@ -27,6 +30,9 @@ public class AIRobotController {
 		chosenCards = new ArrayList<Card>();
 		cards.addAll(robot.getCards());
 		placeCards(robot, cards);
+		x = robot.getX();
+		y = robot.getY();
+		direction = robot.getDirection();
 	}
 
 	@SuppressWarnings("unchecked")
