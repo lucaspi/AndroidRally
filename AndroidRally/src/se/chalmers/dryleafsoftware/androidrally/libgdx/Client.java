@@ -232,4 +232,8 @@ public class Client {
 		}		
 		return robots;
 	}
+	
+	public String getGameData() {
+		return controller.getInitGameData();
+	}
 }
