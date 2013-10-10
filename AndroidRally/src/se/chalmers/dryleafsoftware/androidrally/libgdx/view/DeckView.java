@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -438,6 +439,8 @@ public class DeckView extends Stage {
 		List<CardView> cards = new ArrayList<CardView>();
 		// Clear cards
 		registerView.clear();
+		BitmapFont cardFont = new BitmapFont();
+		cardFont.setColor(Color.GREEN);
 				
 		String indata = input;
 		int i = 0;
@@ -449,21 +452,21 @@ public class DeckView extends Stage {
 			if(prio <= 60) {
 				regX = 0;	// UTURN
 			}else if(prio <= 410 && prio % 20 != 0) {
-				regX = 64;	// LEFT
+				regX = 1;	// LEFT
 			}else if(prio <= 420 && prio % 20 == 0) {
-				regX = 128;	// LEFT
+				regX = 2;	// LEFT
 			}else if(prio <= 480) {
-				regX = 192;	// Back 1
+				regX = 3;	// Back 1
 			}else if(prio <= 660) {
-				regX = 256;	// Move 1
+				regX = 4;	// Move 1
 			}else if(prio <= 780) {
-				regX = 320;	// Move 2
+				regX = 5;	// Move 2
 			}else if(prio <= 840) {
-				regX = 384;	// Move 3
+				regX = 6;	// Move 3
 			}	
 
-			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
-					prio, i);
+			CardView cv = new CardView(new TextureRegion(texture, regX * 128, 0, 128, 180), 
+					prio, i, cardFont);
 			cv.setSize(78, 110);
 			
 			if(data.length == 2) {
