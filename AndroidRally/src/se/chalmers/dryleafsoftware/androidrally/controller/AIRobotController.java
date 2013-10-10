@@ -35,6 +35,7 @@ public class AIRobotController {
 	@SuppressWarnings("unchecked")
 	private void placeCards(Robot robot, List<Card> cards) {
 		if (chosenCards.size() == 5) {
+			robot.setChosenCards(chosenCards);
 			robot.setSentCards(true);
 			return;
 		}
@@ -67,6 +68,7 @@ public class AIRobotController {
 				randomizeCard(robot, cards);
 			}
 			placeCards(robot, cards);
+			return;
 		}
 		else { //annars, försök vrida i rätt riktning
 			for (Card card : cards) {
@@ -81,30 +83,43 @@ public class AIRobotController {
 				}
 			}
 			if (turnCards.size() != 0) { //om man har snurrkort
-				int turnDifference = Math.abs(getDirections(robot).get(0).intValue() - 
-						robot.getDirection());
-				if(turnDifference == 1){
-					if(leftTurnCards.size() != 0){
-						chosenCards.add(leftTurnCards.get(0));
-						cards.remove(leftTurnCards.get(0));
+				for(Integer i : getDirections(robot)){
+					boolean cardAdded = false;
+					int turnDifference = Math.abs(i.intValue() - 
+							robot.getDirection());
+					if(turnDifference == 1){
+						if(leftTurnCards.size() != 0){
+							chosenCards.add(leftTurnCards.get(0));
+							cards.remove(leftTurnCards.get(0));
+							cardAdded = true;
+						}
+					}else if(turnDifference == 2){
+						if(uTurnCards.size() != 0){
+							chosenCards.add(uTurnCards.get(0));
+							cards.remove(uTurnCards.get(0));
+							cardAdded = true;
+						}
+					}else if(turnDifference == 3){
+						if(rightTurnCards.size() != 0){
+							chosenCards.add(rightTurnCards.get(0));
+							cards.remove(rightTurnCards.get(0));
+							cardAdded = true;
+						}
 					}
-				}else if(turnDifference == 2){
-					if(uTurnCards.size() != 0){
-						chosenCards.add(uTurnCards.get(0));
-						cards.remove(uTurnCards.get(0));
+					if(cardAdded){
+						placeCards(robot, cards);
+						return;
+					}else{
+						randomizedTurnCard(robot, cards);
 					}
-				}else if(turnDifference == 3){
-					if(rightTurnCards.size() != 0){
-						chosenCards.add(rightTurnCards.get(0));
-						cards.remove(rightTurnCards.get(0));
-					}
-				}// TODO if card added -> placeCards
-				// kolla getDirections.get(2)
+				}
 				
 			} else { //har man inga snurrkort slumpas ett kort
 				randomizeCard(robot, cards);
+				return;
 			}
 			placeCards(robot, cards);
+			return;
 		}
 	}
 
@@ -242,6 +257,10 @@ public class AIRobotController {
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		cards.remove(index);
+	}
+	
+	private void randomizedTurnCard(Robot robot, List<Card> cards){
+		
 	}
 
 
