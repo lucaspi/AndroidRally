@@ -215,7 +215,7 @@ public class GameController implements PropertyChangeListener {
 	 * @return Data the client needs when connecting.
 	 */
 	public String getInitGameData() {
-		return cardTimerSeconds + ";" + hoursEachRound;
+		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRound.scheduledExecutionTime();
 	}
 
 	/**
