@@ -94,7 +94,7 @@ public class Client {
 	 */
 	public RoundResult getRoundResult() {		
 		RoundResult result = new RoundResult();	
-		String indata = controller.getRoundResults();		
+		String indata = controller.getRoundResults(0);		
 		String[] allActions = indata.split(";");
 		
 		Texture damageAnim = new Texture(Gdx.files.internal("textures/special/damageAnim.png"));

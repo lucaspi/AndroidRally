@@ -26,6 +26,8 @@ public class GameController implements PropertyChangeListener {
 	private AIRobotController aiRobotController;
 	private int nbrOfHumanPlayers;
 	private int nbrOfBots;
+	private List<String> allMoves;
+	private List<String[]> allCards;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
 		this.nbrOfHumanPlayers = nbrOfHumanPlayers;
@@ -33,6 +35,8 @@ public class GameController implements PropertyChangeListener {
 		isRunRunning = false;
 		gameModel = new GameModel(nbrOfHumanPlayers + nbrOfBots);
 		this.nbrOfRobots = String.valueOf(gameModel.getRobots().size());
+		allMoves = new ArrayList<String>();
+		allCards = new ArrayList<String[]>();
 		
 		aiRobotController = new AIRobotController(gameModel.getGameBoard());
 		
@@ -83,7 +87,14 @@ public class GameController implements PropertyChangeListener {
 				isRunRunning = true;
 				stopRoundTimer();
 				handleRemainingRobots();
+				String[] cards = new String[gameModel.getRobots().size()];
+				for(int i = 0; i < gameModel.getRobots().size(); i++){
+					cards[i] = gameModel.getRobots().get(i).getLastRoundChosenCards();
+				}
+				allCards.add(new String[gameModel.getRobots().size()]);
+				
 				gameModel.moveRobots();
+				allMoves.add(gameModel.getAllMoves());
 				//If the game is over a new round will not be started. Game will end.
 				if (!gameModel.isGameOver()) {
 					newRound();
@@ -231,8 +242,12 @@ public class GameController implements PropertyChangeListener {
 	 * Return a string containing all data from the last round.
 	 * @return a string containing all data from the last round.
 	 */
-	public String getRoundResults() {
-		return this.gameModel.getAllMoves();
+	public String getRoundResults(int round) {
+		return allMoves.get(round-1);
+	}
+	
+	public String getCards(int round, int robot){
+		return allCards.get(round-1)[robot];
 	}
 	
 	private void setRandomCards(int robotID) {
