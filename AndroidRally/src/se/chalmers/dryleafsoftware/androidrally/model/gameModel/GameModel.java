@@ -520,7 +520,7 @@ public class GameModel {
 	private boolean checkGameStatus(){
 		for(int i = 0; i < robots.size(); i++){
 			if (robotHasReachedLastCheckPoint())return true;
-			if(!robots.get(i).isDead() && (robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
+			if(robots.get(i).getHealth() < 0 || !robots.get(i).isDead() && (robots.get(i).getX() < 0 || robots.get(i).getX() >= gameBoard.getWidth() || 
 					robots.get(i).getY() < 0 || robots.get(i).getY() >= gameBoard.getHeight())){
 				robots.get(i).die();
 				if(robots.get(i).hasLost()){
