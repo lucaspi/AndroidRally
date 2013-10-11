@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class MessageStage extends Stage { 
@@ -33,7 +36,7 @@ public class MessageStage extends Stage {
 	private final Image inputCatcher;
 	private final TextButtonStyle buttonStyle;
 	private final Table exitPanel;
-	private final Texture backGround;
+	private final Drawable backGround;
 	private final LabelStyle labelStyle;
 	
 	public static final String EVENT_OK = "messageOk";
@@ -41,9 +44,10 @@ public class MessageStage extends Stage {
 	public MessageStage() {
 		super();
 		
-		backGround = new Texture(Gdx.files.internal("textures/messageBackGround.png"));
-		backGround.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
+		backGround = new TextureRegionDrawable(new TextureRegion(
+				new Texture(Gdx.files.internal("textures/messageBackGround.png")),
+						0, 0, 280, 200));
+
 		// Default camera
 		OrthographicCamera cardCamera = new OrthographicCamera(480, 800);
 		cardCamera.zoom = 1.0f;
@@ -51,12 +55,11 @@ public class MessageStage extends Stage {
 		cardCamera.update();
 		setCamera(cardCamera);
 
-		Texture buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
-		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		buttonStyle = new TextButtonStyle(
-				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 0, 32, 32)),
-				new TextureRegionDrawable(new TextureRegion(buttonTexture, 0, 32, 32, 32)),
-				null);
+		NinePatchDrawable buttonTexture = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patch.png")), 4, 4, 4, 4));
+		NinePatchDrawable buttonTexturePressed = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patchpressed.png")), 4, 4, 4, 4));
+		buttonStyle = new TextButtonStyle(buttonTexture, buttonTexturePressed, null);
 		buttonStyle.font = new BitmapFont();
 		
 		labelStyle = new LabelStyle(new BitmapFont(), Color.WHITE);		
@@ -73,11 +76,11 @@ public class MessageStage extends Stage {
         inputCatcher.setSize(480, 800);
         inputCatcher.addListener(gl);
 				
-		backGroundImage = new Image(new TextureRegion(backGround));
+		backGroundImage = new Image(backGround);
 		backGroundImage.addListener(gl);
 		        
         exitPanel = new Table();
-        exitPanel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
+        exitPanel.setBackground(backGround);
         exitPanel.setVisible(true);
         exitPanel.setSize(280, 200);
         exitPanel.setPosition(100, 500);
@@ -88,13 +91,15 @@ public class MessageStage extends Stage {
         		+ "Do you want to exit anyway?", labelStyle);
         Table labelContainer = new Table();
         labelContainer.debug();
-        labelContainer.setSize(200, 200);
-        labelContainer.add(label);
+        labelContainer.setSize(280, 200);
+        labelContainer.add(label).pad(10).size(labelContainer.getWidth() - 20, 
+        		labelContainer.getHeight() - 20);
+        label.setWrap(true);
         exitPanel.add(labelContainer);
         
         TextButton exit = new TextButton("Yes", buttonStyle);
         exit.setSize(100, 30);
-        exit.setPosition(0, 0);
+        exit.setPosition(40, 20);
         exitPanel.add(exit); // Border
         exit.addListener(new ClickListener() {
     		@Override
@@ -105,7 +110,7 @@ public class MessageStage extends Stage {
         
         TextButton noExit = new TextButton("No", buttonStyle);
         noExit.setSize(100, 30);
-        noExit.setPosition(100, 0);
+        noExit.setPosition(140, 20);
         exitPanel.add(noExit); // Border
         noExit.addListener(new ClickListener() {
     		@Override
@@ -128,41 +133,13 @@ public class MessageStage extends Stage {
 	 * @param robots The robots in the game.
 	 */
 	public void dispGameOver(List<RobotView> robots) {
-		closeAll();
-		
-		Table panel = new Table();
-		panel.setSize(280, 200);
-		panel.setPosition(100, 500);
-		panel.debug();
-		panel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
-		panel.setVisible(true);
-			
-		Label message = new Label("", labelStyle);
-		panel.add(message);     
-		
-        TextButton gameOverButton = new TextButton("Return to menu", buttonStyle);
-        panel.row();
-        panel.add(gameOverButton); // Border
-        gameOverButton.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_OK, 0, 1);
-    		}
-    	});
-		
-		setInputCatcher(panel.getX(), panel.getY(), 
-				panel.getWidth(), panel.getHeight());	
-		
 		int scorePos = 0;
 		for(RobotView r : robots) {
 			if(r.isGameDead()) {
 				scorePos++;
 			}
 		}
-		message.setText("You were the " + convertToText(scorePos+1) + " to die!");
-		panel.layout();
-		
-		container.add(panel);
+		dispWithMessage("You were the " + convertToText(scorePos+1) + " to die!");
 	}
 	
 	public void dispCloseMessage() {
@@ -187,27 +164,29 @@ public class MessageStage extends Stage {
 				"sixth", "seventh", "eighth"}[i-1];
 	}
 	
-	/**
-	 * Will show the screen which tells the user who won.
-	 * @param robots The robots in the game.
-	 */
-	public void dispGameWon(List<RobotView> robots) {
+	private void dispWithMessage(String message) {
 		closeAll();
 		
 		Table panel = new Table();
 		panel.setSize(280, 200);
 		panel.setPosition(100, 500);
 		panel.debug();
-		panel.setBackground(new TextureRegionDrawable(new TextureRegion(backGround)));
+		panel.setBackground(backGround);
+		panel.setLayoutEnabled(false);
 		panel.setVisible(true);
 		
 		LabelStyle labelStyle = new LabelStyle(new BitmapFont(), Color.WHITE);				
-		Label message = new Label("", labelStyle);
-		panel.add(message);     
+		Label label = new Label(message, labelStyle);
+		Table messageContainer = new Table();
+		messageContainer.setSize(280, 200);
+		messageContainer.add(label);
+		panel.add(messageContainer);   
 		
         TextButton gameOverButton = new TextButton("Return to menu", buttonStyle);
+        gameOverButton.setPosition(70, 20);
+        gameOverButton.setSize(140, 30);
         panel.row();
-        panel.add(gameOverButton); // Border
+        panel.add(gameOverButton); 
         gameOverButton.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -217,14 +196,19 @@ public class MessageStage extends Stage {
 		
 		setInputCatcher(panel.getX(), panel.getY(), 
 				panel.getWidth(), panel.getHeight());	
-		
+		container.add(panel);
+	}
+	
+	/**
+	 * Will show the screen which tells the user who won.
+	 * @param robots The robots in the game.
+	 */
+	public void dispGameWon(List<RobotView> robots) {
 		for(RobotView r : robots) {
 			if(r.hasFinished()) {
-				message.setText("\"" + r.getName() +"\" just won!");
+				dispWithMessage("\"" + r.getName() +"\" just won!");
 				break;
 			}
-		}				
-		panel.layout();
-		container.add(panel);
+		}	
 	}
 }

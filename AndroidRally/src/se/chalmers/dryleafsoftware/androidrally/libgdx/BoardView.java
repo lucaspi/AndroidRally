@@ -242,10 +242,10 @@ public class BoardView extends Stage {
 
 	/**
 	 * Starts the animations of the items connected with the specified phase.
-	 * @param subPhase The phase to animate.
+	 * @param phase The phase to animate.
 	 */
-	public void setAnimate(int subPhase) {
-		if(subPhase == GameAction.PHASE_LASER) {
+	public void setAnimate(int phase, int speed) {
+		if(phase == GameAction.PHASE_LASER) {
 			collisionMatrix.clearDynamic();
 			for(RobotView robot : robots) {
 				if(robot.isDead()) {
@@ -259,8 +259,8 @@ public class BoardView extends Stage {
 			}
 		}
 		for(AnimatedElement a : animated) {
-			a.enable(subPhase);
-			if(subPhase == GameAction.PHASE_LASER && a instanceof LaserView) {
+			a.enable(phase, speed);
+			if(phase == GameAction.PHASE_LASER && a instanceof LaserView) {
 				((LaserView)a).setCollisionMatrix(collisionMatrix);
 			}
 		}
