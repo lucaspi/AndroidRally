@@ -37,6 +37,7 @@ public class Client {
 	// TODO: the client must somehow know which robotID the player has.
 	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
 	private final int clientID, robotID;
+	private int roundID = 0;
 	// TODO: load the clientID from the user's phone's data.
 	// TODO: save the clientID when assigned one from the server.
 		
@@ -89,10 +90,19 @@ public class Client {
 	}
 	
 	/**
+	 * Gives the number of rounds the view is behind.
+	 * @return The number of rounds the view is behind.
+	 */
+	public int getRoundsBehind() {
+		return 0;
+//		return // controller.getRoundsBehind(roundID);
+	}
+	
+	/**
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
-	public RoundResult getRoundResult() {		
+	public RoundResult getRoundResult() {	
 		RoundResult result = new RoundResult();	
 		String indata = controller.getRoundResults(0);		
 		String[] allActions = indata.split(";");
@@ -225,11 +235,27 @@ public class Client {
 		List<RobotView> robots = new ArrayList<RobotView>();	
 		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
-					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), "Player " + i);
+					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
+					"Player " + i);
 			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			robot.setOrigin(20, 20);
 			robots.add(robot);
 		}		
 		return robots;
+	}
+	
+	/**
+	 * Gives the data needed when loading a game. E.g. the length of the timers.
+	 * @return
+	 */
+	public String getGameData() {
+		return controller.getInitGameData();
+	}
+
+	/**
+	 * Increments the seen rounds by one.
+	 */
+	public void incrementRound() {
+		this.roundID++;
 	}
 }

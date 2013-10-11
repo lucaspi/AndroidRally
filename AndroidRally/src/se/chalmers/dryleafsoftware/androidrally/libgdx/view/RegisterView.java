@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 public class RegisterView extends Table {
 
 	private final Register[] registers;
+	private int highlightIndex = 0;
 	
 	/**
 	 * Creates a new instance which will use the specified texture.
@@ -48,6 +49,25 @@ public class RegisterView extends Table {
 			if(r.getCard() != null) {
 				r.getCard().removeListener(actorGestureListener);
 			}
+		}
+	}
+	
+	public void nextHighLight() {
+		System.out.println("next card!");
+		for(int i = 0; i < registers.length; i++) {
+			if(i == highlightIndex) {
+				registers[i].displayOverlay(Register.INFOCUS);
+			}else{
+				registers[i].displayOverlay(Register.UNFOCUS);
+			}
+		}
+		highlightIndex++;
+	}
+	
+	public void clearHighLight() {
+		highlightIndex = 0;
+		for(Register r : registers) {
+			r.displayOverlay(Register.NORMAL);
 		}
 	}
 	

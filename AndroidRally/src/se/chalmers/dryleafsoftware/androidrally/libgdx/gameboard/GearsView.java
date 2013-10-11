@@ -28,6 +28,6 @@ public class GearsView extends AnimatedElement {
 
 	@Override
 	public void animate(float timeDelta) {
-		this.rotate(90 * timeDelta * direction);
+		this.rotate(90 * timeDelta * getRunSpeed() * direction);
 	}
 }

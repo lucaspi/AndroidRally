@@ -38,8 +38,8 @@ public class Register extends Table {
 		background.setSize(78, 110);
 		
 		padLock = new TextureRegionDrawable(new TextureRegion(texture, 0, 90, 64, 90));
-		grayed = new TextureRegionDrawable(new TextureRegion(texture, 64, 0, 64, 90));
-		current = new TextureRegionDrawable(new TextureRegion(texture, 128, 0, 64, 90));
+		grayed = new TextureRegionDrawable(new TextureRegion(texture, 64, 90, 64, 90));
+		current = new TextureRegionDrawable(new TextureRegion(texture, 128, 90, 64, 90));
 		
 		overlay = new Image();
 		overlay.setSize(78, 110);

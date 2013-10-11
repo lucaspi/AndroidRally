@@ -40,9 +40,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private MessageStage messageStage;
 	
 	// Time to choose cards.
-	private static final int CARDTIME = 40;
+	private int cardTime;
 	// Time between rounds.
-	private static final int ROUNDTIME = 120;
+	private int roundTime;
 	
 	private Texture boardTexture, cardTexture;
 			
@@ -57,7 +57,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */	
 	private static enum Stage { 
 		WAITING,
-		PLAY
+		PLAY,
+		PAUSE
 	};
 	private int playSpeed = 1;
 	private Stage currentStage = Stage.WAITING; 
@@ -67,6 +68,10 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		this.client = new Client(1);
 		this.gameBoard = new BoardView();	
 		this.messageStage = new MessageStage();
+		
+		String[] gameData = client.getGameData().split(";");
+		this.cardTime = Integer.parseInt(gameData[0]);
+		this.roundTime = Integer.parseInt(gameData[1]) * 3600;
 		
 		messageStage.addListener(this);
 
@@ -88,9 +93,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		this.deckView = new DeckView(players, client.getRobotID());
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		deckView.setRoundTick(ROUNDTIME);
-//		deckView.setTimer((int)(runTimerStamp - TimeUtils.millis()) / 1000, DeckView.TIMER_ROUND);
-
+		deckView.setRoundTick(roundTime);
 		
 		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
@@ -102,7 +105,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Handle the game when the client has died.
 	 */
 	private void handleGameOver() {
-		System.out.println("GAME OVER");
 		messageStage.dispGameOver(gameBoard.getRobots());
 		stopGame();
 	}
@@ -124,7 +126,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Handle the game when someone won.
 	 */
 	private void handleGameWon() {
-		System.out.println("GAME WON");
 		messageStage.dispGameWon(gameBoard.getRobots());
 		stopGame();
 	}
@@ -135,15 +136,21 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	public void update() {
 		if(currentStage.equals(Stage.PLAY)) {
 			updateActions();
+		}else if(currentStage.equals(Stage.PAUSE) && actions != null && !actions.isEmpty()) {
+			if(actions.get(0).isDone()) {
+				gameBoard.stopAnimations();
+				cleanAndRemove(actions.get(0));
+				currentStage = Stage.WAITING;
+			}
 		}
 	}
 
 	/*
-	 * Skips all actions on the current card
+	 * Skips all actions on the current card and then waits.
 	 */
 	private void skipCardActions() {
-		if((actions == null || actions.isEmpty()) && result.hasNext()) {
-			actions = result.getNextResult();
+		if(actions == null || actions.isEmpty()) {
+			nextCard();
 		}
 		// Remove all actions
 		for(RobotView r : gameBoard.getRobots()) {
@@ -183,14 +190,21 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			handleGameWon();
 			return false;
 		}else if(actions.isEmpty()) {
-			if(result.hasNext()) {
-				actions = result.getNextResult();
-			}else{
-				currentStage = Stage.WAITING;
-				deckView.displayDrawCard();
-			}
+			nextCard();
 		}
 		return true;
+	}
+
+	private void nextCard() {
+		if(result.hasNext()) {
+			actions = result.getNextResult();
+			deckView.getRegisters().nextHighLight();
+		}else{
+			currentStage = Stage.WAITING;
+			deckView.getRegisters().clearHighLight();
+			deckView.displayDrawCard();
+			client.incrementRound();
+		}
 	}
 
 	/*
@@ -198,18 +212,19 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
-		if((actions == null || actions.isEmpty()) && result.hasNext()) {
-			actions = result.getNextResult();
+		if((actions == null || actions.isEmpty())) {
+			nextCard();
 			return;
-		}
-		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+		}else if(actions.get(0).isDone() || !actions.get(0).isRunning()) {
 			if(actions.get(0).isDone()) {
 				cleanAndRemove(actions.get(0));
 			}
 			gameBoard.stopAnimations();
+			int syncSpeed = playSpeed;
 			if(!actions.isEmpty()) {
+				actions.get(0).setDuration(actions.get(0).getDuration() / syncSpeed);
 				actions.get(0).action(gameBoard.getRobots());
-				gameBoard.setAnimate(actions.get(0).getPhase());
+				gameBoard.setAnimate(actions.get(0).getPhase(), syncSpeed);
 			}
 		}
 	}
@@ -221,7 +236,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			currentStage = Stage.PLAY;
 			playSpeed = 1;
 		}else if(event.getPropertyName().equals(DeckView.EVENT_PAUSE)) {
-			currentStage = Stage.WAITING;
+			currentStage = Stage.PAUSE;
 		}else if(event.getPropertyName().equals(DeckView.EVENT_FASTFORWARD)) {
 			currentStage = Stage.PLAY;
 			playSpeed = 2;
@@ -235,7 +250,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			// Displays the cards and waits for the timer task.
 			deckView.setDeckCards(client.loadCards(), cardTexture);
-			deckView.setCardTick(CARDTIME);
+			deckView.setCardTick(cardTime);
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
 			client.sendCard(deckView.getChosenCards());
 			deckView.displayWaiting();
@@ -245,7 +260,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				&& currentStage.equals(Stage.WAITING)) {
 			deckView.displayPlayOptions();
 			result = client.getRoundResult();
-			deckView.setRoundTick(ROUNDTIME);
+			deckView.setRoundTick(roundTime);
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}
@@ -270,9 +285,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.draw();
 		update();
 		
-		Table.drawDebug(deckView);
-		Table.drawDebug(gameBoard);
-		Table.drawDebug(messageStage);
+//		Table.drawDebug(deckView);
+//		Table.drawDebug(gameBoard);
+//		Table.drawDebug(messageStage);
 	}
 
 	@Override
