@@ -22,18 +22,21 @@ public class AIRobotController {
 	private int direction;
 	private int[] nextCheckpoint;
 	private List<Card> cards;
-	List<Move> moveForwardCards;
-	List<Turn> leftTurnCards;
-	List<Turn> rightTurnCards;
-	List<Turn> uTurnCards;
+	private List<Move> moveForwardCards;
+	private List<Move> moveBackwardCards;
+	private List<Turn> leftTurnCards;
+	private List<Turn> rightTurnCards;
+	private List<Turn> uTurnCards;
 
 	public AIRobotController(GameBoard gb) {
 		this.gb = gb;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void makeMove(Robot robot) {
 		cards = new ArrayList<Card>();
 		moveForwardCards = new ArrayList<Move>();
+		moveBackwardCards = new ArrayList<Move>();
 		leftTurnCards = new ArrayList<Turn>();
 		rightTurnCards = new ArrayList<Turn>();
 		uTurnCards = new ArrayList<Turn>();
@@ -56,6 +59,8 @@ public class AIRobotController {
 			if (card instanceof Move) {
 				if (((Move)card).getDistance() > 0) {
 					moveForwardCards.add((Move)card);
+				} else {
+					moveBackwardCards.add((Move)card);
 				}
 			}
 		}
@@ -76,7 +81,6 @@ public class AIRobotController {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void placeCards() {
 		System.out.println("placeCArd");
 		System.out.println("placeCard " + chosenCards.size());
@@ -101,8 +105,26 @@ public class AIRobotController {
 				}else{
 					addMoveCard(getDX());
 				}
-			} else { // if there are no move forwards cards -> random card 
-				randomizeCard();
+			}  else {  //check if there are other good combinations of cards
+				if(chosenCards.size() <= 1 && moveBackwardCards.size() >= 2 && uTurnCards.size() >= 2) {
+					chosenCards.add(uTurnCards.get(0)); //turn around, walk backwards 2 steps and turn around again
+					removeCardFromLists(uTurnCards.get(0));
+					chosenCards.add(moveBackwardCards.get(0));
+					removeCardFromLists(moveBackwardCards.get(0));
+					chosenCards.add(moveBackwardCards.get(0));
+					removeCardFromLists(moveBackwardCards.get(0));
+					chosenCards.add(uTurnCards.get(0));
+					removeCardFromLists(uTurnCards.get(0));
+				} else if (chosenCards.size() <= 2 && moveBackwardCards.size() >= 1 && uTurnCards.size() >= 2) {
+					chosenCards.add(uTurnCards.get(0)); //turn around, walk backwards 1 step and turn around again
+					removeCardFromLists(uTurnCards.get(0));
+					chosenCards.add(moveBackwardCards.get(0));
+					removeCardFromLists(moveBackwardCards.get(0));
+					chosenCards.add(uTurnCards.get(0));
+					removeCardFromLists(uTurnCards.get(0));
+				} else {// if there are none -> random card
+					randomizeCard(); //maybe randomize between turn-cards? TODO
+				}
 			}
 		} else { // If the robot is turned towards a wrong direction.
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
@@ -316,6 +338,8 @@ public class AIRobotController {
 		if (card instanceof Move) {
 			if (((Move)card).getDistance() > 0) {
 				moveForwardCards.remove(card);
+			} else {
+				moveBackwardCards.remove(card);
 			}
 		} else if (card instanceof Turn) {
 			if (((Turn) card).getTurn() == TurnType.LEFT) {
@@ -337,7 +361,6 @@ public class AIRobotController {
 		Card randChosenCard = cards.get(index);
 		chosenCards.add(randChosenCard);
 		removeCardFromLists(randChosenCard);
-
 	}
 
 }
