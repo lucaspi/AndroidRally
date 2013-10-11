@@ -53,6 +53,14 @@ public class CollisionMatrix {
 		}
 	}
 	
+	public int getWidth() {
+		return this.walls.length;
+	}
+	
+	public int getHeight() {
+		return this.walls[0].length;
+	}
+	
 	/**
 	 * Removes all values from the dynamic matrix. I.e. setting all values to false.
 	 */

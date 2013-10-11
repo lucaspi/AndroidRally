@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.AnimatedImage;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -25,14 +26,14 @@ public class ExplodeAction extends AnimationAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
-		super.action(robots);
+	public void action(List<RobotView> robots, MapBuilder map) {
+		super.action(robots, map);
 		robots.get(getRobotID()).addAction(Actions.fadeOut(getDuration() / 1000f));
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
-		super.cleanUp(robots);
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
+		super.cleanUp(robots, map);
 		robots.get(getRobotID()).setDead(true);
 		robots.get(getRobotID()).addAction(Actions.fadeOut(0));
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.TimeUtils;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -134,11 +135,11 @@ public abstract class GameAction {
 	 * Does the action on the robot already specified.
 	 * @param robots A list of all the robots.
 	 */
-	public abstract void action(List<RobotView> robots);
+	public abstract void action(List<RobotView> robots, MapBuilder map);
 	
 	/**
 	 * Skips the animation and simply places the robot.
 	 * @param robots A list of all the robots.
 	 */
-	public abstract void cleanUp(List<RobotView> robots);
+	public abstract void cleanUp(List<RobotView> robots, MapBuilder map);
 }

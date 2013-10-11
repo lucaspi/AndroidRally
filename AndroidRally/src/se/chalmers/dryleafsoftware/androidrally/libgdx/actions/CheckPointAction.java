@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 public class CheckPointAction extends GameAction {
@@ -22,13 +23,13 @@ public class CheckPointAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 		// All done in cleanup...
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		if(reachedCheckPoint != UNCHANGED) {
 			robots.get(getRobotID()).setReachedCheckPoint(reachedCheckPoint);
 		}

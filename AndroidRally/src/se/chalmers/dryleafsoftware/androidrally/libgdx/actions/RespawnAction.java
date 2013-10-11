@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -23,7 +24,7 @@ public class RespawnAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 		robots.get(getRobotID()).setDead(false);
 		robots.get(getRobotID()).addAction(Actions.parallel(
@@ -32,7 +33,7 @@ public class RespawnAction extends GameAction {
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		RobotView robot = robots.get(getRobotID());
 		robot.setDead(false);
 		robot.addAction(Actions.parallel(

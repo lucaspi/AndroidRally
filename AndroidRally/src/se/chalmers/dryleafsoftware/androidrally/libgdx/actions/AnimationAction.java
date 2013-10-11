@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.AnimatedImage;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 public class AnimationAction extends GameAction {
@@ -15,7 +16,7 @@ public class AnimationAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 		RobotView r = robots.get(getRobotID());
 		animation.setSize(r.getWidth(), r.getHeight());
@@ -25,7 +26,7 @@ public class AnimationAction extends GameAction {
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		robots.get(getRobotID()).getParent().removeActor(animation);
 	}
 }
