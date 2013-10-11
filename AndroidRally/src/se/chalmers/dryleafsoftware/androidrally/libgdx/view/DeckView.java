@@ -480,6 +480,7 @@ public class DeckView extends Stage {
 		}
 		Collections.sort(cards);
 		setDeckCards(cards);
+		updateCards();
 	}
 	
 	/**

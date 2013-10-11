@@ -235,7 +235,18 @@ public class Client {
 		return robots;
 	}
 	
+	/**
+	 * Gives the data needed when loading a game. E.g. the length of the timers.
+	 * @return
+	 */
 	public String getGameData() {
 		return controller.getInitGameData();
+	}
+
+	/**
+	 * Increments the seen rounds by one.
+	 */
+	public void incrementRound() {
+		this.roundID++;
 	}
 }

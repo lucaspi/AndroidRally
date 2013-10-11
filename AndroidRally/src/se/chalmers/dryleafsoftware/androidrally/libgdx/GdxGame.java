@@ -149,7 +149,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Skips all actions on the current card and then waits.
 	 */
 	private void skipCardActions() {
-		if((actions == null || actions.isEmpty()) && result.hasNext()) {
+		if(actions == null || actions.isEmpty()) {
 			nextCard();
 		}
 		// Remove all actions
@@ -190,20 +190,21 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			handleGameWon();
 			return false;
 		}else if(actions.isEmpty()) {
-			if(result.hasNext()) {
-				nextCard();
-			}else{
-				currentStage = Stage.WAITING;
-				deckView.getRegisters().clearHighLight();
-				deckView.displayDrawCard();
-			}
+			nextCard();
 		}
 		return true;
 	}
-	
+
 	private void nextCard() {
-		actions = result.getNextResult();
-		deckView.getRegisters().nextHighLight();
+		if(result.hasNext()) {
+			actions = result.getNextResult();
+			deckView.getRegisters().nextHighLight();
+		}else{
+			currentStage = Stage.WAITING;
+			deckView.getRegisters().clearHighLight();
+			deckView.displayDrawCard();
+			client.incrementRound();
+		}
 	}
 
 	/*
@@ -211,19 +212,19 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
-		if((actions == null || actions.isEmpty()) && result.hasNext()) {
+		if((actions == null || actions.isEmpty())) {
 			nextCard();
 			return;
-		}
-		if(!actions.isEmpty() && (actions.get(0).isDone() || !actions.get(0).isRunning())) {
+		}else if(actions.get(0).isDone() || !actions.get(0).isRunning()) {
 			if(actions.get(0).isDone()) {
 				cleanAndRemove(actions.get(0));
 			}
 			gameBoard.stopAnimations();
+			int syncSpeed = playSpeed;
 			if(!actions.isEmpty()) {
-				actions.get(0).setDuration(actions.get(0).getDuration() / playSpeed);
+				actions.get(0).setDuration(actions.get(0).getDuration() / syncSpeed);
 				actions.get(0).action(gameBoard.getRobots());
-				gameBoard.setAnimate(actions.get(0).getPhase(), playSpeed);
+				gameBoard.setAnimate(actions.get(0).getPhase(), syncSpeed);
 			}
 		}
 	}
