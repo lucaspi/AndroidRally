@@ -28,6 +28,13 @@ public class GameController implements PropertyChangeListener {
 	private int nbrOfBots;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
+		nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
+		nbrOfHumanPlayers = Math.max(nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
+		nbrOfBots = Math.min(nbrOfBots, 8 - nbrOfHumanPlayers);
+		nbrOfBots = Math.max(nbrOfBots, 0);
+		if (nbrOfHumanPlayers == 1 && nbrOfBots == 0) { //if only 1 player there has to be 1 bot
+			nbrOfBots = 1;
+		}
 		this.nbrOfHumanPlayers = nbrOfHumanPlayers;
 		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
@@ -38,9 +45,8 @@ public class GameController implements PropertyChangeListener {
 		
 		mapAsString = gameModel.getMap();
 		
-		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 1-24
+		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 15-180
 		cardTimerSeconds = Math.min(cardTimerSeconds, 180); // -''-
-		//FIXME Kolla med Lucas om 15, 180, 1 och 24 är rätt värden!!
 		hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
 		hoursEachRound = Math.min(hoursEachRound, 24);// -''-
 		this.hoursEachRound = hoursEachRound;
@@ -211,11 +217,19 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void newRound() {
 		System.out.println("------------------------newRound---------------------------");
+		
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
-			aiRobotController.makeMove(gameModel.getRobots().get(i));
+			cardTimer[i].cancelTask();
+			if (!gameModel.getRobots().get(i).hasLost()) {
+				aiRobotController.makeMove(gameModel.getRobots().get(i));
+				gameModel.getRobots().get(i).fillEmptyCardRegisters();
+				gameModel.getRobots().get(i).setSentCards(true);
+				gameModel.getRobots().get(i).setLastChosenCards(getCurrentChosenCards(i));
+			}
+			nbrOfRobotsDone++;
 		}
 	}
 	
