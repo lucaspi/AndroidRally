@@ -94,8 +94,12 @@ public class AIRobotController {
 		direction = robot.getDirection();
 		nextCheckPoint = robot.getLastCheckPoint() + 1;
 		checkpointPosition = nextCheckPoint();
-		placeCards();
-		robot.setChosenCards(chosenCards);
+//		try {//TODO fix!!!
+			placeCards();
+//		} catch (Exception e) {
+//		} finally {
+			robot.setChosenCards(chosenCards);
+//		}
 	}
 
 	/**
@@ -106,7 +110,7 @@ public class AIRobotController {
 		if (chosenCards.size() == 5) {
 			return;
 		}
-		
+		boolean cardAdded = false;
 		boolean isRightDirection = false;
 		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
 			if (this.direction == direction.intValue()) {
@@ -120,6 +124,7 @@ public class AIRobotController {
 				}else{
 					addMoveCard(Math.abs(getDX()));
 				}
+				cardAdded = true;
 			}  else {  //check if there are other good combinations of cards
 				if(chosenCards.size() <= 1 && moveBackwardCards.size() >= 2 && uTurnCards.size() >= 2) {
 					//turn around, walk backwards 2 steps and turn around again
@@ -132,13 +137,11 @@ public class AIRobotController {
 					addChosenCard(uTurnCards.get(0));
 					addChosenCard(moveBackwardCards.get(0));
 					addChosenCard(uTurnCards.get(0));
-				} else {// if there are none -> random card
-					randomizeCard();
 				}
+				cardAdded = true;
 			}
 		} else { // If the robot is turned towards a wrong direction.
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
-				boolean cardAdded = false;
 				for(Integer i : getDirections()){
 					int turnDifference = ((i.intValue() - 
 							direction)+4)%4;
@@ -162,21 +165,10 @@ public class AIRobotController {
 						}
 					}
 				}
-				if(!cardAdded){
-					for(int j = 0; j<cards.size(); j++){
-						if(!(cards.get(j) instanceof Move)){
-							addChosenCard(cards.get(j));
-							cardAdded = true;
-							break;
-						}
-					}
-					if(!cardAdded){
-						randomizeCard();
-					}
-				}
-			} else { // No turn cards -> random card
-				randomizeCard();
 			}
+		}
+		if(!cardAdded){
+			randomizeCard();
 		}
 		placeCards();
 	}
