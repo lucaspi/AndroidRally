@@ -100,13 +100,13 @@ public class AIRobotController {
 		if (isRightDirection) {
 			
 			if (moveForwardCards.size() != 0) { // Move forward as long as possible
-				chosenCards.add(moveForwardCards.get(0));
-				removeCardFromLists(moveForwardCards.get(0));
+//				chosenCards.add(moveForwardCards.get(0));
+//				removeCardFromLists(moveForwardCards.get(0));
 				if(direction == GameBoard.NORTH || direction == GameBoard.SOUTH){
-					addMoveCard(getDY());
+					addMoveCard(Math.abs(getDY()));
 					System.out.println("north/south");
 				}else{
-					addMoveCard(getDX());
+					addMoveCard(Math.abs(getDX()));
 					System.out.println("west/east");
 				}
 			}  else {  //check if there are other good combinations of cards
