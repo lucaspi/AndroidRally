@@ -1,7 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.model.gameModel;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 

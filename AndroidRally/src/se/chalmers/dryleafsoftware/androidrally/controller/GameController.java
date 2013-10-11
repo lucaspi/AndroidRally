@@ -40,7 +40,6 @@ public class GameController implements PropertyChangeListener {
 		
 		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 1-24
 		cardTimerSeconds = Math.min(cardTimerSeconds, 180); // -''-
-		//FIXME Kolla med Lucas om 15, 180, 1 och 24 är rätt värden!!
 		hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
 		hoursEachRound = Math.min(hoursEachRound, 24);// -''-
 		this.hoursEachRound = hoursEachRound;

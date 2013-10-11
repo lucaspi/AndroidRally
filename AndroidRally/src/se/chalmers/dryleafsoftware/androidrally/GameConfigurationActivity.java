@@ -14,6 +14,9 @@ public class GameConfigurationActivity extends Activity {
 	private TextView roundTimeText, cardTimeText, playersText;
 	private SeekBar roundTimeBar, cardTimeBar, playersBar;
 	private BarListener barListener;
+	public static final String HOURS_INTENT_EXTRA = "HOURS";
+	public static final String  CARD_TIME_INTENT_EXTRA = "CARDS";
+	public static final String  BOTS_INTENT_EXTRA = "BOTS";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,9 @@ public class GameConfigurationActivity extends Activity {
 	 */
 	public void startGame(View view) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+		i.putExtra(HOURS_INTENT_EXTRA, roundTimeBar.getProgress());
+		i.putExtra(CARD_TIME_INTENT_EXTRA, cardTimeBar.getProgress());
+		i.putExtra(BOTS_INTENT_EXTRA, playersBar.getProgress());
 		startActivity(i);
 	}
 

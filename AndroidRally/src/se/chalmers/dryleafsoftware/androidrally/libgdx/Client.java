@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
+import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.CheckPointAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.ExplodeAction;
@@ -37,6 +38,7 @@ public class Client {
 	// TODO: the client must somehow know which robotID the player has.
 	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
 	private final int clientID, robotID;
+	private GameSettings settings;
 	// TODO: load the clientID from the user's phone's data.
 	// TODO: save the clientID when assigned one from the server.
 		
@@ -44,8 +46,14 @@ public class Client {
 	 * Creates a new client instance.
 	 * @param clientID The ID number of the player.
 	 */
-	public Client(int clientID) {
-		this.controller = new GameController(1,7, 24, 40, null);
+	public Client(int clientID, GameSettings settings) {
+		if (settings == null) {
+			this.settings = new GameSettings();
+		} else {
+			this.settings = settings;
+		}
+		this.controller = new GameController(this.settings.getNbrOfHumanPlayers(), this.settings.getNbrOfBots(),
+				this.settings.getHoursEachRound(), this.settings.getCardTimerSeconds(), this.settings.getMap());
 		this.clientID = clientID;
 		this.robotID = 0;
 		controller.newRound();
