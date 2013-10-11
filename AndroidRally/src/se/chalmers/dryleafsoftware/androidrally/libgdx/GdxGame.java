@@ -303,7 +303,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		update();
 		
 //		Table.drawDebug(deckView);
-//		Table.drawDebug(gameBoard);
+		Table.drawDebug(gameBoard);
 //		Table.drawDebug(messageStage);
 	}
 

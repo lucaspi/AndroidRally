@@ -57,35 +57,24 @@ public class BoardView extends Stage {
 		// Create a group of all the objects on the map.
 		container = new Group();
 		container.setPosition(0, 0);
-		container.setSize(480, 640);		
+//		container.setSize(480, 480);		
 		
 		// Create a inner container for the the ScrollPane.
 		scrollContainer = new Table();
 		scrollContainer.setFillParent(true);
 		scrollContainer.setLayoutEnabled(false);
-		scrollContainer.debug();
-		
-		// Centers the container in the scrollpane.
-		Table center = new Table();
-		center.setFillParent(true);
-		center.add(container);
-		
-		// Fills the space around the container.
-		Table filler = new Table();
-		filler.setFillParent(true);
-		filler.add(center).size(480, 480);
-		filler.setSize(480, 480);
-		scrollContainer.add(filler);
+		scrollContainer.add(container);
 		
 		// Create the ScrollPane.
         ScrollPaneStyle scrollStyle = new ScrollPaneStyle();
         pane = new ScrollPane(scrollContainer, scrollStyle);
         pane.setForceOverscroll(true, true);
+        pane.setFillParent(true);
         
         // Create a container to hold the ScrollPane.
         Table scrollParent = new Table();
         scrollParent.add(pane);
-        scrollParent.debug();
+//        scrollParent.debug();
         scrollParent.setPosition(0, 320);
         scrollParent.setSize(480, 480);
         addActor(scrollParent);
@@ -95,54 +84,6 @@ public class BoardView extends Stage {
 		boardCamera.position.set(240, 400, 0f);
 		boardCamera.update();
 		setCamera(boardCamera);
-               
-        pane.addListener(new ActorGestureListener() {
-        	@Override
-        	public void zoom(InputEvent event, float initialDistance, float distance) {
-        		if(distance - initialDistance > 0) {
-        			setZoom(getZoom() + 0.02f, event.getStageX(), event.getStageY());
-        		}else{
-        			setZoom(getZoom() - 0.02f, event.getStageX(), event.getStageY());
-        		}
-        	}
-        	@Override
-        	public void tap(InputEvent event, float x, float y, int count, int button) {
-        		if(count == 2) {
-        			if(getZoom() == 2){
-        				setZoom(1f, event.getStageX(), event.getStageY());
-        			} else {
-        				setZoom(2f, event.getStageX(), event.getStageY());
-        			}
-        		}
-        	}
-        });
-	}
-	
-	/**
-	 * Gives the current zoom level.
-	 * @return The current zoom level.
-	 */
-	public float getZoom() {
-		return container.getScaleX();
-	}
-	
-	/**
-	 * Sets the zoom level.
-	 * @param zoom The new zoom level.
-	 */
-	public void setZoom(float zoom, float x, float y) {
-		if(zoom < 1) {
-			zoom = 1;
-		}else if(zoom > 2) {
-			zoom = 2f;
-		}
-		container.setSize(mapBuilder.getWidth() * 40, mapBuilder.getHeight() * 40);
-//		container.setScale(zoom);
-//		container.setSize(mapBuilder.getWidth() * 40 * zoom,
-//				mapBuilder.getHeight() * 40 * zoom);	
-//		scrollContainer.setSize(container.getWidth(), container.getHeight());
-		scrollContainer.setSize(480, 480);
-		pane.layout();
 	}
 	
 	/**
@@ -256,8 +197,12 @@ public class BoardView extends Stage {
 			container.addActor(i);
 		}
 		
-		setZoom(1f, 0, 0);	 
+		container.setSize(mapBuilder.getWidth() * 40,
+				mapBuilder.getHeight() * 40);	
+		scrollContainer.setSize(480, 480);
 		pane.setScrollPercentY(100);
+		pane.setScrollingDisabled(mapBuilder.getWidth() < 12, mapBuilder.getHeight() < 12);
+		pane.layout();
 	}
 	
 	public MapBuilder getMapBuilder() {
