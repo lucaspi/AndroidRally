@@ -131,11 +131,7 @@ public class GameController implements PropertyChangeListener {
 			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
 			gameModel.getRobots().get(robotID).setSentCards(true);
 			gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
-			String[] cards = new String[gameModel.getRobots().size()];
-			for(int i = 0; i < gameModel.getRobots().size(); i++){
-				cards[i] = gameModel.getRobots().get(i).getLastRoundChosenCards();
-			}
-			allCards.add(new String[gameModel.getRobots().size()]);
+			allCards.get(allCards.size()-1)[robotID] = gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 		}
 		nbrOfRobotsDone++;
 
@@ -238,6 +234,7 @@ public class GameController implements PropertyChangeListener {
 		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
 			aiRobotController.makeMove(gameModel.getRobots().get(i));
 		}
+		allCards.add(new String[gameModel.getRobots().size()]);
 	}
 	
 	public String getMap() {
