@@ -90,6 +90,15 @@ public class Client {
 	}
 	
 	/**
+	 * Gives the number of rounds the view is behind.
+	 * @return The number of rounds the view is behind.
+	 */
+	public int getRoundsBehind() {
+		return 0;
+//		return // controller.getRoundsBehind(roundID);
+	}
+	
+	/**
 	 * Gives all the actions which was created during the last round.
 	 * @return A list of all the actions was created during the last round.
 	 */
