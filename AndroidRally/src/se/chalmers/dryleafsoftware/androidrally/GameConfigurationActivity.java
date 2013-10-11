@@ -14,6 +14,9 @@ public class GameConfigurationActivity extends Activity {
 	private TextView roundTimeText, cardTimeText, playersText;
 	private SeekBar roundTimeBar, cardTimeBar, playersBar;
 	private BarListener barListener;
+	public static final String HOURS_INTENT_EXTRA = "HOURS";
+	public static final String  CARD_TIME_INTENT_EXTRA = "CARDS";
+	public static final String  BOTS_INTENT_EXTRA = "BOTS";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class GameConfigurationActivity extends Activity {
 		//Number of players chooser
 		playersBar = (SeekBar) findViewById(R.id.playersBar);
 		playersText = (TextView) findViewById(R.id.playersTextView);
-		playersBar.setMax(7); //1-8 bots
+		playersBar.setMax(6); //1-7 bots
 		playersBar.setProgress(3); //Set to default 4 bots (4th step)
 		playersBar.setOnSeekBarChangeListener(barListener);
 	}
@@ -48,6 +51,9 @@ public class GameConfigurationActivity extends Activity {
 	 */
 	public void startGame(View view) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+		i.putExtra(HOURS_INTENT_EXTRA, roundTimeBar.getProgress() + 1);
+		i.putExtra(CARD_TIME_INTENT_EXTRA, (cardTimeBar.getProgress() + 1)*15);
+		i.putExtra(BOTS_INTENT_EXTRA, playersBar.getProgress() + 1);
 		startActivity(i);
 	}
 
