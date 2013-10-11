@@ -94,8 +94,7 @@ public class Client {
 	 * @return The number of rounds the view is behind.
 	 */
 	public int getRoundsBehind() {
-		return 0;
-//		return // controller.getRoundsBehind(roundID);
+		return controller.getRound() - roundID;
 	}
 	
 	/**
@@ -104,7 +103,8 @@ public class Client {
 	 */
 	public RoundResult getRoundResult() {	
 		RoundResult result = new RoundResult();	
-		String indata = controller.getRoundResults();		
+		String indata = controller.getRoundResults(roundID + 1);	
+		System.out.println("Asking for round: " + (roundID+1));
 		String[] allActions = indata.split(";");
 		
 		Texture damageAnim = new Texture(Gdx.files.internal("textures/special/damageAnim.png"));
@@ -116,9 +116,9 @@ public class Client {
 		
 		for(String s : allActions) {
 			String[] parallel = s.split("#");
-			if(parallel[0].equals("R")) {
+			if(parallel[0].equals("R")) { // R = card
 				result.newPhase();
-			}else if(parallel[0].substring(0, 1).equals("B")) {
+			}else if(parallel[0].substring(0, 1).equals("B")) { // B = phase
 				int phase = Integer.parseInt(parallel[0].substring(1));	
 				if(phase == GameAction.PHASE_LASER) { 
 					MultiAction multiDamage = new MultiAction();
@@ -148,20 +148,17 @@ public class Client {
 						result.addAction(a);
 						int id = Integer.parseInt(parallel[i].substring(0, 1));
 						result.addAction(new RespawnAction(id));
-//						result.addAction(new HealthAction(id, 0, HealthAction.DECREASE_ONE));
 					}
 				}else if(phase == GameAction.PHASE_CHECKPOINT) {
-					// TODO: checkpoint action!
 					for(int i = 1; i < parallel.length; i++) {
 						String[] data = parallel[i].split(":");
 						System.out.println("Robot: " + data[0] + ", reached checkpoint: " + data[1]);
 						result.addAction(new CheckPointAction(Integer.parseInt(data[0]),
 								Integer.parseInt(data[1]), false));
 					}
-				}else{
-					GameAction action;
-					// If no actions follows:
-					if(parallel.length == 1) {
+				}else{ // If the phase isn't that special.
+					GameAction action;					
+					if(parallel.length == 1) { // If no actions follows:
 						action = new HolderAction(1000);
 					}else{ // If actions
 						MultiAction multi = new MultiAction();
@@ -218,7 +215,7 @@ public class Client {
 	 * @return A list of the client's cards.
 	 */
 	public String loadCards() {	
-		String temp = controller.getCards(robotID);
+		String temp = controller.getCards(roundID + 1, robotID);
 		System.out.println("To client: \"" + temp + "\"");
 		return temp;
 	}
@@ -246,7 +243,11 @@ public class Client {
 	
 	/**
 	 * Gives the data needed when loading a game. E.g. the length of the timers.
+<<<<<<< HEAD
 	 * @return
+=======
+	 * @return The data needed when loading a game.
+>>>>>>> origin/keepDataOldRounds
 	 */
 	public String getGameData() {
 		return controller.getInitGameData();
@@ -257,5 +258,9 @@ public class Client {
 	 */
 	public void incrementRound() {
 		this.roundID++;
+	}
+	
+	public int getRoundID() {
+		return this.roundID;
 	}
 }

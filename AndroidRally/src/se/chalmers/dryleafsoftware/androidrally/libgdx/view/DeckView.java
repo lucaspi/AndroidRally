@@ -90,12 +90,15 @@ public class DeckView extends Stage {
 	
 	private int cardTick = 0;
 	private int roundTick = 0;
+	private final int roundTime;
+	private static final int MAX_PING = 2;
 
 	/**
 	 * Creates a new default instance.
 	 */
-	public DeckView(List<RobotView> robots, int robotID) {
+	public DeckView(List<RobotView> robots, int robotID, int roundTime) {
 		super();
+		this.roundTime = roundTime;
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
@@ -190,14 +193,15 @@ public class DeckView extends Stage {
 						System.out.println("---------------------------------CARD TIMER-----------");
 					}
 				}
-				if(roundTick > 0) {
+				if(roundTick - MAX_PING > 0) {
 					roundTick--;
-					if(roundTick == 0) {
+					if(roundTick - MAX_PING == 0) {
 						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
 						System.out.println("-------------------------------------ROund timer!-----------");
+						roundTick = DeckView.this.roundTime;
 					}
 				}
-				setTimerLabel(cardTick > 0 ? cardTick : roundTick);
+				setTimerLabel(cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING));
 			}
 		}, 1000, 1000);
 
@@ -417,63 +421,69 @@ public class DeckView extends Stage {
 	 * @param texture The texture to use.
 	 */
 	public void setChosenCards(String input, Texture texture) {
-		setCards(input, texture, true);
+		registerView.clear();
+		BitmapFont cardFont = new BitmapFont();
+		cardFont.setColor(Color.GREEN);
+		int i = 0;
+		for(String card : input.split(":")) {
+			int prio = Integer.parseInt(card);	
+			CardView cv = buildCard(prio, texture, i, cardFont);
+
+			registerView.getRegister(i).setCard(cv);
+			registerView.getRegister(i).displayOverlay(Register.UNFOCUS);
+			i++;
+		}
 	}
-	
-	/**
-	 * Displays all cards.
-	 * @param input The String with card data.
-	 * @param texture The texture to use.
-	 */
-	public void setDeckCards(String input, Texture texture) {
-		setCards(input, texture, false);
+		
+	private CardView buildCard(int prio, Texture texture, int index, BitmapFont cardFont) {	
+		int regX = 0;
+		if(prio <= 60) {
+			regX = 0;	// UTURN
+		}else if(prio <= 410 && prio % 20 != 0) {
+			regX = 1;	// LEFT
+		}else if(prio <= 420 && prio % 20 == 0) {
+			regX = 2;	// LEFT
+		}else if(prio <= 480) {
+			regX = 3;	// Back 1
+		}else if(prio <= 660) {
+			regX = 4;	// Move 1
+		}else if(prio <= 780) {
+			regX = 5;	// Move 2
+		}else if(prio <= 840) {
+			regX = 6;	// Move 3
+		}	
+
+		CardView cv = new CardView(new TextureRegion(texture, regX * 128, 0, 128, 180), 
+				prio, index, cardFont);
+		cv.setSize(78, 110);
+		return cv;
 	}
 	
 	/**
 	 * Displays all cards.
 	 * @param input A String with all the cards' data.
 	 * @param texture The texture to use when creating the cards.
-	 * @param onlyLocked Set to <code>true</code> if only locked cards should be displayed.
 	 */
-	private void setCards(String input, Texture texture, boolean onlyLocked) {
+	public void setDeckCards(String input, Texture texture) {
 		List<CardView> cards = new ArrayList<CardView>();
 		// Clear cards
 		registerView.clear();
 		BitmapFont cardFont = new BitmapFont();
 		cardFont.setColor(Color.GREEN);
-				
+		
 		String indata = input;
 		int i = 0;
 		for(String card : indata.split(":")) {
 			String[] data = card.split(";");
-			
-			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
-			int regX = 0;
-			if(prio <= 60) {
-				regX = 0;	// UTURN
-			}else if(prio <= 410 && prio % 20 != 0) {
-				regX = 1;	// LEFT
-			}else if(prio <= 420 && prio % 20 == 0) {
-				regX = 2;	// LEFT
-			}else if(prio <= 480) {
-				regX = 3;	// Back 1
-			}else if(prio <= 660) {
-				regX = 4;	// Move 1
-			}else if(prio <= 780) {
-				regX = 5;	// Move 2
-			}else if(prio <= 840) {
-				regX = 6;	// Move 3
-			}	
 
-			CardView cv = new CardView(new TextureRegion(texture, regX * 128, 0, 128, 180), 
-					prio, i, cardFont);
-			cv.setSize(78, 110);
-			
+			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
+			CardView cv = buildCard(prio, texture, i, cardFont);
+
 			if(data.length == 2) {
 				int lockPos = Integer.parseInt(data[0].substring(1));
 				registerView.getRegister(lockPos).setCard(cv);
 				registerView.getRegister(lockPos).displayOverlay(Register.PADLOCK);
-			}else if(!onlyLocked){
+			}else{
 				cards.add(cv);
 			}			
 			i++;

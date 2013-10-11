@@ -21,12 +21,14 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	private String nbrOfRobots;
+	private int nbrOfRobots;
 	private String mapAsString;
 	private AIRobotController aiRobotController;
 	private int nbrOfHumanPlayers;
 	private int nbrOfBots;
 	private static final int PING_TIME = 5; //seconds
+	private List<String> allMoves;
+	private List<String[]> allCards;
 	private int cardTimerSeconds;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
@@ -41,7 +43,9 @@ public class GameController implements PropertyChangeListener {
 		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
 		gameModel = new GameModel(nbrOfHumanPlayers + nbrOfBots);
-		this.nbrOfRobots = String.valueOf(gameModel.getRobots().size());
+		this.nbrOfRobots = gameModel.getRobots().size();
+		allMoves = new ArrayList<String>();
+		allCards = new ArrayList<String[]>();
 		
 		aiRobotController = new AIRobotController(gameModel.getGameBoard());
 		
@@ -50,13 +54,14 @@ public class GameController implements PropertyChangeListener {
 		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 15-180
 		cardTimerSeconds = Math.min(cardTimerSeconds, 180); // -''-
 		this.cardTimerSeconds = cardTimerSeconds;
+
 		hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
 		hoursEachRound = Math.min(hoursEachRound, 24);// -''-
 		this.hoursEachRound = hoursEachRound;
 		
 		timer = new Timer();
-		cardTimer = new CardTimer[Integer.parseInt(nbrOfRobots) + PING_TIME];
-		for (int i = 0; i < Integer.parseInt(nbrOfRobots); i++) {
+		cardTimer = new CardTimer[nbrOfRobots];
+		for (int i = 0; i < nbrOfRobots; i++) {
 			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
@@ -92,7 +97,9 @@ public class GameController implements PropertyChangeListener {
 				isRunRunning = true;
 				stopRoundTimer();
 				handleRemainingRobots();
+				
 				gameModel.moveRobots();
+				allMoves.add(gameModel.getAllMoves());
 				//If the game is over a new round will not be started. Game will end.
 				if (!gameModel.isGameOver()) {
 					newRound();
@@ -132,7 +139,7 @@ public class GameController implements PropertyChangeListener {
 			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
 			gameModel.getRobots().get(robotID).setSentCards(true);
 			gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
-
+			allCards.get(allCards.size()-1)[robotID] = gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 		}
 		nbrOfRobotsDone++;
 
@@ -216,7 +223,7 @@ public class GameController implements PropertyChangeListener {
 	 * @return Data the client needs when connecting.
 	 */
 	public String getInitGameData() {
-		return cardTimerSeconds + ";" + hoursEachRound;
+		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRound.scheduledExecutionTime();
 	}
 
 	/**
@@ -233,7 +240,7 @@ public class GameController implements PropertyChangeListener {
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
-		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
+		for (int i = nbrOfHumanPlayers ; i < nbrOfRobots; i++) {
 			cardTimer[i].cancelTask();
 			if (!gameModel.getRobots().get(i).hasLost()) {
 				aiRobotController.makeMove(gameModel.getRobots().get(i));
@@ -243,6 +250,7 @@ public class GameController implements PropertyChangeListener {
 			}
 			nbrOfRobotsDone++;
 		}
+		allCards.add(new String[gameModel.getRobots().size()]);
 	}
 	
 	public String getMap() {
@@ -250,15 +258,39 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	public String getNbrOfPlayers() {
-		return nbrOfRobots;
+		return "" + nbrOfRobots;
 	}
 	
 	/**
 	 * Return a string containing all data from the last round.
+	 * @param round the round to get results from. The first round is 1 and not 0.
 	 * @return a string containing all data from the last round.
 	 */
-	public String getRoundResults() {
-		return this.gameModel.getAllMoves();
+	public String getRoundResults(int round) {
+		return allMoves.get(round-1);
+	}
+	
+	/**
+	 * Returns a String representing the chosenCards for a specific robot
+	 * and round.
+	 * @param round the round to get the cards from. The first round is 1 and not 0.
+	 * @param robot the robotID to get cards for
+	 * @return the chosenCards for a specific robot and round.
+	 */
+	public String getCards(int round, int robot){
+		if(round > allMoves.size()) {
+			return getCards(robot);
+		}else{
+			return allCards.get(round-1)[robot];
+		}
+	}
+	
+	/**
+	 * Return the current round. The first round is 1 and not 0.
+	 * @return the current round.
+	 */
+	public int getRound(){
+		return allMoves.size();
 	}
 	
 	private void setRandomCards(int robotID) {
