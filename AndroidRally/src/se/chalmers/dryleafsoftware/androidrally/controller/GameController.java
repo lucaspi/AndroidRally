@@ -4,6 +4,7 @@ package se.chalmers.dryleafsoftware.androidrally.controller;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,6 +31,15 @@ public class GameController implements PropertyChangeListener {
 	private List<String> allMoves;
 	private List<String[]> allCards;
 	private int cardTimerSeconds;
+	private Date endOfRoundDate;
+	
+//	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxx36x36:37xxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26x17xx1x103x103x103x103x103xxxxyxxxx26x36xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
+//	private static final String testMap = "yxx18x28xxxxyx38x48x58x68xxxyxxxxxxxyxxxxxxxyxxxxxxxyxxxxxxx12";
+//	private static final String testMap = "yxx18x28xxxxxxxxxxxxxxxxxxxxxxxxyx38x48x58x68xxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx12yxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+//	private static final String testMap = "yxx18x28x38xxxxxyxxxxxxxxxyxxxxxxxxxyxxxxxxxxxyxxxxxx12xxx";
+	
+//	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
+	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
 		this.nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
@@ -40,7 +50,7 @@ public class GameController implements PropertyChangeListener {
 			this.nbrOfBots = 1;
 		}
 		isRunRunning = false;
-		gameModel = new GameModel(this.nbrOfHumanPlayers + this.nbrOfBots);
+		gameModel = new GameModel(this.nbrOfHumanPlayers + this.nbrOfBots, testMap);
 		this.nbrOfRobots = gameModel.getRobots().size();
 		allMoves = new ArrayList<String>();
 		allCards = new ArrayList<String[]>();
@@ -76,6 +86,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void startRoundTimer() {
 		reScheduleTimer();
+		endOfRoundDate = new Date(hoursEachRound * 3600000);
 		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 
@@ -218,7 +229,7 @@ public class GameController implements PropertyChangeListener {
 	 * @return Data the client needs when connecting.
 	 */
 	public String getInitGameData() {
-		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRound.scheduledExecutionTime();
+		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRoundDate.getTime();
 	}
 
 	/**
