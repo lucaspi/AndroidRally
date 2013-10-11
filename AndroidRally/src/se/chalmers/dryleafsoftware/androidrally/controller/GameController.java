@@ -240,14 +240,30 @@ public class GameController implements PropertyChangeListener {
 	
 	/**
 	 * Return a string containing all data from the last round.
+	 * @param round the round to get results from. The first round is 1 and not 0.
 	 * @return a string containing all data from the last round.
 	 */
 	public String getRoundResults(int round) {
 		return allMoves.get(round-1);
 	}
 	
+	/**
+	 * Returns a String representing the chosenCards for a specific robot
+	 * and round.
+	 * @param round the round to get the cards from. The first round is 1 and not 0.
+	 * @param robot the robotID to get cards for
+	 * @return the chosenCards for a specific robot and round.
+	 */
 	public String getCards(int round, int robot){
 		return allCards.get(round-1)[robot];
+	}
+	
+	/**
+	 * Return the current round. The first round is 1 and not 0.
+	 * @return the current round.
+	 */
+	public int getRound(){
+		return allMoves.size();
 	}
 	
 	private void setRandomCards(int robotID) {
