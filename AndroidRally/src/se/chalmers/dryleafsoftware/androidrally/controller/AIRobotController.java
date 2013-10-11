@@ -251,7 +251,7 @@ public class AIRobotController {
 					randomizeCard();
 				}
 			} else {
-				checkpointPosition = gb.getCheckPoints().get(nextCheckPoint());
+				checkpointPosition = gb.getCheckPoints().get(nextCheckPoint);
 				dx = getDX();
 				dy = getDY();
 			}
