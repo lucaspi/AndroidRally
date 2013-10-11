@@ -115,6 +115,9 @@ public class GameModel {
 							boardElements.get(0).action(robots.get(j));
 							addSimultaneousMove(robots.get(j));
 							if(checkGameStatus())return;
+							if(robots.get(j).isDead()){
+								addRobotDeadMove(robots.get(j));
+							}
 						}
 					}
 				}
