@@ -33,7 +33,7 @@ public class ConveyorBeltView extends AnimatedElement {
 
 	@Override
 	public void animate(float timeDelta) {
-		scrollTimer += timeDelta;
+		scrollTimer += timeDelta * getRunSpeed();
 		if (scrollTimer > 1.0f)
 			scrollTimer = 0.0f;
 		texture.setV(scrollTimer);

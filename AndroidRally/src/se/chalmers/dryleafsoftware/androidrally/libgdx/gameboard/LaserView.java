@@ -51,8 +51,8 @@ public class LaserView extends AnimatedElement {
 	}
 	
 	@Override
-	public void enable(int phase) {
-		super.enable(phase);
+	public void enable(int phase, int speed) {
+		super.enable(phase, speed);
 		setVisible(isEnabled());
 	}
 	

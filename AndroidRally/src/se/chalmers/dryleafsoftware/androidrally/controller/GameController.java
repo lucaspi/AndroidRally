@@ -27,6 +27,7 @@ public class GameController implements PropertyChangeListener {
 	private int nbrOfHumanPlayers;
 	private int nbrOfBots;
 	private static final int PING_TIME = 5; //seconds
+	private int cardTimerSeconds;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
 		nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
@@ -48,6 +49,7 @@ public class GameController implements PropertyChangeListener {
 		
 		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 15-180
 		cardTimerSeconds = Math.min(cardTimerSeconds, 180); // -''-
+		this.cardTimerSeconds = cardTimerSeconds;
 		hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
 		hoursEachRound = Math.min(hoursEachRound, 24);// -''-
 		this.hoursEachRound = hoursEachRound;
@@ -206,6 +208,15 @@ public class GameController implements PropertyChangeListener {
 		System.out.println("getCards" + sb.toString());
 		cardTimer[robotID].start();
 		return sb.toString(); 
+	}
+	
+	/**
+	 * Gives data the client needs when connecting to a game. (Such as the length of the 
+	 * timers etc.)
+	 * @return Data the client needs when connecting.
+	 */
+	public String getInitGameData() {
+		return cardTimerSeconds + ";" + hoursEachRound;
 	}
 
 	/**
