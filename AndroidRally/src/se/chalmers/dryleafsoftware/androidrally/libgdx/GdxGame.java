@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
@@ -64,7 +65,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 	@Override
 	public void create() {
-		this.client = new Client(1);
+		this.client = new Client(1, GameSettings.getCurrentSettings());
 		this.gameBoard = new BoardView();	
 		this.messageStage = new MessageStage();
 		
