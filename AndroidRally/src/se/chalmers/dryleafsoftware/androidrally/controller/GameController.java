@@ -89,11 +89,6 @@ public class GameController implements PropertyChangeListener {
 				isRunRunning = true;
 				stopRoundTimer();
 				handleRemainingRobots();
-				String[] cards = new String[gameModel.getRobots().size()];
-				for(int i = 0; i < gameModel.getRobots().size(); i++){
-					cards[i] = gameModel.getRobots().get(i).getLastRoundChosenCards();
-				}
-				allCards.add(new String[gameModel.getRobots().size()]);
 				
 				gameModel.moveRobots();
 				allMoves.add(gameModel.getAllMoves());
@@ -136,7 +131,11 @@ public class GameController implements PropertyChangeListener {
 			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
 			gameModel.getRobots().get(robotID).setSentCards(true);
 			gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
-
+			String[] cards = new String[gameModel.getRobots().size()];
+			for(int i = 0; i < gameModel.getRobots().size(); i++){
+				cards[i] = gameModel.getRobots().get(i).getLastRoundChosenCards();
+			}
+			allCards.add(new String[gameModel.getRobots().size()]);
 		}
 		nbrOfRobotsDone++;
 
