@@ -16,6 +16,8 @@ public class GameSettings {
 	private static final String DEFAULT_MAP = null;
 	private static String map = DEFAULT_MAP;
 	
+	private static GameSettings currentSettings;
+	
 	public GameSettings() {
 		 this(DEFAULT_HUMAN_PLAYERS, DEFAULT_BOTS);
 	}
@@ -60,8 +62,15 @@ public class GameSettings {
 		return GameSettings.map;
 	}
 
+	public static void setCurrentSettings(GameSettings settings) {
+		currentSettings = settings;
+	}
+	
 	public static GameSettings getCurrentSettings() {
-		return new GameSettings(nbr_of_human_players, nbr_of_human_players, hours_each_round, card_timer_seconds, map);
+		if (currentSettings == null) {
+			currentSettings = new GameSettings();
+		}
+		return currentSettings;
 	}
 
 }
