@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 /**
@@ -42,8 +43,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	// Time to choose cards.
 	private int cardTime;
 	// Time between rounds.
-	private int roundTime;
-	
+			
 	private Texture boardTexture, cardTexture;
 			
 	/*
@@ -71,7 +71,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		
 		String[] gameData = client.getGameData().split(";");
 		this.cardTime = Integer.parseInt(gameData[0]);
-		this.roundTime = Integer.parseInt(gameData[1]) * 3600;
+		int roundTime = Integer.parseInt(gameData[1]) * 3600;
+		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - TimeUtils.millis()) / 1000;
+		// Roundtime shouldn't be too long.
 		
 		messageStage.addListener(this);
 
@@ -90,15 +92,22 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		players.get(client.getRobotID()).addListener(
 				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
 		
-		this.deckView = new DeckView(players, client.getRobotID());
+		this.deckView = new DeckView(players, client.getRobotID(), roundTime); 
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		deckView.setRoundTick(roundTime);
+		deckView.setRoundTick(roundTimeLeft);
 		
 		//Creates an input multiplexer to be able to use multiple listeners
 		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
 		Gdx.input.setInputProcessor(im);
 		Gdx.input.setCatchBackKey(true);
+		
+		// Look to see if the client is behind.
+		if(client.getRoundsBehind() > 0) {
+			deckView.displayPlayOptions();
+			result = client.getRoundResult();
+			deckView.setChosenCards(client.loadCards(), cardTexture);
+		}
 	}
 	
 	/*
@@ -118,7 +127,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		actions.clear();
 		deckView.setCardTick(-1);
 		deckView.setRoundTick(-1);
-		deckView.displayWaiting();
 		currentStage = Stage.WAITING;
 	}
 	
@@ -171,7 +179,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Skips all actions
 	 */
 	private void skipAllActions() {
-		while(actions == null || !actions.isEmpty() || (actions.isEmpty() && result.hasNext())) {
+		int roundID = client.getRoundID();
+		while((actions == null || !actions.isEmpty() || (actions.isEmpty() && result.hasNext()))
+				&& roundID == client.getRoundID()) {
 			skipCardActions();
 		}
 	}
@@ -200,10 +210,18 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			actions = result.getNextResult();
 			deckView.getRegisters().nextHighLight();
 		}else{
-			currentStage = Stage.WAITING;
-			deckView.getRegisters().clearHighLight();
-			deckView.displayDrawCard();
 			client.incrementRound();
+			deckView.getRegisters().clearHighLight();
+			System.out.println("Nbr behind: " + client.getRoundsBehind());
+			if(client.getRoundsBehind() > 0) {
+				currentStage = Stage.WAITING;
+				deckView.displayPlayOptions();
+				deckView.setChosenCards(client.loadCards(), cardTexture);
+				result = client.getRoundResult();
+			}else{
+				currentStage = Stage.WAITING;
+				deckView.displayDrawCard();
+			}
 		}
 	}
 
@@ -261,7 +279,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				&& currentStage.equals(Stage.WAITING)) {
 			deckView.displayPlayOptions();
 			result = client.getRoundResult();
-			deckView.setRoundTick(roundTime);
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}

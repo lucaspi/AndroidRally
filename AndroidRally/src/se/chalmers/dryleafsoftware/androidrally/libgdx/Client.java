@@ -255,4 +255,8 @@ public class Client {
 	public void incrementRound() {
 		this.roundID++;
 	}
+	
+	public int getRoundID() {
+		return this.roundID;
+	}
 }
