@@ -26,6 +26,7 @@ public class GameController implements PropertyChangeListener {
 	private AIRobotController aiRobotController;
 	private int nbrOfHumanPlayers;
 	private int nbrOfBots;
+	private static final int PING_TIME = 5; //seconds
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
 		nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
@@ -52,7 +53,7 @@ public class GameController implements PropertyChangeListener {
 		this.hoursEachRound = hoursEachRound;
 		
 		timer = new Timer();
-		cardTimer = new CardTimer[Integer.parseInt(nbrOfRobots)];
+		cardTimer = new CardTimer[Integer.parseInt(nbrOfRobots) + PING_TIME];
 		for (int i = 0; i < Integer.parseInt(nbrOfRobots); i++) {
 			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
