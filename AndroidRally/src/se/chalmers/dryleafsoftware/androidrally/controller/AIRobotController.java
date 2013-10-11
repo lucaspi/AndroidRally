@@ -103,9 +103,6 @@ public class AIRobotController {
 		if (chosenCards.size() == 5) {
 			return;
 		}
-		if(chosenCards.size() != 0){// TODO when several cards is chosen during on placeCard this doesnt work
-			changeCalculatedPosition(chosenCards.get(chosenCards.size()-1));
-		}
 		
 		boolean isRightDirection = false;
 		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
