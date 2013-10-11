@@ -140,9 +140,9 @@ public class AIRobotController {
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
 				boolean cardAdded = false;
 				for(Integer i : getDirections()){
-					int turnDifference = Math.abs(i.intValue() - 
-							direction);
-					if(turnDifference == 1){
+					int turnDifference = ((i.intValue() - 
+							direction)+4)%4;
+					if(turnDifference == 3){
 						if(leftTurnCards.size() != 0){
 							addChosenCard(leftTurnCards.get(0));
 							cardAdded = true;
@@ -154,7 +154,7 @@ public class AIRobotController {
 							cardAdded = true;
 							break;
 						}
-					}else if(turnDifference == 3){
+					}else if(turnDifference == 1){
 						if(rightTurnCards.size() != 0){
 							addChosenCard(rightTurnCards.get(0));
 							cardAdded = true;
