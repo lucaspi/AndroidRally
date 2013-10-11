@@ -107,7 +107,7 @@ public class AIRobotController {
 	 * card and then call itself.
 	 */
 	private void placeCards() {
-		if (chosenCards.size() == 5) {
+		if (chosenCards.size() >= 5) {
 			return;
 		}
 		boolean cardAdded = false;
@@ -132,13 +132,14 @@ public class AIRobotController {
 					addChosenCard(moveBackwardCards.get(0));
 					addChosenCard(moveBackwardCards.get(0));
 					addChosenCard(uTurnCards.get(0));
+					cardAdded = true;
 				} else if (chosenCards.size() <= 2 && moveBackwardCards.size() >= 1 && uTurnCards.size() >= 2) {
 					//turn around, walk backwards 1 step and turn around again
 					addChosenCard(uTurnCards.get(0));
 					addChosenCard(moveBackwardCards.get(0));
 					addChosenCard(uTurnCards.get(0));
+					cardAdded = true;
 				}
-				cardAdded = true;
 			}
 		} else { // If the robot is turned towards a wrong direction.
 			if (rightTurnCards.size() != 0 || leftTurnCards.size() != 0 || uTurnCards.size() != 0) { // Try turn towards a correct direction
