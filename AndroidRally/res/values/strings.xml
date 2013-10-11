@@ -7,5 +7,14 @@
 	<string name="action_refresh">Refresh</string>
 	<string name="action_help">Help</string>
 	<string name="current_games">Current games</string>
+	<string name="title_activity_game_configuration">Wohooooo</string>
+	<string name="round_time">Round time</string>
+	<string name="card_time">Card time</string>
+	<string name="round_time_default">12 hours</string>
+	<string name="card_time_default">45 seconds</string>
+	<string name="players_text">Number of bots</string>
+	<string name="number_of_players_default">4 players</string>
+	<string name="start_button">Start Game</string>
+	<string name="set_up_button">Set up game</string>
 
 </resources>

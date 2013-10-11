@@ -21,7 +21,7 @@ public class Wrench implements BoardElement{
 	
 	@Override
 	public void action(Robot robot) {
-		robot.damage(-repairAmount);
+		robot.repair(repairAmount);
 	}
 
 	@Override

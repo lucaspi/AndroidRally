@@ -19,10 +19,13 @@ public class HoleTest {
 		
 		assertTrue(robot.getLife() == 3);
 		
+		robot.setX(robot.getSpawnPointX());
+		robot.setY(robot.getSpawnPointY());
+		
 		hole.instantAction(robot);
 		assertTrue(robot.getLife() == 2);
-		assertTrue(robot.getX() == -1);
-		assertTrue(robot.getY() == -1);
+		assertTrue(robot.getX() == 5);
+		assertTrue(robot.getY() == 5);
 	}
 
 }

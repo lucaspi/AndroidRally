@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,14 +7,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
- * This is the main activity, i.g. it will be the activity started when opening the app 
- * on the phone.
+ * This is the main activity, i.g. it will be the activity started when opening
+ * the app on the phone.
  * 
  * @author
- *
+ * 
  */
 public class MainActivity extends Activity {
 
@@ -35,31 +35,40 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_refresh:
-				// TODO: refresh()
-				showToaster("Refreshing");
-				return true;
-			case R.id.action_help:
-				// Todo: help someone
-				showToaster("Helping");
-				return true;
-			default:
-				return true;
+		case R.id.action_refresh:
+			// TODO: refresh()
+			showToaster("Refreshing");
+			return true;
+		case R.id.action_help:
+			// Todo: help someone
+			showToaster("Helping");
+			return true;
+		default:
+			return true;
 		}
 	}
 	
+	/**
+	 * Starts the chosen game
+	 * 
+	 * @param view
+	 */
+	public void startChosenGame(View view) {
+		ListView lv = (ListView) view.findViewById(R.id.currentGames);
+//		lv.get the chosen one
+//		configure the correct game to start
+//		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+//		startActivity(i);
+	}
+
 	public void showToaster(CharSequence message) {
 		Context context = getApplicationContext();
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
-	
-	/**
-	 * Starts the game.
-	 * @param view
-	 */
-	public void startGame(View view) {
-		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+
+	public void startConfiguration(View view) {
+		Intent i = new Intent(getApplicationContext(), GameConfigurationActivity.class);
 		startActivity(i);
 	}
 

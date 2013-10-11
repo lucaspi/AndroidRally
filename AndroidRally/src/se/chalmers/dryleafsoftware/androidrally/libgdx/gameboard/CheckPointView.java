@@ -2,7 +2,6 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
@@ -11,18 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
  * @author 
  *
  */
-public class CheckPointView extends Image {
+public class CheckPointView extends Image implements Comparable<CheckPointView> {
 
 	private final int number;
 	private final BitmapFont font;
 	
 	/**
 	 * Creates a new checkpoint with the specified texture and the specified number.
-	 * @param texture The texture of the checkpoint.
 	 * @param number The number of the checkpoint.
 	 */
-	public CheckPointView(TextureRegion texture, int number) {
-		super(texture);
+	public CheckPointView(int number) {
+		super();
 		this.number = number;
 		font = new BitmapFont();
 	}
@@ -30,6 +28,11 @@ public class CheckPointView extends Image {
 	@Override
 	public void draw(SpriteBatch spriteBatch, float f) {	
 		super.draw(spriteBatch, f);
-		font.draw(spriteBatch, "" + number, getX() + 20, getY() + 20);
+		font.draw(spriteBatch, "" + number, getX() + 7, getY() + 35);
+	}
+	
+	@Override
+	public int compareTo(CheckPointView that) {
+		return this.number - that.number;
 	}
 }

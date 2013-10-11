@@ -2,26 +2,55 @@ package se.chalmers.dryleafsoftware.androidrally.controller;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.badlogic.gdx.utils.Timer;
 
-public class CardTimer extends Timer {
+public class CardTimer {
 	
-	private final int robotID;
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	private int robotNbr;
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	public static final String CARD_TIME_OUT = "cardTimeOut";
+	private long seconds;
+	private Timer timer;
+	private TimerTask timeOut;
 	
-	public CardTimer(long secondsInFuture, int robotID, PropertyChangeListener pcl) {
-		super();
-		this.robotID = robotID;
-		pcs.addPropertyChangeListener(pcl);
-		schedule(new Timer.Task() {
+	public CardTimer(long seconds, int robotID) {
+		timer = new Timer();
+		this.seconds = seconds * 1000;
+		this.robotNbr = robotID;
+	}
+	
+	/**
+	 * Starts the timer based on the number of seconds given in the
+	 * constructor. Sends an event to listeners with name given by
+	 * static modifier CardTimer.CARD_TIME_OUT.
+	 */
+	public void start() {
+		reSchedule();
+		timer.schedule(timeOut, seconds);
+	}
+
+	public void cancelTask() {
+		if (timeOut != null) {
+			timeOut.cancel();
+		}
+	}
+	
+	private void reSchedule() {
+		timeOut = new TimerTask() {
 			@Override
 			public void run() {
-				pcs.firePropertyChange("cardTimeOut", -1, CardTimer.this.robotID);
-				stop();
-				clear();
+				pcs.firePropertyChange(CARD_TIME_OUT, -1, robotNbr);
 			}
-		}, secondsInFuture);
-		start();
+		};
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		pcs.addPropertyChangeListener(pcl);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		pcs.removePropertyChangeListener(pcl);
 	}
 }

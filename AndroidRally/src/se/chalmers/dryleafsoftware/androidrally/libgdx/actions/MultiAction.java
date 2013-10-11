@@ -6,14 +6,14 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
- * A MultiAction can do several SingleActions at the same time.
+ * A MultiAction can do several GameActions at the same time.
  * 
  * @author
  *
  */
 public class MultiAction extends GameAction {
 
-	private List<SingleAction> actions = new ArrayList<SingleAction>();
+	private List<GameAction> actions = new ArrayList<GameAction>();
 	
 	/**
 	 * Creates a new empty instance.
@@ -26,9 +26,9 @@ public class MultiAction extends GameAction {
 	 * Creates a new instance which will add the specified actions.
 	 * @param action The actions to add.
 	 */
-	public MultiAction(SingleAction... action) {
+	public MultiAction(GameAction... action) {
 		this();
-		for(SingleAction a : action) {
+		for(GameAction a : action) {
 			add(a);
 		}		
 	}
@@ -37,7 +37,7 @@ public class MultiAction extends GameAction {
 	 * Adds the specified action.
 	 * @param a The action to add.
 	 */
-	public void add(SingleAction a) {
+	public void add(GameAction a) {
 		actions.add(a);
 		setDuration(Math.max(getDuration(), a.getDuration()));
 	}
@@ -45,14 +45,14 @@ public class MultiAction extends GameAction {
 	@Override
 	public void action(List<RobotView> robots) {
 		start();
-		for(SingleAction a : actions) {
+		for(GameAction a : actions) {
 			a.action(robots);
 		}
 	}
 
 	@Override
 	public void cleanUp(List<RobotView> robots) {
-		for(SingleAction a : actions) {
+		for(GameAction a : actions) {
 			a.cleanUp(robots);
 		}
 	}

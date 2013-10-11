@@ -29,4 +29,8 @@ public class Turn extends Card {
 	public void action(Robot robot) {
 		robot.turn(turnType);
 	}
+	
+	public TurnType getTurn(){
+		return turnType;
+	}
 }

@@ -17,16 +17,12 @@ public class ConveyorBeltTest {
 
 	@Test
 	public void testMoveOnConveyorBeltsInDifferentDirections() {
-		String[][] testMap = new String[][]{
-				{				"",						"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.EAST)+3},
-				{"1"+String.valueOf(GameBoard.SOUTH)+3, "1"+String.valueOf(GameBoard.WEST)+3,	"1"+String.valueOf(GameBoard.EAST)+3},
-				{"1"+String.valueOf(GameBoard.WEST)+3,  "1"+String.valueOf(GameBoard.NORTH)+3,	"1"+String.valueOf(GameBoard.NORTH)+3}
-		};
+		String testMap =
+				"yx"									+ "x1" + String.valueOf(GameBoard.SOUTH) + "3x1" + String.valueOf(GameBoard.EAST) + "3" +
+				"yx1" + String.valueOf(GameBoard.SOUTH)+ "3x1" + String.valueOf(GameBoard.WEST)  + "3x1" + String.valueOf(GameBoard.EAST) + "3" +
+				"yx1" + String.valueOf(GameBoard.WEST) + "3x1" + String.valueOf(GameBoard.NORTH) + "3x1" + String.valueOf(GameBoard.NORTH)+ "3";
 		
 		GameModel gm = new GameModel(2, testMap);
-		
-		Card left = new Turn(80,TurnType.LEFT);
-		Card right = new Turn(90,TurnType.RIGHT);
 		
 		List<Card> cardList1 = new ArrayList<Card>();
 		List<Card> cardList2 = new ArrayList<Card>();
@@ -51,6 +47,8 @@ public class ConveyorBeltTest {
 		assertTrue(gm.getRobots().get(1).getX() == 1);
 		assertTrue(gm.getRobots().get(1).getY() == 1);
 		gm.moveRobots();
+		System.out.println("x0" + gm.getRobots().get(0).getX());
+		System.out.println("y0" + gm.getRobots().get(0).getY());
 		assertTrue(gm.getRobots().get(0).getX() == 1);
 		assertTrue(gm.getRobots().get(0).getY() == 1);
 		assertTrue(gm.getRobots().get(1).getX() == 2);
@@ -61,11 +59,10 @@ public class ConveyorBeltTest {
 	
 	@Test
 	public void testActionWhenConvetyorBeltsAreTowardsEachOtherWithAGapBetween() {
-		String[][] testMap = new String[][]{
-				{				"",				"1"+String.valueOf(GameBoard.EAST)+3,				""						},
-				{"1"+String.valueOf(GameBoard.SOUTH)+3,			"",					"1"+String.valueOf(GameBoard.NORTH)+3},
-				{				"",				"1"+String.valueOf(GameBoard.WEST)+3,				""						}
-		};
+		String testMap =
+				"yx"						 + "x1" + String.valueOf(GameBoard.EAST)+"3x" +
+				"yx1"+String.valueOf(GameBoard.SOUTH)+"3" +		"x" + 				  "x1"+String.valueOf(GameBoard.NORTH)+"3" +
+				"yx" + 						   "x1" + String.valueOf(GameBoard.WEST)+"3x";
 		
 		GameModel gm = new GameModel(2, testMap);
 		

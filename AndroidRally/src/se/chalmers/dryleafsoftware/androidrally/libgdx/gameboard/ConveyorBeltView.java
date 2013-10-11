@@ -9,40 +9,31 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class ConveyorBeltView extends AnimatedImage {
+public class ConveyorBeltView extends AnimatedElement {
 	
 	private float scrollTimer = 0;
 	private final TextureRegion texture;
-	private float speedMulti;
 	
 	/**
 	 * Creates a new conveyer belt at the specified position.
 	 * @param texture The texture of the conveyer belt.
 	 * @param degree The direction of the conveyer belt (counterclockwise).
-	 * @param speedMulti A speed multiplier of the conveyer belt's speed.
+	 * @param speed A speed multiplier of the conveyer belt's speed.
 	 */
-	public ConveyorBeltView(TextureRegion texture, int degree, int speedMulti) {
+	public ConveyorBeltView(TextureRegion texture, int degree, int speed) {
 		super(texture);
 		this.texture = texture;
-		this.setOrigin(getWidth()/2, getHeight()/2);
 		this.rotate(-degree);
-		this.speedMulti = speedMulti;
-		int[] mask = new int[speedMulti];
+		int[] mask = new int[speed];
 		for(int i = 0; i < mask.length; i++) {
 			mask[i] = 10 + i + 1;
 		}
 		this.setPhaseMask(mask);
 	}
-	
-	@Override
-	public void setSize(float width, float height) {
-		super.setSize(width, height);
-		this.setOrigin(getWidth()/2, getHeight()/2);
-	}
 
 	@Override
 	public void animate(float timeDelta) {
-		scrollTimer += timeDelta * speedMulti;
+		scrollTimer += timeDelta;
 		if (scrollTimer > 1.0f)
 			scrollTimer = 0.0f;
 		texture.setV(scrollTimer);
