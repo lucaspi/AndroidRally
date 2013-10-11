@@ -226,7 +226,7 @@ public class AIRobotController {
 			directions.add(Integer.valueOf((directions.get(indexToRemove) + 1) % 4));
 			directions.add(Integer.valueOf((directions.get(indexToRemove) + 3) % 4));
 		}
-		directions.remove(indexToRemove);
+		directions.remove(indexToRemove.intValue());
 	}
 
 	private List<Integer> removeBadDirections(List<Integer> directions){
@@ -235,8 +235,8 @@ public class AIRobotController {
 		}
 		for(int i = 0; i < directions.size(); i++){
 			if(directions.get(i).intValue() == GameBoard.NORTH){
-				for(int j = 0; j < 3; j++){
-					if((y-j) >= 0){
+				for(int j = 0; j < Math.min(3, Math.abs(getDY())); j++){
+					if((y-j) >= 0 && !gb.getTile(x, y-j).getNorthWall()){
 						if (gb.getTile(x, y-j).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile(x, (y-j)).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -251,8 +251,8 @@ public class AIRobotController {
 					}
 				}
 			}else if(directions.get(i).intValue() == GameBoard.EAST){
-				for(int j = 0; j < 3; j++){
-					if((x+j) <= gb.getWidth()){
+				for(int j = 0; j < Math.min(3, Math.abs(getDX())); j++){
+					if((x+j) < gb.getWidth() && !gb.getTile(x+j, y).getEastWall()){
 						if (gb.getTile(x+j, y).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile((x+j), y).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -267,8 +267,8 @@ public class AIRobotController {
 					}
 				}
 			}else if(directions.get(i).intValue() == GameBoard.SOUTH){
-				for(int j = 0; j < 3; j++){
-					if((y+j) <= gb.getHeight()){
+				for(int j = 0; j < Math.min(3, Math.abs(getDY())); j++){
+					if((y+j) < gb.getHeight() && !gb.getTile(x, y+j).getSouthWall()){
 						if (gb.getTile(x, y+j).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile(x, (y+j)).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -283,8 +283,8 @@ public class AIRobotController {
 					}
 				}
 			}else if(directions.get(i).intValue() == GameBoard.WEST){
-				for(int j = 0; j < 3; j++){
-					if((x-j) >= 0){
+				for(int j = 0; j < Math.min(3, Math.abs(getDX())); j++){
+					if((x-j) >= 0 && !gb.getTile(x-j, y).getWestWall()){
 						if (gb.getTile(x-j, y).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile((x-j), y).getBoardElements()){
 								if(boardElement instanceof Hole){
