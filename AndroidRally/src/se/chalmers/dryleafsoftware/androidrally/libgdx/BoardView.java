@@ -47,6 +47,7 @@ public class BoardView extends Stage {
 	private final ScrollPane pane;
 	private CollisionMatrix collisionMatrix;
 	private final List<CheckPointView> checkPoints = new ArrayList<CheckPointView>();
+	private MapBuilder mapBuilder;
 			
 	/**
 	 * Creates a new instance of BoardView.
@@ -62,8 +63,19 @@ public class BoardView extends Stage {
 		scrollContainer = new Table();
 		scrollContainer.setFillParent(true);
 		scrollContainer.setLayoutEnabled(false);
-		scrollContainer.add(container);
 		scrollContainer.debug();
+		
+		// Centers the container in the scrollpane.
+		Table center = new Table();
+		center.setFillParent(true);
+		center.add(container);
+		
+		// Fills the space around the container.
+		Table filler = new Table();
+		filler.setFillParent(true);
+		filler.add(center).size(480, 480);
+		filler.setSize(480, 480);
+		scrollContainer.add(filler);
 		
 		// Create the ScrollPane.
         ScrollPaneStyle scrollStyle = new ScrollPaneStyle();
@@ -83,8 +95,7 @@ public class BoardView extends Stage {
 		boardCamera.position.set(240, 400, 0f);
 		boardCamera.update();
 		setCamera(boardCamera);
-        
-        setZoom(1f, 0, 0);	        
+               
         pane.addListener(new ActorGestureListener() {
         	@Override
         	public void zoom(InputEvent event, float initialDistance, float distance) {
@@ -125,9 +136,12 @@ public class BoardView extends Stage {
 		}else if(zoom > 2) {
 			zoom = 2f;
 		}
-		container.setScale(zoom);
-		container.setSize(480 * zoom, 640 * zoom);	
-		scrollContainer.setSize(container.getWidth(), container.getHeight());	
+		container.setSize(mapBuilder.getWidth() * 40, mapBuilder.getHeight() * 40);
+//		container.setScale(zoom);
+//		container.setSize(mapBuilder.getWidth() * 40 * zoom,
+//				mapBuilder.getHeight() * 40 * zoom);	
+//		scrollContainer.setSize(container.getWidth(), container.getHeight());
+		scrollContainer.setSize(480, 480);
 		pane.layout();
 	}
 	
@@ -138,7 +152,6 @@ public class BoardView extends Stage {
 	 * NOTE: The bottom four rows of the map array will always be created as the dock area.
 	 */
 	public void createBoard(final Texture texture, String map) {
-		collisionMatrix = new CollisionMatrix(12, 16);
 		final Texture conveyerTexture = new Texture(Gdx.files.internal("textures/special/conveyor.png"));
 		conveyerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		conveyerTexture.setWrap(TextureWrap.ClampToEdge, TextureWrap.Repeat);
@@ -146,19 +159,19 @@ public class BoardView extends Stage {
 		// To be added on top of all the other objects
 		final List<Image> overlay = new ArrayList<Image>();
 
-		new MapBuilder(map) {
+		this.mapBuilder = new MapBuilder(map) {
 			@Override
 			public void buildFactoryFloor(int x, int y) {
 				Image floor = new Image(new TextureRegion(texture, 0, 0, 64, 64));
 				floor.setSize(40, 40);
-				floor.setPosition(40 * x, 640 - 40 * (y+1));
+				floor.setPosition(40 * x, getHeight() * 40 - 40 * (y+1));
 				container.addActor(floor);
 			}
 			@Override
 			public void buildDockFloor(int x, int y) {
 				Image floor = new Image(new TextureRegion(texture, 64, 0, 64, 64));
 				floor.setSize(40, 40);
-				floor.setPosition(40 * x, 640 - 40 * (y+1));
+				floor.setPosition(40 * x, getHeight() * 40 - 40 * (y+1));
 				container.addActor(floor);
 			}
 			@Override
@@ -195,7 +208,7 @@ public class BoardView extends Stage {
 				container.addActor(setCommonValues(
 						new DockView(new TextureRegion(
 								texture, 320, 0, 64, 64), nbr), x, y));
-				docks[nbr - 1] = new Vector2(40 * x, 640 - 40 * (y+1));
+				docks[nbr - 1] = new Vector2(40 * x, getHeight() * 40 - 40 * (y+1));
 			}
 			@Override
 			public void buildWall(int x, int y, int dir) {
@@ -212,7 +225,8 @@ public class BoardView extends Stage {
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
 				overlayImage.setSize(40, 40);
-				overlayImage.setPosition(40 * x, 640 - 40 * (y+1) + 20);
+				Vector2 pos = convertToMapY(x, y);
+				overlayImage.setPosition(pos.x, pos.y + 20);
 				overlayImage.setOrigin(overlayImage.getWidth()/2 , 
 						overlayImage.getHeight()/2 - 20);
 				overlayImage.rotate(-(dir) * 90);
@@ -220,11 +234,18 @@ public class BoardView extends Stage {
 			}
 			private Image setCommonValues(Image i, int x, int y) {
 				i.setSize(40, 40);
-				i.setPosition(40 * x, 640 - 40 * (y+1));
+				Vector2 pos = convertToMapY(x, y);
+				i.setPosition(pos.x, pos.y);
 				i.setOrigin(20, 20);
 				return i;
 			}
+			@Override
+			public Vector2 convertToMapY(int x, int y) {
+				return new Vector2(40 * x, getHeight() * 40 - 40 * (y+1));
+			}
 		};
+		collisionMatrix = new CollisionMatrix(mapBuilder.getWidth(), mapBuilder.getHeight());
+		mapBuilder.build();
 				
 		for(AnimatedElement i : animated) {
 			container.addActor(i);
@@ -235,7 +256,12 @@ public class BoardView extends Stage {
 			container.addActor(i);
 		}
 		
+		setZoom(1f, 0, 0);	 
 		pane.setScrollPercentY(100);
+	}
+	
+	public MapBuilder getMapBuilder() {
+		return this.mapBuilder; 
 	}
 	
 	public List<CheckPointView> getCheckPoints() {

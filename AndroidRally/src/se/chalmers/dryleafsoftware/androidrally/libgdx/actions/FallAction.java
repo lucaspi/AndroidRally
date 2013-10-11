@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -24,7 +25,7 @@ public class FallAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 		robots.get(getRobotID()).addAction(
 				Actions.parallel(Actions.fadeOut(getDuration() / 1000f),
@@ -32,7 +33,7 @@ public class FallAction extends GameAction {
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		robots.get(getRobotID()).clearActions();
 		robots.get(getRobotID()).addAction(
 				Actions.parallel(Actions.fadeOut(0),

@@ -34,6 +34,8 @@ public class GameModel {
 	private boolean isGameOver;
 
 	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxx36x36:37xxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26x17xx1x103x103x103x103x103xxxxyxxxx26x36xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
+//	private static final String testMap = "yxx18x28xxxxyx38x48x58x68xxxyxxxxxxxyxxxxxxxyxxxxxxxyxxxxxxx12";
+	
 	/**
 	 * Only for testing!!
  	 * @param nbrOfRobots players + bots

@@ -190,7 +190,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private boolean cleanAndRemove(GameAction action) {
 		int phase = action.getPhase();
-		action.cleanUp(gameBoard.getRobots());
+		action.cleanUp(gameBoard.getRobots(), gameBoard.getMapBuilder());
 		actions.remove(action);
 		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
 			handleGameOver();
@@ -240,7 +240,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			int syncSpeed = playSpeed;
 			if(!actions.isEmpty()) {
 				actions.get(0).setDuration(actions.get(0).getDuration() / syncSpeed);
-				actions.get(0).action(gameBoard.getRobots());
+				actions.get(0).action(gameBoard.getRobots(), gameBoard.getMapBuilder());
 				gameBoard.setAnimate(actions.get(0).getPhase(), syncSpeed);
 			}
 		}

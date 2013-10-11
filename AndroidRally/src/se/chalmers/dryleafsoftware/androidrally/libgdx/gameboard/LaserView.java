@@ -63,11 +63,13 @@ public class LaserView extends AnimatedElement {
 	}
 	
 	private int calcHeight() {
+		System.out.println("Widht: " + collisionMatrix.getWidth()+ "h: " + collisionMatrix.getHeight());
 		int length = 0;
 		int x = (int) (getX() / 40);
-		int y = 15 - (int) (getY() / 40);
+		int y = collisionMatrix.getHeight() - 1 - (int) (getY() / 40);
 		int dir = ((int)(getRotation() / -90) + 4) % 4;
 		if((!outer && collisionMatrix.isBlocked(x, y)) || !collisionMatrix.validPos(x, y)) {
+			System.out.println("Length 1: 0");
 			return 0;
 		}
 		switch(dir) {
@@ -81,8 +83,8 @@ public class LaserView extends AnimatedElement {
 			}
 			break;
 		case MapBuilder.DIR_SOUTH:
-			length = 40 * (16-y);
-			for(int i = y; i <= 16; i++) {
+			length = 40 * (collisionMatrix.getHeight()-y);
+			for(int i = y; i <= collisionMatrix.getHeight(); i++) {
 				if(collisionMatrix.cannotTravel(x, i, dir)) {
 					length = 40 * (i-y+1);
 					break;
@@ -99,8 +101,8 @@ public class LaserView extends AnimatedElement {
 			}
 			break;
 		case MapBuilder.DIR_EAST:
-			length = 40 * (12-x);
-			for(int i = x; i <= 12; i++) {
+			length = 40 * (collisionMatrix.getWidth()-x);
+			for(int i = x; i <= collisionMatrix.getWidth(); i++) {
 				if(collisionMatrix.cannotTravel(i, y, dir)) {
 					length = 40 * (i-x+1);
 					break;
@@ -108,6 +110,7 @@ public class LaserView extends AnimatedElement {
 			}
 			break;
 		}
+		System.out.println("Length: " + length);
 		return length;
 	}
 

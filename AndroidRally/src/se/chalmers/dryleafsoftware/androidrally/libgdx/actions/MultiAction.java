@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -43,17 +44,17 @@ public class MultiAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 		for(GameAction a : actions) {
-			a.action(robots);
+			a.action(robots, map);
 		}
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		for(GameAction a : actions) {
-			a.cleanUp(robots);
+			a.cleanUp(robots, map);
 		}
 	}
 }

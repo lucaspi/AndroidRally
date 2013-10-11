@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
+import com.badlogic.gdx.math.Vector2;
+
 /**
  * This class helps with the loading of a map.
  * 
@@ -8,6 +10,8 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
  */
 public abstract class MapBuilder {
 
+	private int width, height;
+	
 	/**
 	 * ID numbers for all the implemented board elements.
 	 */
@@ -31,19 +35,25 @@ public abstract class MapBuilder {
 	DIR_SOUTH = 2,
 	DIR_WEST = 3;
 
+	private final String[][] map;
+	
 	/**
 	 * Creates a new instance which will load the map provided.
 	 * @param indata The map to load supplied as a String.
 	 */
 	public MapBuilder(String indata) {
 		String[] mapY = indata.substring(1).split("y");
-		String[][] map = new String[mapY.length][];
+		map = new String[mapY.length][];
 		for(int i = 0; i < map.length; i++) {
 			map[i] = mapY[i].substring(1).split("x", 64);
 		}
-		
-		for(int y = 0; y < map[0].length; y++) {	
-			for(int x = 0; x < map.length; x++) {
+		width = map.length;
+		height = map[0].length;
+	}
+	
+	public void build() {
+		for(int y = 0; y < height; y++) {	
+			for(int x = 0; x < width; x++) {
 				// Create the floor
 				if(y < map[0].length - 4) {
 					buildFactoryFloor(x, y);
@@ -89,6 +99,16 @@ public abstract class MapBuilder {
 			} // loop - X
 		} // loop - Y
 	}
+
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
+	}
+		
+	public abstract Vector2 convertToMapY(int x, int y);
 
 	/**
 	 * Creates a new piece of factory floor.

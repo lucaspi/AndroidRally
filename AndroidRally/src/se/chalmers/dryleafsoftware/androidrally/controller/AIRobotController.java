@@ -252,7 +252,7 @@ public class AIRobotController {
 				}
 			}else if(directions.get(i).intValue() == GameBoard.EAST){
 				for(int j = 0; j < 3; j++){
-					if((x+j) <= gb.getWidth()){
+					if((x+j) < gb.getWidth()){
 						if (gb.getTile(x+j, y).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile((x+j), y).getBoardElements()){
 								if(boardElement instanceof Hole){
@@ -268,7 +268,7 @@ public class AIRobotController {
 				}
 			}else if(directions.get(i).intValue() == GameBoard.SOUTH){
 				for(int j = 0; j < 3; j++){
-					if((y+j) <= gb.getHeight()){
+					if((y+j) < gb.getHeight()){
 						if (gb.getTile(x, y+j).getBoardElements() != null) {
 							for(BoardElement boardElement : gb.getTile(x, (y+j)).getBoardElements()){
 								if(boardElement instanceof Hole){
