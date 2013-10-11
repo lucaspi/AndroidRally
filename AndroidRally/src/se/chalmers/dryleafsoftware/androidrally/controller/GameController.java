@@ -21,7 +21,7 @@ public class GameController implements PropertyChangeListener {
 	private boolean isRunRunning;
 	private int nbrOfRobotsDone;
 	private CardTimer[] cardTimer;
-	private String nbrOfRobots;
+	private int nbrOfRobots;
 	private String mapAsString;
 	private AIRobotController aiRobotController;
 	private int nbrOfHumanPlayers;
@@ -35,7 +35,7 @@ public class GameController implements PropertyChangeListener {
 		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
 		gameModel = new GameModel(nbrOfHumanPlayers + nbrOfBots);
-		this.nbrOfRobots = String.valueOf(gameModel.getRobots().size());
+		this.nbrOfRobots = gameModel.getRobots().size();
 		allMoves = new ArrayList<String>();
 		allCards = new ArrayList<String[]>();
 		
@@ -52,8 +52,8 @@ public class GameController implements PropertyChangeListener {
 		this.hoursEachRound = hoursEachRound;
 		
 		timer = new Timer();
-		cardTimer = new CardTimer[Integer.parseInt(nbrOfRobots)];
-		for (int i = 0; i < Integer.parseInt(nbrOfRobots); i++) {
+		cardTimer = new CardTimer[nbrOfRobots];
+		for (int i = 0; i < nbrOfRobots; i++) {
 			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
@@ -236,7 +236,7 @@ public class GameController implements PropertyChangeListener {
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
-		for (int i = nbrOfHumanPlayers ; i < Integer.parseInt(nbrOfRobots); i++) {
+		for (int i = nbrOfHumanPlayers ; i < nbrOfRobots; i++) {
 			aiRobotController.makeMove(gameModel.getRobots().get(i));
 		}
 	}
@@ -246,7 +246,7 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	public String getNbrOfPlayers() {
-		return nbrOfRobots;
+		return "" + nbrOfRobots;
 	}
 	
 	/**

@@ -234,6 +234,8 @@ public class BoardView extends Stage {
 		for(Image i : overlay) {
 			container.addActor(i);
 		}
+		
+		pane.setScrollPercentY(100);
 	}
 	
 	public List<CheckPointView> getCheckPoints() {
