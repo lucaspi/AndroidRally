@@ -32,17 +32,15 @@ public class GameController implements PropertyChangeListener {
 	private int cardTimerSeconds;
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
-		nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
-		nbrOfHumanPlayers = Math.max(nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
-		nbrOfBots = Math.min(nbrOfBots, 8 - nbrOfHumanPlayers);
-		nbrOfBots = Math.max(nbrOfBots, 0);
-		if (nbrOfHumanPlayers == 1 && nbrOfBots == 0) { //if only 1 player there has to be 1 bot
-			nbrOfBots = 1;
+		this.nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
+		this.nbrOfHumanPlayers = Math.max(this.nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
+		this.nbrOfBots = Math.min(nbrOfBots, 8 - this.nbrOfHumanPlayers);
+		this.nbrOfBots = Math.max(this.nbrOfBots, 0);
+		if (this.nbrOfHumanPlayers == 1 && this.nbrOfBots == 0) { //if only 1 player there has to be 1 bot
+			this.nbrOfBots = 1;
 		}
-		this.nbrOfHumanPlayers = nbrOfHumanPlayers;
-		this.nbrOfBots = nbrOfBots;
 		isRunRunning = false;
-		gameModel = new GameModel(nbrOfHumanPlayers + nbrOfBots);
+		gameModel = new GameModel(this.nbrOfHumanPlayers + this.nbrOfBots);
 		this.nbrOfRobots = gameModel.getRobots().size();
 		allMoves = new ArrayList<String>();
 		allCards = new ArrayList<String[]>();
@@ -51,17 +49,15 @@ public class GameController implements PropertyChangeListener {
 		
 		mapAsString = gameModel.getMap();
 		
-		cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 15-180
-		cardTimerSeconds = Math.min(cardTimerSeconds, 180); // -''-
-		this.cardTimerSeconds = cardTimerSeconds;
-		hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
-		hoursEachRound = Math.min(hoursEachRound, 24);// -''-
-		this.hoursEachRound = hoursEachRound;
+		this.cardTimerSeconds = Math.max(cardTimerSeconds, 15); //Make cardTimerSeconds be in the interval 15-180
+		this.cardTimerSeconds = Math.min(this.cardTimerSeconds, 180); // -''-
+		this.hoursEachRound = Math.max(hoursEachRound, 1); //Make hoursEachRound be in the interval 1-24
+		this.hoursEachRound = Math.min(this.hoursEachRound, 24);// -''-
 		
 		timer = new Timer();
 		cardTimer = new CardTimer[nbrOfRobots];
 		for (int i = 0; i < nbrOfRobots; i++) {
-			cardTimer[i] = new CardTimer(cardTimerSeconds, i); //let the time be a variable
+			cardTimer[i] = new CardTimer(this.cardTimerSeconds, i); //let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
 	}
