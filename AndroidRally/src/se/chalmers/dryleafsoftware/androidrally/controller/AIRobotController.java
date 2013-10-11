@@ -27,10 +27,12 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public class AIRobotController {
 	private GameBoard gb;
 	private List<Card> chosenCards;
+	private Robot robot;
 	private int x;
 	private int y;
 	private int direction;
-	private int[] nextCheckpoint;
+	private int nextCheckPoint;
+	private int[] checkpointPosition;
 	private List<Card> cards;
 	private List<Move> moveForwardCards;
 	private List<Move> moveBackwardCards;
@@ -90,7 +92,8 @@ public class AIRobotController {
 		x = robot.getX();
 		y = robot.getY();
 		direction = robot.getDirection();
-		nextCheckpoint = nextCheckPoint(robot);
+		nextCheckPoint = robot.getLastCheckPoint() + 1;
+		checkpointPosition = nextCheckPoint();
 		placeCards();
 		robot.setChosenCards(chosenCards);
 	}
@@ -223,10 +226,10 @@ public class AIRobotController {
 	 * @param robot the robot to find the next checkpoint for.
 	 * @return the next checkpoint for the robot in the form [posX][posY].
 	 */
-	private int[] nextCheckPoint(Robot robot) {
+	private int[] nextCheckPoint() {
 		int[] xy = new int[2];
 		for(int i = 0; i <= 1; i++) {
-			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i];
+			xy[i] = gb.getCheckPoints().get(nextCheckPoint)[i];
 		}
 		return xy;
 	}
@@ -243,6 +246,20 @@ public class AIRobotController {
 		List<Integer> directions = new ArrayList<Integer>();
 		int dx = getDX();
 		int dy = getDY();
+		
+		if (x == checkpointPosition[0] && y == checkpointPosition[1]) {
+			nextCheckPoint++;
+			if (nextCheckPoint > gb.getCheckPoints().size()) {
+				for (int i = chosenCards.size(); i < 5; i++) {
+					randomizeCard();
+				}
+			} else {
+				checkpointPosition = gb.getCheckPoints().get(nextCheckPoint());
+				dx = getDX();
+				dy = getDY();
+			}
+		}
+		
 		if(dx < 0){
 			directions.add(Integer.valueOf(GameBoard.EAST));
 		}else if(dx > 0){
@@ -253,6 +270,8 @@ public class AIRobotController {
 		}else if(dy > 0){
 			directions.add(Integer.valueOf(GameBoard.NORTH));
 		}
+		
+		
 		removeBadDirections(directions);
 
 		// The direction which distance towards the checkpoint is
@@ -380,7 +399,7 @@ public class AIRobotController {
 	 * robots calculated position.
 	 */
 	private int getDX(){
-		return (x - nextCheckpoint[0]);
+		return (x - checkpointPosition[0]);
 	}
 
 	/**
@@ -390,7 +409,7 @@ public class AIRobotController {
 	 * robots calculated position.
 	 */
 	private int getDY(){
-		return (y - nextCheckpoint[1]);
+		return (y - checkpointPosition[1]);
 	}
 
 	/**
