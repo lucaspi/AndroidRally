@@ -72,18 +72,9 @@ public class AIRobotController {
 		nextCheckpoint = nextCheckPoint(robot);
 		placeCards();
 		robot.setChosenCards(chosenCards);
-//		for(int i = 0; i < cards.size(); i++){
-//			System.out.println("Card nr: " + i + " " + cards.get(i).getPriority());
-//		}
-//		for(int i = 0; i < chosenCards.size(); i++){
-//			System.out.println("ChosenCard nr: " + i + " " + chosenCards.get(i).getPriority());
-//			System.out.println("ChosenCard nr: " + i + " " + robot.getChosenCards()[i].getPriority());
-//		}
 	}
 
 	private void placeCards() {
-//		System.out.println("placeCArd");
-//		System.out.println("placeCard " + chosenCards.size());
 		if (chosenCards.size() == 5) {
 			return;
 		}
@@ -100,14 +91,10 @@ public class AIRobotController {
 		if (isRightDirection) {
 			
 			if (moveForwardCards.size() != 0) { // Move forward as long as possible
-//				chosenCards.add(moveForwardCards.get(0));
-//				removeCardFromLists(moveForwardCards.get(0));
 				if(direction == GameBoard.NORTH || direction == GameBoard.SOUTH){
 					addMoveCard(Math.abs(getDY()));
-					System.out.println("north/south");
 				}else{
 					addMoveCard(Math.abs(getDX()));
-					System.out.println("west/east");
 				}
 			}  else {  //check if there are other good combinations of cards
 				if(chosenCards.size() <= 1 && moveBackwardCards.size() >= 2 && uTurnCards.size() >= 2) {
@@ -204,7 +191,7 @@ public class AIRobotController {
 	private int[] nextCheckPoint(Robot robot) {
 		int[] xy = new int[2];
 		for(int i = 0; i <= 1; i++) {
-			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i]; //TODO will crash game if game is over and continues
+			xy[i] = gb.getCheckPoints().get(robot.getLastCheckPoint()+1)[i];
 		}
 		return xy;
 	}
@@ -325,7 +312,6 @@ public class AIRobotController {
 			}
 		}
 		randomizeCard();
-		System.out.println("randomCards");
 	}
 	
 	private int getDX(){
