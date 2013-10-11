@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
@@ -204,6 +205,22 @@ public class Client {
 			}
 		}
 		return result;	
+	}
+	
+	/**
+	 * Saves the current game.
+	 * @param gameID
+	 */
+	public void saveCurrentGame(int gameID) {
+		controller.save("androidRallySave" + gameID);
+	}
+	
+	/**
+	 * Gives an array of gameID's of all the games the client is playing.
+	 * @return
+	 */
+	public int[] getSavedGames() {
+		return IOHandler.getGameIDs();
 	}
 	
 	/*

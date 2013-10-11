@@ -1,5 +1,10 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -66,6 +71,7 @@ public class MainActivity extends Activity {
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	
 
 	public void startConfiguration(View view) {
 		Intent i = new Intent(getApplicationContext(), GameConfigurationActivity.class);

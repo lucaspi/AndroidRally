@@ -2,14 +2,19 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FilterOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.DeckView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.MessageStage;
+
+import android.content.Context;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -20,7 +25,6 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.TimeUtils;
 
 
 /**
@@ -72,7 +76,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		String[] gameData = client.getGameData().split(";");
 		this.cardTime = Integer.parseInt(gameData[0]);
 		int roundTime = Integer.parseInt(gameData[1]) * 3600;
-		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - TimeUtils.millis()) / 1000;
+		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - System.currentTimeMillis()) / 1000;
 		// Roundtime shouldn't be too long.
 		
 		messageStage.addListener(this);
@@ -281,6 +285,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			result = client.getRoundResult();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
+		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
+			client.saveCurrentGame(0);
+			Gdx.app.exit();
 		}
 	}
 
@@ -306,6 +313,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 //		Table.drawDebug(deckView);
 		Table.drawDebug(gameBoard);
 //		Table.drawDebug(messageStage);
+		
 	}
 
 	@Override
@@ -327,6 +335,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				if(deckView.isCardTimerOn()) {
 					messageStage.dispCloseMessage();
 				}else{
+					client.saveCurrentGame(0);
 					Gdx.app.exit();
 				}
 			}

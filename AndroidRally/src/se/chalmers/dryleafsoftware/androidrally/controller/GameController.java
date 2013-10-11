@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
@@ -68,6 +69,39 @@ public class GameController implements PropertyChangeListener {
 				setRandomCards(i);
 			}
 		}
+	}
+	
+	public void save(String savefile) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(cardTimerSeconds + ":");
+		sb.append(hoursEachRound);
+		sb.append("b");
+		
+//		[xx][yy][dir][damage][lives]:[checkpoint]:[spawn xx][spawn yy]
+		for(Robot r : gameModel.getRobots()) {
+			sb.append(String.format("%02d", r.getX()));
+			sb.append(String.format("%02d", r.getY()));
+			sb.append(r.getDirection());
+			sb.append(r.getHealth());
+			sb.append(r.getLife());
+			sb.append(":");
+			sb.append(r.getLastCheckPoint());
+			sb.append(":");
+			sb.append(String.format("%02d", r.getSpawnPointX()));
+			sb.append(String.format("%02d", r.getSpawnPointY()));
+			sb.append("a");	
+			for(Card c : r.getChosenCards()) {
+				if(c != null) {
+					sb.append(c.getPriority() + ":");
+				}else{
+					sb.append("-1:");
+				}
+			}
+			sb.append("c");
+		}
+		sb.append("b" + gameModel.getMap());
+		System.out.println("Saving: " + sb.toString());
+		IOHandler.save(sb.toString(), 0);
 	}
 
 	/**
@@ -291,4 +325,6 @@ public class GameController implements PropertyChangeListener {
 	private void setRandomCards(int robotID) {
 		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
 	}
+
+	
 }
