@@ -109,7 +109,7 @@ public class AIRobotController {
 		
 		boolean isRightDirection = false;
 		for (Integer direction : getDirections()) { // Check if the robot stand in a correct direction
-			if (this.direction == direction) {
+			if (this.direction == direction.intValue()) {
 				isRightDirection = true;
 			}
 		}
@@ -133,7 +133,7 @@ public class AIRobotController {
 					addChosenCard(moveBackwardCards.get(0));
 					addChosenCard(uTurnCards.get(0));
 				} else {// if there are none -> random card
-					randomizeCard(); //maybe randomize between turn-cards? TODO
+					randomizeCard();
 				}
 			}
 		} else { // If the robot is turned towards a wrong direction.
