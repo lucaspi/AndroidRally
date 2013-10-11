@@ -256,6 +256,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			deckView.displayWaiting();
 			currentStage = Stage.WAITING;
 			deckView.setCardTick(-1);
+			deckView.setChosenCards(client.loadCards(), cardTexture);
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
 			deckView.displayPlayOptions();

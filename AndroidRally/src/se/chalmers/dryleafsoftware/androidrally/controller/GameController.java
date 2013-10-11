@@ -265,7 +265,11 @@ public class GameController implements PropertyChangeListener {
 	 * @return the chosenCards for a specific robot and round.
 	 */
 	public String getCards(int round, int robot){
-		return allCards.get(round-1)[robot];
+		if(round > allMoves.size()) {
+			return getCards(robot);
+		}else{
+			return allCards.get(round-1)[robot];
+		}
 	}
 	
 	/**
