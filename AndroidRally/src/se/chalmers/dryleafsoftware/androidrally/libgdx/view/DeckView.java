@@ -86,6 +86,8 @@ public class DeckView extends Stage {
 	 */
 	public static final String EVENT_INFO = "info";
 	
+	public static final String EVENT_RUN = "run";
+	
 	private final Timer timer;	
 	private final Label timerLabel;
 	
@@ -177,33 +179,12 @@ public class DeckView extends Stage {
 		runButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				runButton.setDisabled(true);
-				pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-				pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+				if(!runButton.isDisabled()) {
+					runButton.setDisabled(true);
+					pcs.firePropertyChange(EVENT_RUN, 0, 1);
+				}
 			}
 		});
-		
-//		// TODO: Remove this dummy button!
-//        TextButton dummy = new TextButton("Force round", buttonStyle);
-//        dummy.setPosition(280, 60);
-//        dummy.setSize(100, 20);
-//        statusBar.add(dummy); // Border
-//        dummy.addListener(new ClickListener() {
-//    		@Override
-//    		public void clicked(InputEvent event, float x, float y) {
-//    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-//    		}
-//    	});
-//        TextButton dummy2 = new TextButton("Send cards", buttonStyle);
-//        dummy2.setPosition(380, 60);
-//        dummy2.setSize(100, 20);
-//        statusBar.add(dummy2); // Border
-//        dummy2.addListener(new ClickListener() {
-//    		@Override
-//    		public void clicked(InputEvent event, float x, float y) {
-//    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-//    		}
-//    	});
         
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	

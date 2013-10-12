@@ -283,20 +283,33 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			deckView.setDeckCards(client.loadCards(), cardTexture);
 			deckView.setCardTick(cardTime);
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
-			client.sendCard(deckView.getChosenCards());
-			deckView.displayWaiting();
-			currentStage = Stage.WAITING;
-			deckView.setCardTick(-1);
-			deckView.setChosenCards(client.loadCards(), cardTexture);
+			onCardTimer();
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
-			deckView.displayPlayOptions();
-			result = client.getRoundResult();
+			onRoundTimer();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
 			handleSave();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_RUN)) {
+			onCardTimer();
+			if(singlePlayer) {
+				onRoundTimer();
+			}
 		}
+	}
+	
+	private void onCardTimer() {
+		client.sendCard(deckView.getChosenCards());
+		deckView.displayWaiting();
+		currentStage = Stage.WAITING;
+		deckView.setCardTick(-1);
+		deckView.setChosenCards(client.loadCards(), cardTexture);
+	}
+	
+	private void onRoundTimer() {
+		deckView.displayPlayOptions();
+		result = client.getRoundResult();
 	}
 
 	@Override
