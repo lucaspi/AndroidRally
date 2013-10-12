@@ -2,8 +2,6 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FilterOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
@@ -13,8 +11,6 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandl
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.DeckView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.view.MessageStage;
-
-import android.content.Context;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -67,10 +63,12 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private int playSpeed = 1;
 	private Stage currentStage = Stage.WAITING; 
 	private final int gameID;
+	private final boolean singlePlayer;
 	
-	public GdxGame(int gameID) {
+	public GdxGame(int gameID, boolean singlePlayer) {
 		super();
 		this.gameID = gameID;
+		this.singlePlayer = singlePlayer;
 	}
 
 	@Override
@@ -194,8 +192,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void skipAllActions() {
 		int roundID = client.getRoundID();
-		while((actions == null || !actions.isEmpty() || (actions.isEmpty() && result.hasNext()))
-				&& roundID == client.getRoundID()) {
+		while(result != null && 
+				(((actions == null || actions.isEmpty()) && result.hasNext()) || !actions.isEmpty())
+				&& roundID == client.getRoundID() ) {
 			skipCardActions();
 		}
 	}
@@ -326,6 +325,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	}
 	
 	private void handleSave() {
+		skipAllActions();
 		client.saveCurrentGame(gameID, gameBoard.getSaveData());
 		Gdx.app.exit();
 	}

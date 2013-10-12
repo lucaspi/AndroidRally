@@ -53,6 +53,7 @@ public class DeckView extends Stage {
 	private final Table allPlayerInfo; // The panel with all the players' info
 	private final RegisterView registerView;
 	private final TextButtonStyle buttonStyle;
+	private final TextButton runButton;
 
 	
 	public static final String EVENT_PAUSE = "pause";
@@ -155,28 +156,54 @@ public class DeckView extends Stage {
 				new Texture(Gdx.files.internal("textures/button9patchpressed.png")), 4, 4, 4, 4));
 		buttonStyle = new TextButtonStyle(buttonTexture, buttonTexturePressed, null);
 		buttonStyle.font = new BitmapFont();
-				
-		// TODO: Remove this dummy button!
-        TextButton dummy = new TextButton("Force round", buttonStyle);
-        dummy.setPosition(280, 60);
-        dummy.setSize(100, 20);
-        statusBar.add(dummy); // Border
-        dummy.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-    		}
-    	});
-        TextButton dummy2 = new TextButton("Send cards", buttonStyle);
-        dummy2.setPosition(380, 60);
-        dummy2.setSize(100, 20);
-        statusBar.add(dummy2); // Border
-        dummy2.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-    		}
-    	});
+		buttonStyle.pressedOffsetX = 1;
+		buttonStyle.pressedOffsetY = -1;
+		
+		TextButtonStyle	playStyle = new TextButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(compTexture, 0, 192, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(compTexture, 64, 192, 64, 64)),
+				null);
+		playStyle.disabled = new TextureRegionDrawable(
+				new TextureRegion(compTexture, 128, 192, 64, 64));
+		playStyle.font = new BitmapFont();
+		playStyle.pressedOffsetX = 1;
+		playStyle.pressedOffsetY = -1;
+		
+		runButton = new TextButton("Run", playStyle);
+		runButton.setPosition(410, 20);
+		runButton.setSize(64, 64);
+		runButton.setDisabled(true);
+		registerView.add(runButton);
+		runButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				runButton.setDisabled(true);
+				pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+				pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+			}
+		});
+		
+//		// TODO: Remove this dummy button!
+//        TextButton dummy = new TextButton("Force round", buttonStyle);
+//        dummy.setPosition(280, 60);
+//        dummy.setSize(100, 20);
+//        statusBar.add(dummy); // Border
+//        dummy.addListener(new ClickListener() {
+//    		@Override
+//    		public void clicked(InputEvent event, float x, float y) {
+//    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
+//    		}
+//    	});
+//        TextButton dummy2 = new TextButton("Send cards", buttonStyle);
+//        dummy2.setPosition(380, 60);
+//        dummy2.setSize(100, 20);
+//        statusBar.add(dummy2); // Border
+//        dummy2.addListener(new ClickListener() {
+//    		@Override
+//    		public void clicked(InputEvent event, float x, float y) {
+//    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
+//    		}
+//    	});
         
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
@@ -515,6 +542,7 @@ public class DeckView extends Stage {
 			cv.addListener(cl);
 			cv.addListener(cardListener);
 		}
+		runButton.setDisabled(false);
 	}
 	
 	public void displayOpponentInfo() {
