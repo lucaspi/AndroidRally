@@ -168,10 +168,12 @@ public class DeckView extends Stage {
 		playStyle.disabled = new TextureRegionDrawable(
 				new TextureRegion(compTexture, 128, 192, 64, 64));
 		playStyle.font = new BitmapFont();
+		playStyle.fontColor = Color.WHITE;
+		playStyle.disabledFontColor = Color.GRAY;
 		playStyle.pressedOffsetX = 1;
 		playStyle.pressedOffsetY = -1;
 		
-		runButton = new TextButton("Run", playStyle);
+		runButton = new TextButton("\r\nRun", playStyle);
 		runButton.setPosition(410, 20);
 		runButton.setSize(64, 64);
 		runButton.setDisabled(true);
