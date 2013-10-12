@@ -13,6 +13,7 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
+import se.chalmers.dryleafsoftware.androidrally.model.gameBoard.GameBoard;
 
 
 import com.badlogic.gdx.Gdx;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * This view class displays everything on the game area.
@@ -39,7 +41,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
  */
 public class BoardView extends Stage {
 
-	private final List<RobotView> robots = new ArrayList<RobotView>();
+	private List<RobotView> robots = new ArrayList<RobotView>();
 	private final List<AnimatedElement> animated = new ArrayList<AnimatedElement>();
 	private final Vector2[] docks = new Vector2[8];
 	private final Group container; 
@@ -84,6 +86,47 @@ public class BoardView extends Stage {
 		boardCamera.position.set(240, 400, 0f);
 		boardCamera.update();
 		setCamera(boardCamera);
+	}
+	
+	public void restore(String data, Texture texture) {
+		String[] chunks = data.split("b");		
+		createBoard(texture, chunks[1]);
+		
+		String[] robots = chunks[0].split("a");
+		for(int i = 0; i < robots.length; i++) {
+			String[] r = robots[i].split(":");
+			float x = Float.parseFloat(r[0]);
+			float y = Float.parseFloat(r[1]);
+			float rot = Float.parseFloat(r[2]);
+			int lives = Integer.parseInt(r[3]);
+			int damage = Integer.parseInt(r[4]);
+			RobotView robot = getRobots().get(i);
+			robot.setX(x);
+			robot.setY(y);
+			robot.setRotation(rot);
+			robot.setLives(lives);
+			robot.setDamage(damage);
+			container.removeActor(robot);
+			container.addActor(robot);
+		}
+	}
+	
+	// [robot]b[robot]b[robot]ba[map]
+	public String getSaveData() {
+		StringBuilder sb = new StringBuilder();
+		
+		// [x]:[y]:[dir]:[lives]:[damage]
+		for(RobotView r : getRobots()) {
+			sb.append(r.getX() + ":");
+			sb.append(r.getY() + ":");
+			sb.append(r.getRotation() + ":");
+			sb.append(r.getLives() + ":");
+			sb.append(r.getDamage());
+			sb.append("a");
+		}
+		sb.append("b");
+		sb.append(mapBuilder.getMap());
+		return sb.toString();
 	}
 	
 	/**
@@ -274,17 +317,7 @@ public class BoardView extends Stage {
 		return this.robots;
 	}
 	
-	/**
-	 * Gives the robot with the specified robot ID-number.
-	 * @param robotID The ID-number to look for.
-	 * @return The robot with the specified ID.
-	 */
-	public RobotView getRobot(int robotID) {
-		for(RobotView p : robots) {
-			if(p.getRobotID() == robotID) {
-				return p;
-			}
-		}
-		return null;
+	public void setRobots(List<RobotView> robots) {
+		this.robots = robots;
 	}
 }

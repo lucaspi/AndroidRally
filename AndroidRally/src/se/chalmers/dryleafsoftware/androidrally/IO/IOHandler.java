@@ -13,12 +13,19 @@ public class IOHandler {
 	 * Saved ids: [id1]:[id2]:[id3]:[id4]:
 	 */
 	
-	public static final String SAVENAME = "save";
+	public static final String SERVER_DATA = "save";
 	public static final String GAMEID_PATH = "gameids";
+	public static final String CLIENT_DATA = "client";
 	
-	public static void save(String saveData, int gameID) {
+	/**
+	 * Saves the game with the specified ID. 
+	 * @param saveData The data to save.
+	 * @param gameID The game with the specified ID to save.
+	 */
+	public static void save(String saveData, int gameID, String location) {
 		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		prefs.putString(SAVENAME + gameID, saveData);
+		prefs.putString(location + gameID, saveData);
+		System.out.println("Saving: " + gameID + ", " + saveData);
 		
 		String data = prefs.getString(GAMEID_PATH);
 		String[] idString = data.split(":");
@@ -32,11 +39,27 @@ public class IOHandler {
 		if(!alreadySaved) {
 			prefs.putString(GAMEID_PATH, data + ":" + gameID);
 		}
+		prefs.flush();
 	}
 	
+	public static boolean isSaved(int gameID) {
+		int[] gameIDs = getGameIDs();
+		for(int i = 0; i < gameIDs.length; i++) {
+			if(gameIDs[i] == gameID) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gives all the games the client is playing. 
+	 * @return An array of all the IDs of all the games a client is playing in.
+	 */
 	public static int[] getGameIDs() {
 		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		String data = prefs.getString(GAMEID_PATH);
+		String data = prefs.getString(GAMEID_PATH).substring(1);
+		System.out.println("GameIDs: " + data);
 		String[] idString = data.split(":");
 		int[] id = new int[idString.length];
 		for(int i = 0; i < idString.length; i++) {
@@ -45,9 +68,13 @@ public class IOHandler {
 		return id;
 	}
 	
-	public static void remove(int gameID) {
+	/**
+	 * Removes the data for the specified game. 
+	 * @param gameID
+	 */
+	public static void remove(int gameID, String location) {
 		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		prefs.remove(SAVENAME + gameID);
+		prefs.remove(location + gameID);
 	
 		String gameIDString = "" + gameID;
 		String data = prefs.getString(GAMEID_PATH);
@@ -65,10 +92,19 @@ public class IOHandler {
 			sb.append(s + ":");
 		}
 		prefs.putString(GAMEID_PATH, sb.toString());
+		
+		prefs.flush();
 	}
 	
-	public static String load(String loadData, int gameID) {
+	/**
+	 * Loads the data to the specified game. 
+	 * @param gameID
+	 * @return
+	 */
+	public static String load(int gameID, String location) {
 		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		return prefs.getString(SAVENAME + gameID);
+		String data = prefs.getString(location + gameID);
+		System.out.println("Loaded: " + data);
+		return data;
 	}
 }

@@ -37,8 +37,9 @@ import com.badlogic.gdx.math.Vector2;
 public class Client {
 
 	// TODO: the client must somehow know which robotID the player has.
-	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
-	private final int clientID, robotID;
+	private se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
+	private final int clientID; 
+	private int robotID;
 	private int roundID = 0;
 	private GameSettings settings;
 	// TODO: load the clientID from the user's phone's data.
@@ -58,6 +59,11 @@ public class Client {
 				this.settings.getHoursEachRound(), this.settings.getCardTimerSeconds(), this.settings.getMap());
 		this.clientID = clientID;
 		this.robotID = 0;
+		controller.newRound();
+	}
+	
+	public void loadGame(int gameID) {
+		this.controller = new GameController(IOHandler.load(gameID, IOHandler.SERVER_DATA));
 		controller.newRound();
 	}
 	
@@ -208,11 +214,35 @@ public class Client {
 	}
 	
 	/**
+	 * Loads the data needed to restore the game board.
+	 * @param gameID
+	 * @return
+	 */
+	public String getSavedBoardData(int gameID) {
+		String data = IOHandler.load(gameID, IOHandler.CLIENT_DATA);
+		String[] chunks = data.split("c");
+		String[] clientData = chunks[0].split(":");
+		this.robotID = Integer.parseInt(clientData[0]);
+		this.roundID = Integer.parseInt(clientData[1]);
+		
+		return chunks[1];
+	}
+	
+	/**
 	 * Saves the current game.
 	 * @param gameID
 	 */
-	public void saveCurrentGame(int gameID) {
-		controller.save("androidRallySave" + gameID);
+	public void saveCurrentGame(int gameID, String boardData) {
+		// Force save of server data:
+		controller.save(gameID);
+		
+		// Save client specific data:
+		StringBuilder sb = new StringBuilder();
+		sb.append(robotID + ":");
+		sb.append(robotID);
+		sb.append("c");
+		sb.append(boardData);
+		IOHandler.save(sb.toString(), gameID, IOHandler.CLIENT_DATA);
 	}
 	
 	/**
@@ -245,6 +275,10 @@ public class Client {
 		return temp;
 	}
 	
+	public List<RobotView> getRobots(Texture texture) {
+		return getRobots(texture, null);
+	}
+	
 	/**
 	 * Gives all the players robots in the current game as a list.
 	 * @param texture The textures to use when displaying the robots.
@@ -259,7 +293,9 @@ public class Client {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
 					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
 					"Player " + i);
-			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+			if(dockPositions != null) {
+				robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+			}
 			robot.setOrigin(20, 20);
 			robots.add(robot);
 		}		

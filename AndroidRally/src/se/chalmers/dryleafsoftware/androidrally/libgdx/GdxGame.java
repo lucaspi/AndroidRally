@@ -66,12 +66,37 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	};
 	private int playSpeed = 1;
 	private Stage currentStage = Stage.WAITING; 
+	private final int gameID;
+	
+	public GdxGame(int gameID) {
+		super();
+		this.gameID = gameID;
+	}
 
 	@Override
 	public void create() {
+		// Only load the textures once.
+		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
+		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
+		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
 		this.client = new Client(1, GameSettings.getCurrentSettings());
-		this.gameBoard = new BoardView();	
 		this.messageStage = new MessageStage();
+		
+		this.gameBoard = new BoardView();
+		if(IOHandler.isSaved(gameID)) { // If we can load from file.
+			client.loadGame(gameID);
+			players = client.getRobots(boardTexture);
+			gameBoard.setRobots(players);
+			gameBoard.restore(client.getSavedBoardData(gameID), boardTexture);
+		}else{ // If we need to start a new game.
+			gameBoard.createBoard(boardTexture, client.getMap());
+			players = client.getRobots(boardTexture, gameBoard.getDocksPositions());
+			gameBoard.setRobots(players);
+		}	
+		players.get(client.getRobotID()).addListener(
+				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
 		
 		String[] gameData = client.getGameData().split(";");
 		this.cardTime = Integer.parseInt(gameData[0]);
@@ -79,32 +104,12 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - System.currentTimeMillis()) / 1000;
 		// Roundtime shouldn't be too long.
 		
-		messageStage.addListener(this);
-
-		// Only load the textures once.
-		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
-		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
-		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
-		gameBoard.createBoard(boardTexture, client.getMap());
-		
-		players = client.getRobots(boardTexture, gameBoard.getDocksPositions());
-		for(RobotView player : players) {
-			gameBoard.addRobot(player);
-		}		
-		players.get(client.getRobotID()).addListener(
-				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
+		messageStage.addListener(this);		
 		
 		this.deckView = new DeckView(players, client.getRobotID(), roundTime); 
 		deckView.addListener(this);
 		deckView.displayDrawCard();
 		deckView.setRoundTick(roundTimeLeft);
-		
-		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
-		Gdx.input.setInputProcessor(im);
-		Gdx.input.setCatchBackKey(true);
 		
 		// Look to see if the client is behind.
 		if(client.getRoundsBehind() > 0) {
@@ -112,6 +117,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			result = client.getRoundResult();
 			deckView.setChosenCards(client.loadCards(), cardTexture);
 		}
+
+		//Creates an input multiplexer to be able to use multiple listeners
+		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
+		Gdx.input.setInputProcessor(im);
+		Gdx.input.setCatchBackKey(true);
 	}
 	
 	/*
@@ -286,8 +296,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
-			client.saveCurrentGame(0);
-			Gdx.app.exit();
+			handleSave();
 		}
 	}
 
@@ -315,6 +324,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 //		Table.drawDebug(messageStage);
 		
 	}
+	
+	private void handleSave() {
+		client.saveCurrentGame(gameID, gameBoard.getSaveData());
+		Gdx.app.exit();
+	}
 
 	@Override
 	public void resize(int width, int height) {
@@ -335,8 +349,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				if(deckView.isCardTimerOn()) {
 					messageStage.dispCloseMessage();
 				}else{
-					client.saveCurrentGame(0);
-					Gdx.app.exit();
+					handleSave();
 				}
 			}
 			return false;
