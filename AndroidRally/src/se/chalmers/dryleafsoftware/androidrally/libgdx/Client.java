@@ -36,14 +36,12 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Client {
 
-	// TODO: the client must somehow know which robotID the player has.
+	
 	private se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
-	private final int clientID; 
-	private int robotID;
+	private final int clientID; // TODO: the client must be assigned a unique ID from server
+	private int robotID; // TODO: get robot ID from server
 	private int roundID = 0;
 	private GameSettings settings;
-	// TODO: load the clientID from the user's phone's data.
-	// TODO: save the clientID when assigned one from the server.
 		
 	/**
 	 * Creates a new client instance.
@@ -97,11 +95,6 @@ public class Client {
 		}	
 		System.out.println("From client: \"" + sb.toString() + "\"");
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
-		for(int i = 0; i < 0; i++) {
-			if(i != robotID) {
-				controller.setChosenCardsToRobot(i, "-1:-1:-1:-1:-1"); // TODO: remove
-			}
-		}
 	}
 	
 	/**

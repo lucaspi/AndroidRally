@@ -1,47 +1,43 @@
 package se.chalmers.dryleafsoftware.androidrally.IO;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 
+/**
+ * Helps with saving and loading from the application's private storage.
+ * 
+ * @author 
+ *
+ */
 public class IOHandler {
 		
-	/*
-	 * Note: 
-	 * Saved ids: [id1]:[id2]:[id3]:[id4]:
+	/**
+	 * Path to the directory where data needed for the server part is stored.
 	 */
-	
-	public static final String SERVER_DATA = "save";
-	public static final String GAMEID_PATH = "gameids";
-	public static final String CLIENT_DATA = "client";
+	public static final String SERVER_DATA = "server/";
+	/**
+	 * Path to the directory where data needed for the client part is stored.
+	 */
+	public static final String CLIENT_DATA = "saves/";
 	
 	/**
 	 * Saves the game with the specified ID. 
 	 * @param saveData The data to save.
 	 * @param gameID The game with the specified ID to save.
+	 * @param location The location to store the data. Use static values.
 	 */
-	public static void save(String saveData, int gameID, String location) {
-		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		prefs.putString(location + gameID, saveData);
-		System.out.println("Saving: " + gameID + ", " + saveData);
-		
-		String data = prefs.getString(GAMEID_PATH);
-		String[] idString = data.split(":");
-		String gameIDString = "" + gameID;
-		boolean alreadySaved = false;
-		for(int i = 0; i < idString.length; i++) {
-			if(idString[i].equals(gameIDString)) {
-				alreadySaved = true;
-			}
-		}
-		if(!alreadySaved) {
-			prefs.putString(GAMEID_PATH, data + ":" + gameID);
-		}
-		prefs.flush();
+	public static void save(String saveData, int gameID, String location) {		
+		FileHandle file = Gdx.files.local(location + gameID);
+		file.writeString(saveData, false);
+		System.out.println("(Saving) Location: \"" + location + gameID + "\", " + 
+				"data: \"" + saveData + "\"");
 	}
 	
+	/**
+	 * Checks if the specified game is saved.
+	 * @param gameID The ID of the game to check.
+	 * @return <code>true</code> if the game with the specified game is saved.
+	 */
 	public static boolean isSaved(int gameID) {
 		int[] gameIDs = getGameIDs();
 		for(int i = 0; i < gameIDs.length; i++) {
@@ -53,58 +49,39 @@ public class IOHandler {
 	}
 	
 	/**
-	 * Gives all the games the client is playing. 
-	 * @return An array of all the IDs of all the games a client is playing in.
+	 * Gives all the IDs of the games saved.
+	 * @return An array of all the IDs of all the games a client has saved on the phone.
 	 */
-	public static int[] getGameIDs() {
-		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		String data = prefs.getString(GAMEID_PATH).substring(1);
-		System.out.println("GameIDs: " + data);
-		String[] idString = data.split(":");
-		int[] id = new int[idString.length];
-		for(int i = 0; i < idString.length; i++) {
-			id[i] = Integer.parseInt(idString[i]);
+	public static int[] getGameIDs() {		
+		FileHandle[] files = Gdx.files.local("saves/").list();
+		int[] ids = new int[files.length];
+		for(int i = 0; i < files.length; i++) {
+			ids[i] = Integer.parseInt(files[i].name());
+			System.out.println("Stored ID: \"" + ids[i] + "\"");
 		}
-		return id;
+		return ids;
 	}
 	
 	/**
-	 * Removes the data for the specified game. 
-	 * @param gameID
+	 * Removes the save for the specified game.
+	 * @param gameID The ID of the game to remove.
+	 * @param location The location to remove from. Use static values.
 	 */
 	public static void remove(int gameID, String location) {
-		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		prefs.remove(location + gameID);
-	
-		String gameIDString = "" + gameID;
-		String data = prefs.getString(GAMEID_PATH);
-		String[] idString = data.split(":");
-		List<String> idList = Arrays.asList(idString);
-		for(String s : idList) {
-			if(s.equals(gameIDString)) {
-				idList.remove(s);
-				break;
-			}
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		for(String s : idList) {
-			sb.append(s + ":");
-		}
-		prefs.putString(GAMEID_PATH, sb.toString());
-		
-		prefs.flush();
+		Gdx.files.local(location + gameID).delete();
 	}
 	
 	/**
-	 * Loads the data to the specified game. 
-	 * @param gameID
-	 * @return
+	 * Loads the data for the specified game.
+	 * @param gameID The ID of the game to load.
+	 * @param location The location to load from. Use static values.
+	 * @return The data stored at the location.
 	 */
 	public static String load(int gameID, String location) {
-		Preferences prefs = Gdx.app.getPreferences("androidRally");
-		String data = prefs.getString(location + gameID);
-		System.out.println("Loaded: " + data);
+		FileHandle file = Gdx.files.local(location + gameID);
+		String data = file.readString();
+		System.out.println("(Loading) Location: \"" + location + gameID + "\", " + 
+				"data: \"" + data + "\"");
 		return data;
 	}
 }
