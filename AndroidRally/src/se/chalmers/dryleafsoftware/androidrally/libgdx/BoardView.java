@@ -237,9 +237,9 @@ public class BoardView extends Stage {
 		container.setSize(mapBuilder.getWidth() * 40,
 				mapBuilder.getHeight() * 40);	
 		scrollContainer.setSize(480, 480);
-		pane.setScrollPercentY(100);
 		pane.setScrollingDisabled(mapBuilder.getWidth() < 12, mapBuilder.getHeight() < 12);
 		pane.layout();
+		pane.setScrollPercentY(100);
 	}
 	
 	public MapBuilder getMapBuilder() {
