@@ -1,5 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.server.network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.network.Connection;
@@ -9,11 +10,15 @@ import se.chalmers.dryleafsoftware.androidrally.server.Game;
 public class DataHandler implements IDataHandler{
 	private int newID = 0;
 	private int newGameID = 0;
-	private List<Game> games = null;
+	private List<Game> games;
 	
 	
 	public DataHandler(List<Game> games) {
 		this.games=games;
+		if (games==null){
+			games = new ArrayList<Game>();
+			games.add(createNewGame());
+		}
 		// TODO Auto-generated constructor stub
 	}
 
