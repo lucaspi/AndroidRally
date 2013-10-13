@@ -20,10 +20,12 @@ public class DataHandler implements IDataHandler{
 	public void handle(String data, Connection connection) {
 		String clientID = data.substring(0, data.indexOf('$'));
 		if (clientID.equalsIgnoreCase("-1")){
-			connection.send(generateNewID() + "$");
-			return;
+			clientID = generateNewClientID()+"";
+			connection.send(clientID + "$");
 		}
-		//TODO check ifall sent id is ok?
+		
+		
+		//TODO check if received id is legit?
 		
 		
 		String data2 = data.substring(data.indexOf('$')+1);
@@ -38,8 +40,9 @@ public class DataHandler implements IDataHandler{
 			}
 			connection.send(clientID + "$" + (games.get(games.size()-1)).getID() + "$");
 //			//TODO
-			return;
+
 		} else {
+			connection.send("game id test");
 			for (Game game : games){
 				for (String s : game.getClients() ){
 					if (s.equalsIgnoreCase(gameID)){
@@ -51,7 +54,6 @@ public class DataHandler implements IDataHandler{
 
 		}
 			
-			return;
 	}
 		
 
@@ -68,7 +70,7 @@ public class DataHandler implements IDataHandler{
 		return newGameID;
 	}
 
-	private int generateNewID() {
+	private int generateNewClientID() {
 		newID++;
 		// TODO Auto-generated method stub
 		return newID;
