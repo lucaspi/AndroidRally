@@ -33,7 +33,7 @@ public class DataHandler implements IDataHandler{
 		
 		if (gameID.equalsIgnoreCase("-1")){
 			connection.send("no game id test");
-			if ( ! games.get(games.size()-1).addPlayer(clientID) ){
+			if ( games.size()<1 || ! games.get(games.size()-1).addPlayer(clientID) ){
 				Game newGame = createNewGame();
 				games.add(newGame);
 				newGame.addPlayer(clientID);
