@@ -12,20 +12,32 @@ public class DataHandler implements IDataHandler{
 	}
 
 	public void handle(String data, Connection c) {
-		if (data.contains("Test")){
-			return;
+		try {
+			if (data.contains("Test")){
+				return;
+			}
+			
+			String clientID = data.substring(0, data.indexOf('$'));
+			
+			if (client.getID().equalsIgnoreCase("-1") &&
+					! clientID.equalsIgnoreCase("-1") &&
+					! clientID.equalsIgnoreCase("0")){
+				client.setID(clientID);			
+			}
+			
+			String data2 = data.substring(data.indexOf('$')+1);
+			String gameID = data2.substring(0, data2.indexOf('$'));
+			
+			if (client.getGameID().equalsIgnoreCase("-1") &&
+					! gameID.equalsIgnoreCase("-1") &&
+					! gameID.equalsIgnoreCase("0")){
+				client.setGameID(gameID);
+			}
+			
+			// TODO Auto-generated method stub
+		} catch (Exception e){
+			e.printStackTrace();
 		}
-		if (client.getID().equalsIgnoreCase("-1")){
-			String newID = data.substring(0, data.indexOf('$'));
-			if ( ! newID.equalsIgnoreCase("-1") && ! newID.equalsIgnoreCase("0")){
-				client.setID(newID);
-			}			
-		}
-		
-		
-		
-		// TODO Auto-generated method stub
-		
 	}
 	
 

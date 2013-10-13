@@ -7,7 +7,7 @@ import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 
 public class Client {
 	private Connection connection;
-	private String ID = "-1";
+	private String ID = loadID();
 	private String gameID = "-1";
 	
 	public Client(){
@@ -20,10 +20,8 @@ public class Client {
 		}
 		this.connection = new Connection(s, new DataHandler(this));
 		connection.start();
-		setID(loadID());
-//		connection.send(ID + "$");
-		connection.send(ID + "$" + gameID +"$");
 		
+		connection.send(ID + "$" + gameID +"$");
 	}
 
 	private String loadID() {
