@@ -65,7 +65,7 @@ public class Connection extends Thread{
 	 * Sends data over the connection.
 	 * @param data the data to be sent over the connection.
 	 */
-	public void send(String data){
+	public synchronized void send(String data){
 		System.out.println("Sent:" + data);
 		outputWriter.println(data);	
 	}
