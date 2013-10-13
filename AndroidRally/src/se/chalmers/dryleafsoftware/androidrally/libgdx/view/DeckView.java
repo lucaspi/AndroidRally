@@ -262,11 +262,18 @@ public class DeckView extends Stage {
     	scrollContainer.defaults().width(240);
     	ScrollPane pane = new ScrollPane(scrollContainer);
     	allPlayerInfo.add(pane);
+    	
+    	NinePatchDrawable divider = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/divider.png")), 63, 63, 0, 0));
     	for(int i = 0; i < robots.size(); i++) {
     		if(i != robotID) {    			
     	    	scrollContainer.add(new LifeView(compTexture, robots.get(i)));
     	    	scrollContainer.add(new DamageView(compTexture, robots.get(i)));
     			scrollContainer.row();
+    			if(i != robots.size() - 1) {
+    				scrollContainer.add(new Image(divider)).colspan(2).width(420).pad(3);
+    				scrollContainer.row();
+    			}
     		}
     	}
     	scrollContainer.debug();
