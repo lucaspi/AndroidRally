@@ -1,8 +1,5 @@
-package se.chalmers.dryleafsoftware.androidrally.server;
+package se.chalmers.dryleafsoftware.androidrally.server.fileManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
