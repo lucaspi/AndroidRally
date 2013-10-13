@@ -7,7 +7,8 @@ import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 
 public class Client {
 	private Connection connection;
-	private int ID = -1;
+	private String ID = "-1";
+	private String gameID = "-1";
 	
 	public Client(){
 		Socket s = null;
@@ -18,41 +19,39 @@ public class Client {
 			// TODO: handle exception
 		}
 		this.connection = new Connection(s, new DataHandler(this));
+		connection.start();
 		setID(loadID());
+		connection.send(ID + "$");
 		
 	}
 
-	private int loadID() {
+	private String loadID() {
 		// TODO Auto-generated method stub
 		//TODO should load id from file on client.
-		return -1;
+		return "-1";
 	}
 
-	public int getClientID() {
-		// TODO Auto-generated method stub
-		return 0;
+	public void setGameID(String s) {
+		System.out.println("Game ID set to:"+s);
+		this.gameID=s;		
 	}
-
-	public void setClientID(int i) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setGameID(int i) {
-		// TODO Auto-generated method stub
-		
+	
+	public String getGameID() {
+		return this.gameID;		
 	}
 
 	public Connection getConnection() {
 		return connection;
 	}
 
-	public int getID() {
+	public String getID() {
 		return this.ID;
 	}
 
-	public void setID(int iD) {
+	public void setID(String iD) {
+		System.out.println("Client ID set to:" + iD);
 		this.ID = iD;
 	}
+	
 
 }

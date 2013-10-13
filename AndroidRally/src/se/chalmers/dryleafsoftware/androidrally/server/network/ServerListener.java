@@ -5,12 +5,10 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 
 public class ServerListener extends Thread{
-	List<GameController> gameControllers;
-	List<Client> clients = new ArrayList<Client>();
+	private List<Client> clients = new ArrayList<Client>();
     private ServerSocket serverSocket = null;
     private DataHandler dataHandler;
     
@@ -22,25 +20,19 @@ public class ServerListener extends Thread{
     	super();
     	try {
 			serverSocket = new ServerSocket(10000);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
     
     /**
      * Creates the server listener, the start() method has to be called.
+     * @param h should be responsible for handling data.
      */
-    public ServerListener(DataHandler h) {
+    public ServerListener(DataHandler handler) {
     	this();
-		this.dataHandler = h;
+		this.dataHandler = handler;
 	}
-
-	public ServerListener(List<GameController> gameControllers) {
-		this();
-		this.gameControllers=gameControllers;
-		// TODO Auto-generated constructor stub
-	}
-
 
 	@Override
     public void run(){
@@ -57,14 +49,10 @@ public class ServerListener extends Thread{
         		if( clients.get(a).getConnection().isAlive()){
         			a++;
         		} else{
-        			clients.remove(a); //FIXME Could generate bug if ArrayList doesn't close gap.
+        			clients.remove(a);
         		}
         	}
     	}
 	}
-    
-    public List<Client> getClients(){
-    	return clients;
-    }
 
 }

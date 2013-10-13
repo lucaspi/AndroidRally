@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import se.chalmers.dryleafsoftware.androidrally.server.network.DataHandler;
-
 /**
  * Handles the network connections for the server.
  * @author Vidar Eriksson
@@ -46,6 +44,7 @@ public class Connection extends Thread{
 	    
     		String inputLine;        
 	        while ((inputLine = inputReader.readLine()) != null) {
+	        	System.out.println("Recived:" + inputLine);
         		dataHandler.handle(inputLine, this);				
 			}
 
@@ -59,7 +58,7 @@ public class Connection extends Thread{
 			socket.close();
 		} catch (Exception e) {	
 			e.printStackTrace();
-			// TODO: handle exception
+			// TODO Auto-generated catch block
 		}
     }
 	/**
@@ -67,6 +66,7 @@ public class Connection extends Thread{
 	 * @param data the data to be sent over the connection.
 	 */
 	public void send(String data){
+		System.out.println("Sent:" + data);
 		outputWriter.println(data);	
 	}
 	

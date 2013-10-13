@@ -12,30 +12,15 @@ public class DataHandler implements IDataHandler{
 	}
 
 	public void handle(String data, Connection c) {
-		if (client.getClientID()==-1){
-			try {
-				String newID = data.substring(0, data.indexOf('$'));
-				int i = -1;
-				i = Integer.parseInt(newID);
-				client.setClientID(i);
-			} catch (NumberFormatException e){
-				e.printStackTrace();
-				System.out.println("ERROR! Could not parse new ID.");
-			}
-			
+		if (client.getID().equalsIgnoreCase("-1")){
+			String newID = data.substring(0, data.indexOf('$'));
+			if ( ! newID.equalsIgnoreCase("-1") && ! newID.equalsIgnoreCase("0")){
+				client.setID(newID);
+			}			
 		}
 		
-		if (data.substring(0, data.indexOf('$')+1).equalsIgnoreCase("0")){
-			int i = -1;
-			try {
-				String tempData = data.substring(0, data.indexOf('$'));
-				i = Integer.parseInt(data.substring(0, tempData.indexOf('$')));
-				client.setGameID(i);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
+		
+		
 		// TODO Auto-generated method stub
 		
 	}
