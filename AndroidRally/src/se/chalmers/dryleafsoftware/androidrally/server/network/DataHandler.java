@@ -33,18 +33,20 @@ public class DataHandler implements IDataHandler{
 		
 		if (gameID.equalsIgnoreCase("-1")){
 			connection.send("Test, no game id");
-			connection.send("Test, no game id");
+			connection.send("Test, 1");
 			if ( games.size()<1 ){
 				connection.send("Test, first new game created");
 				games.add(createNewGame());
 				
 			}
+			connection.send("Test, 2");
 			if( ! games.get(games.size()-1).addPlayer(clientID) ){
 				connection.send("Test, new game added to games and player put into");
 				Game newGame = createNewGame();
 				games.add(newGame);
 				newGame.addPlayer(clientID);
 			}
+			connection.send("Test, 3");
 			connection.send(clientID + "$" + (games.get(games.size()-1)).getID() + "$");
 //			//TODO
 
