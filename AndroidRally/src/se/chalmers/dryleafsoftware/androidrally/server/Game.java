@@ -7,7 +7,7 @@ import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 
 public class Game {
 	private int ID =-1;
-	private GameController gameController;
+	private GameController gameController = null;
 	private List<String> clientID = new ArrayList<String>();
 	
 	private Game(){

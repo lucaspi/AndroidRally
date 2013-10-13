@@ -14,8 +14,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		@SuppressWarnings("unused")
-		ServerController controller = new ServerController();
+		new ServerController();
 		
 	}
 }

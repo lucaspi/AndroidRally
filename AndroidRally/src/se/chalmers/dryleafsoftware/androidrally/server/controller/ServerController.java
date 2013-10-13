@@ -13,7 +13,7 @@ import se.chalmers.dryleafsoftware.androidrally.server.network.ServerListener;
  *
  */
 public class ServerController {
-	private List<Game> games = loadGame();
+	private List<Game> games = loadGames();
 	private ServerListener serverListener;
 	
 	public ServerController(){
@@ -23,9 +23,9 @@ public class ServerController {
 	}
 
 
-	private ArrayList<Game> loadGame() {
+	private ArrayList<Game> loadGames() {
 		// TODO Should load all games from file
-		return null;
+		return new ArrayList<Game>();
 	}
 	public List<Game> getGames(){
 		return games;
