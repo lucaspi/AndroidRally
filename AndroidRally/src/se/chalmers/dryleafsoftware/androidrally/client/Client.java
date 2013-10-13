@@ -21,7 +21,8 @@ public class Client {
 		this.connection = new Connection(s, new DataHandler(this));
 		connection.start();
 		setID(loadID());
-		connection.send(ID + "$");
+//		connection.send(ID + "$");
+		connection.send(ID + "$" + gameID +"$");
 		
 	}
 
