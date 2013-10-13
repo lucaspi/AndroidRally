@@ -9,7 +9,7 @@ import se.chalmers.dryleafsoftware.androidrally.server.Game;
 public class DataHandler implements IDataHandler{
 	private int newID = 0;
 	private int newGameID = 0;
-	private List<Game> games;
+	private List<Game> games = null;
 	
 	
 	public DataHandler(List<Game> games) {
@@ -32,7 +32,8 @@ public class DataHandler implements IDataHandler{
 		String gameID = data2.substring(0, data2.indexOf('$'));
 		
 		if (gameID.equalsIgnoreCase("-1")){
-			connection.send("Test, no game id test");
+			connection.send("Test, no game id");
+			connection.send("Test, no game id");
 			if ( games.size()<1 ){
 				connection.send("Test, first new game created");
 				games.add(createNewGame());
