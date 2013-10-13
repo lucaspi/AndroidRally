@@ -32,8 +32,14 @@ public class DataHandler implements IDataHandler{
 		String gameID = data2.substring(0, data2.indexOf('$'));
 		
 		if (gameID.equalsIgnoreCase("-1")){
-			connection.send("no game id test");
-			if ( games.size()<1 || ! games.get(games.size()-1).addPlayer(clientID) ){
+			connection.send("Test, no game id test");
+			if ( games.size()<1 ){
+				connection.send("Test, first new game created");
+				games.add(createNewGame());
+				
+			}
+			if( ! games.get(games.size()-1).addPlayer(clientID) ){
+				connection.send("Test, new game added to games and player put into");
 				Game newGame = createNewGame();
 				games.add(newGame);
 				newGame.addPlayer(clientID);
@@ -42,7 +48,7 @@ public class DataHandler implements IDataHandler{
 //			//TODO
 
 		} else {
-			connection.send("game id test");
+			connection.send("Test, game id test");
 			for (Game game : games){
 				for (String s : game.getClients() ){
 					if (s.equalsIgnoreCase(gameID)){

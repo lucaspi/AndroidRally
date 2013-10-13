@@ -12,6 +12,9 @@ public class DataHandler implements IDataHandler{
 	}
 
 	public void handle(String data, Connection c) {
+		if (data.contains("Test")){
+			return;
+		}
 		if (client.getID().equalsIgnoreCase("-1")){
 			String newID = data.substring(0, data.indexOf('$'));
 			if ( ! newID.equalsIgnoreCase("-1") && ! newID.equalsIgnoreCase("0")){
