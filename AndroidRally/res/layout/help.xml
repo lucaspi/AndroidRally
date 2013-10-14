@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="10dip" >
+
+	<TextView
+		android:id="@+id/helpText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/help" />
+
+	<Button
+		android:id="@+id/closeHelp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/close_help" />
+
+</LinearLayout>
