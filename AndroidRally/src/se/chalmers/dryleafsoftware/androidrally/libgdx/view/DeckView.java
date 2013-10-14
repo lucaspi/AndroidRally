@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -9,19 +9,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.view.PlayerInfoView;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -29,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
@@ -38,33 +41,34 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * 
  */
 public class DeckView extends Stage {
-
-	private final Texture buttonTexture;
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private List<CardView> deckCards = new ArrayList<CardView>();
-	private final Register[] registers;
 	private int position;
 	private final CardListener cl;
-	private Table container;
+	private final Table container;
 	private final Table lowerArea, upperArea, statusBar;
 	private final Table playPanel; // The panel with [Play] [Step] [Skip]
 	private final Table drawPanel; // The panel with [Draw cards]
-	private final PlayerInfoView playerInfo; // Panel with damage and lives indicators.
 	private final Table allPlayerInfo; // The panel with all the players' info
+	private final RegisterView registerView;
+	private final TextButtonStyle buttonStyle;
+	private final TextButton runButton;
 
+	
+	public static final String EVENT_PAUSE = "pause";
 	/**
 	 * Specifying that the game should start.
 	 */
 	public static final String EVENT_PLAY = "play";
+	
+	public static final String EVENT_FASTFORWARD = "fast";
 	/**
 	 * Specifying that the next register's set of actions should display.
 	 */
-	public static final String EVENT_STEP = "step";
-	/**
-	 * Specifying that all the actions should be skipped.
-	 */
-	public static final String EVENT_SKIP = "skip";
+	public static final String EVENT_STEP_ALL = "stepAll";
+	
+	public static final String EVENT_STEP_CARD = "stepCard";
 	/**
 	 * Specifying that the player should be given new cards.
 	 */
@@ -82,21 +86,24 @@ public class DeckView extends Stage {
 	 */
 	public static final String EVENT_INFO = "info";
 	
+	public static final String EVENT_RUN = "run";
+	
 	private final Timer timer;	
 	private final Label timerLabel;
 	
 	private int cardTick = 0;
 	private int roundTick = 0;
+	private final int roundTime;
+	private static final int MAX_PING = 2;
 
 	/**
 	 * Creates a new default instance.
 	 */
-	public DeckView(List<RobotView> robots, int robotID) {
+	public DeckView(List<RobotView> robots, int robotID, int roundTime) {
 		super();
+		this.roundTime = roundTime;
 		Texture deckTexture = new Texture(Gdx.files.internal("textures/woodenDeck.png"));
 		deckTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		buttonTexture = new Texture(Gdx.files.internal("textures/button.png"));
-		buttonTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		Texture compTexture = new Texture(Gdx.files.internal("textures/deckComponents.png"));
 		compTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				
@@ -110,7 +117,7 @@ public class DeckView extends Stage {
 		setCamera(cardCamera);
 		
 		// Set background image
-		Image deck = new Image(new TextureRegion(deckTexture, 0f, 0f, 1f, 1f));
+		Image deck = new Image(new TextureRegion(deckTexture, 0, 0, 480, 320));
 		deck.setPosition(0, 0);
 		deck.setSize(480, 320);
 		addActor(deck);
@@ -138,57 +145,49 @@ public class DeckView extends Stage {
 		statusBar.debug();
 		statusBar.setSize(480, 80);
 		statusBar.setPosition(0, 240);
+		statusBar.setLayoutEnabled(false);
 		container.add(statusBar);
 		
-		registers = new Register[5];
-		for(int i = 0; i < 5; i++) {
-			registers[i] = new Register(compTexture, i);
-			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
-			upperArea.add(registers[i]);
-			
-		}
+		registerView = new RegisterView(compTexture);
+		registerView.setSize(upperArea.getWidth(), upperArea.getHeight());
+		upperArea.add(registerView);
 		
-		// TODO: Remove this dummy button!
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
-        TextButton dummy = new TextButton("Force round", style);
-        statusBar.add(dummy); // Border
-        dummy.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-    		}
-    	});
-        TextButton dummy2 = new TextButton("Send cards", style);
-        statusBar.add(dummy2); // Border
-        dummy2.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-    		}
-    	});
+		NinePatchDrawable buttonTexture = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patch.png")), 4, 4, 4, 4));
+		NinePatchDrawable buttonTexturePressed = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/button9patchpressed.png")), 4, 4, 4, 4));
+		buttonStyle = new TextButtonStyle(buttonTexture, buttonTexturePressed, null);
+		buttonStyle.font = new BitmapFont();
+		buttonStyle.pressedOffsetX = 1;
+		buttonStyle.pressedOffsetY = -1;
+		
+		TextButtonStyle	playStyle = new TextButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(compTexture, 0, 192, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(compTexture, 64, 192, 64, 64)),
+				null);
+		playStyle.disabled = new TextureRegionDrawable(
+				new TextureRegion(compTexture, 128, 192, 64, 64));
+		playStyle.font = new BitmapFont();
+		playStyle.fontColor = Color.WHITE;
+		playStyle.disabledFontColor = Color.GRAY;
+		playStyle.pressedOffsetX = 1;
+		playStyle.pressedOffsetY = -1;
+		
+		runButton = new TextButton("\r\nRun", playStyle);
+		runButton.setPosition(410, 20);
+		runButton.setSize(64, 64);
+		runButton.setDisabled(true);
+		registerView.add(runButton);
+		runButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if(!runButton.isDisabled()) {
+					runButton.setDisabled(true);
+					pcs.firePropertyChange(EVENT_RUN, 0, 1);
+				}
+			}
+		});
         
-        final TextButton showPlayers = new TextButton("Info", style);
-        statusBar.add(showPlayers); // Border
-        showPlayers.addListener(new ClickListener() {
-        	private boolean dispOpp = false;
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			if(dispOpp) {
-    				displayNormal();
-    				showPlayers.setText("Info");
-    			}else{
-    				displayOpponentInfo();
-    				showPlayers.setText("Back");
-    			}
-    			dispOpp = !dispOpp;
-    		}
-    	});
-		
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
 
@@ -204,57 +203,97 @@ public class DeckView extends Stage {
 						System.out.println("---------------------------------CARD TIMER-----------");
 					}
 				}
-				if(roundTick > 0) {
+				if(roundTick - MAX_PING > 0) {
 					roundTick--;
-					if(roundTick == 0) {
+					if(roundTick - MAX_PING == 0) {
 						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
 						System.out.println("-------------------------------------ROund timer!-----------");
 					}
 				}
-				setTimerLabel(cardTick > 0 ? cardTick : roundTick);
+				int timerTick = cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING);
+				timerLabel.setVisible(timerTick > 0);
+				setTimerLabel(timerTick);
 			}
 		}, 1000, 1000);
 
+		Table statusCenter = new Table();
+		statusCenter.setPosition(200, 0);
+		statusCenter.setSize(80, statusBar.getHeight());	
+		statusCenter.debug();
+		statusBar.add(statusCenter);
     	LabelStyle lStyle = new LabelStyle();
     	lStyle.font = new BitmapFont();
-    	timerLabel = new Label("", lStyle);
-    	statusBar.add(timerLabel);
+    	timerLabel = new Label("", lStyle);    	
+    	statusCenter.add(timerLabel);
+    	statusCenter.row();
     	
-    	playerInfo = new PlayerInfoView(compTexture, robots.get(robotID));
-    	statusBar.add(playerInfo);
+    	
+        final TextButton showPlayers = new TextButton("Info", buttonStyle);
+        statusCenter.add(showPlayers).minWidth(75);
+        showPlayers.addListener(new ClickListener() {
+        	private boolean dispOpp = false;
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			if(dispOpp) {
+    				displayNormal();
+    				showPlayers.setText("Info");
+    			}else{
+    				displayOpponentInfo();
+    				showPlayers.setText("Back");
+    			}
+    			dispOpp = !dispOpp;
+    		}
+    	});
+    	
+    	DamageView dv = new DamageView(compTexture, robots.get(robotID));
+    	LifeView lv = new LifeView(compTexture, robots.get(robotID));
+    	lv.setPosition(0, 0);
+    	lv.setSize(120, 80);
+    	lv.debug();
+    	dv.setPosition(290, 20);
+    	dv.setSize(200, 40);
+    	dv.debug();
+    	statusBar.add(dv);
+    	statusBar.add(lv);
     	
     	allPlayerInfo = new Table();
     	allPlayerInfo.setPosition(0, 0);
     	allPlayerInfo.setSize(480, 240);
     	Table scrollContainer = new Table();
+    	scrollContainer.defaults().width(240);
     	ScrollPane pane = new ScrollPane(scrollContainer);
     	allPlayerInfo.add(pane);
+    	
+    	NinePatchDrawable divider = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/divider.png")), 63, 63, 0, 0));
     	for(int i = 0; i < robots.size(); i++) {
-    		if(i != robotID) {
-    			scrollContainer.add(new PlayerInfoView(compTexture, robots.get(i))).pad(10);
+    		if(i != robotID) {    			
+    	    	scrollContainer.add(new LifeView(compTexture, robots.get(i)));
+    	    	scrollContainer.add(new DamageView(compTexture, robots.get(i)));
     			scrollContainer.row();
+    			if(i != robots.size() - 1) {
+    				scrollContainer.add(new Image(divider)).colspan(2).width(420).pad(3);
+    				scrollContainer.row();
+    			}
     		}
     	}
+    	scrollContainer.debug();
+	}
+	
+	public void resetRoundTimer() {
+		roundTick = DeckView.this.roundTime;
 	}
 	
 	/*
 	 * Creates the panel with the [Draw Cards] button.
 	 */
-	private Table buildDrawCardPanel() {
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
-		
+	private Table buildDrawCardPanel() {		
 		int internalPadding = 50, externalPadding = 10;
 		Table drawPanel = new Table();
     	drawPanel.setSize(480, 120);
-    	TextButton draw = new TextButton("Draw Cards", style);
+    	TextButton draw = new TextButton("Draw Cards", buttonStyle);
     	draw.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	drawPanel.add(draw).pad(externalPadding); // Border
-    	
+    	drawPanel.add(draw).pad(externalPadding).minHeight(30); // Border    	
     	draw.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
@@ -268,45 +307,82 @@ public class DeckView extends Stage {
 	 * Creates the panel with the [Play] [Step] [Skip] buttons.
 	 */
 	private Table buildPlayerPanel() {
-		TextButtonStyle style = new TextButtonStyle();	  
-        style.up = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 0, 32, 32));
-        style.down = new TextureRegionDrawable(
-        		new TextureRegion(buttonTexture, 0, 32, 32, 32));
-        style.font = new BitmapFont();
-		
-		int internalPadding = 50, externalPadding = 10;
+		Texture buttons = new Texture(Gdx.files.internal("textures/playButtons.png"));
+		buttons.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        
 		Table playPanel = new Table();
 		playPanel.setSize(480, 120);
-		TextButton play = new TextButton("Play", style);
-		play.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(play).pad(externalPadding); // Border
-    	TextButton step = new TextButton("Step", style);
-    	step.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(step).pad(externalPadding); // Border
-    	TextButton skip = new TextButton("Skip", style);
-    	skip.pad(0, internalPadding, 0, internalPadding); // Internal padding
-    	playPanel.add(skip).pad(externalPadding); // Border
-    	
+		
+		// Create pause button
+		Button pause = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 0, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 0, 64, 64, 64)),
+				null));
+    	playPanel.add(pause).size(50, 50).pad(0);
+    	pause.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_PAUSE, 0, 1);
+    		}
+    	});
+		
+    	// Create play button
+		Button play = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 64, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 64, 64, 64, 64)),
+				null));
+    	playPanel.add(play).size(50, 50).pad(0);
     	play.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
     			pcs.firePropertyChange(EVENT_PLAY, 0, 1);
     		}
     	});
-    	step.addListener(new ClickListener() {
+    	
+    	// Create fast forward button
+    	Button fastForward = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 128, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 128, 64, 64, 64)),
+				null));
+    	playPanel.add(fastForward).size(50, 50).pad(0);
+    	fastForward.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_STEP, 0, 1);
+    			pcs.firePropertyChange(EVENT_FASTFORWARD, 0, 1);
     		}
     	});
-    	skip.addListener(new ClickListener() {
+    	
+    	// Create button for skip single card
+    	Button skipCard = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 192, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 192, 64, 64, 64)),
+				null));
+    	playPanel.add(skipCard).size(50, 50).pad(0);
+    	skipCard.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_SKIP, 0, 1);
+    			pcs.firePropertyChange(EVENT_STEP_CARD, 0, 1);
     		}
     	});
+    	
+    	// Create button for skip all cards
+    	Button skipAll = new Button(new ButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(buttons, 256, 0, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(buttons, 256, 64, 64, 64)),
+				null));
+    	playPanel.add(skipAll).size(50, 50).pad(0);
+    	skipAll.addListener(new ClickListener() {
+    		@Override
+    		public void clicked(InputEvent event, float x, float y) {
+    			pcs.firePropertyChange(EVENT_STEP_ALL, 0, 1);
+    		}
+    	});
+    	
     	return playPanel;
+	}
+	
+	public boolean isCardTimerOn() {
+		return cardTick > 0;
 	}
 	
 	/*
@@ -367,70 +443,78 @@ public class DeckView extends Stage {
 	 * @param texture The texture to use.
 	 */
 	public void setChosenCards(String input, Texture texture) {
-		setCards(input, texture, true);
+		registerView.clear();
+		BitmapFont cardFont = new BitmapFont();
+		cardFont.setColor(Color.GREEN);
+		int i = 0;
+		for(String card : input.split(":")) {
+			int prio = Integer.parseInt(card);	
+			CardView cv = buildCard(prio, texture, i, cardFont);
+			
+			System.out.println("registerView: " + registerView);
+			System.out.println("register[i]: " + registerView.getRegister(i));
+			registerView.getRegister(i).setCard(cv);
+			registerView.getRegister(i).displayOverlay(Register.UNFOCUS);
+			i++;
+		}
 	}
-	
-	/**
-	 * Displays all cards.
-	 * @param input The String with card data.
-	 * @param texture The texture to use.
-	 */
-	public void setDeckCards(String input, Texture texture) {
-		setCards(input, texture, false);
+		
+	private CardView buildCard(int prio, Texture texture, int index, BitmapFont cardFont) {	
+		int regX = 0;
+		if(prio <= 60) {
+			regX = 0;	// UTURN
+		}else if(prio <= 410 && prio % 20 != 0) {
+			regX = 1;	// LEFT
+		}else if(prio <= 420 && prio % 20 == 0) {
+			regX = 2;	// LEFT
+		}else if(prio <= 480) {
+			regX = 3;	// Back 1
+		}else if(prio <= 660) {
+			regX = 4;	// Move 1
+		}else if(prio <= 780) {
+			regX = 5;	// Move 2
+		}else if(prio <= 840) {
+			regX = 6;	// Move 3
+		}	
+
+		CardView cv = new CardView(new TextureRegion(texture, regX * 128, 0, 128, 180), 
+				prio, index, cardFont);
+		cv.setSize(78, 110);
+		return cv;
 	}
 	
 	/**
 	 * Displays all cards.
 	 * @param input A String with all the cards' data.
 	 * @param texture The texture to use when creating the cards.
-	 * @param onlyLocked Set to <code>true</code> if only locked cards should be displayed.
 	 */
-	private void setCards(String input, Texture texture, boolean onlyLocked) {
+	public void setDeckCards(String input, Texture texture) {
 		List<CardView> cards = new ArrayList<CardView>();
 		// Clear cards
-		for(Register r : registers) {
-			r.clear();
-			r.setLocked(false);
-		}
-				
+		registerView.clear();
+		BitmapFont cardFont = new BitmapFont();
+		cardFont.setColor(Color.GREEN);
+		
 		String indata = input;
 		int i = 0;
 		for(String card : indata.split(":")) {
 			String[] data = card.split(";");
-			
-			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
-			int regX = 0;
-			if(prio <= 60) {
-				regX = 0;	// UTURN
-			}else if(prio <= 410 && prio % 20 != 0) {
-				regX = 64;	// LEFT
-			}else if(prio <= 420 && prio % 20 == 0) {
-				regX = 128;	// LEFT
-			}else if(prio <= 480) {
-				regX = 192;	// Back 1
-			}else if(prio <= 660) {
-				regX = 256;	// Move 1
-			}else if(prio <= 780) {
-				regX = 320;	// Move 2
-			}else if(prio <= 840) {
-				regX = 384;	// Move 3
-			}	
 
-			CardView cv = new CardView(new TextureRegion(texture, regX, 0, 64, 90), 
-					prio, i);
-			cv.setSize(78, 110);
-			
+			int prio = (data.length == 2) ? Integer.parseInt(data[1]) : Integer.parseInt(data[0]);	
+			CardView cv = buildCard(prio, texture, i, cardFont);
+
 			if(data.length == 2) {
 				int lockPos = Integer.parseInt(data[0].substring(1));
-				registers[lockPos].setCard(cv);
-				registers[lockPos].setLocked(true);
-			}else if(!onlyLocked){
+				registerView.getRegister(lockPos).setCard(cv);
+				registerView.getRegister(lockPos).displayOverlay(Register.PADLOCK);
+			}else{
 				cards.add(cv);
 			}			
 			i++;
 		}
 		Collections.sort(cards);
 		setDeckCards(cards);
+		updateCards();
 	}
 	
 	/**
@@ -455,6 +539,7 @@ public class DeckView extends Stage {
 			cv.addListener(cl);
 			cv.addListener(cardListener);
 		}
+		runButton.setDisabled(false);
 	}
 	
 	public void displayOpponentInfo() {
@@ -468,11 +553,7 @@ public class DeckView extends Stage {
 	 */
 	public void displayWaiting() {
 		lowerArea.clear();
-		for(Register r : registers) {
-			if(r.getCard() != null) {
-				r.removeListener(cardListener);
-			}
-		}
+		registerView.removeCardListener(cardListener);
 	}
 	
 	/**
@@ -488,9 +569,7 @@ public class DeckView extends Stage {
 	 * Displays the panel which should be visible after viewing the round results.
 	 */
 	public void displayDrawCard() {
-		for(Register r : registers) {
-			r.clear();
-		}
+		registerView.clear();
 		lowerArea.clear();
 		lowerArea.add(drawPanel);
 	}
@@ -501,11 +580,7 @@ public class DeckView extends Stage {
 	public void displayPlayOptions() {
 		lowerArea.clear();
 		lowerArea.add(playPanel);
-		for(Register r : registers) {
-			if(r.getCard() != null) {
-				r.removeListener(cardListener);
-			}
-		}
+		registerView.removeCardListener(cardListener);
 	}
 	
 	/**
@@ -514,11 +589,7 @@ public class DeckView extends Stage {
 	 * @return
 	 */
 	public CardView[] getChosenCards() {
-		CardView[] cards = new CardView[registers.length];
-		for(int i = 0; i < registers.length; i++) {
-			cards[i] = registers[i].getCard();
-		}
-		return cards;
+		return registerView.getCards();
 	}
 
 	/**
@@ -566,6 +637,10 @@ public class DeckView extends Stage {
 	public int getPositionX() {
 		return this.position;
 	}
+	
+	public RegisterView getRegisters() {
+		return this.registerView;
+	}
 
 	/**
 	 * Gives the total width it takes to render the cards not yet added to a
@@ -583,23 +658,15 @@ public class DeckView extends Stage {
 	}
 	
 	private void choseCard(CardView card) {
-		for(int i = 0; i < registers.length; i++) {
-			if(registers[i].isEmpty()) {
-				registers[i].setCard(card);
-				deckCards.remove(card);
-				break;
-			}
+		if(registerView.addCard(card)) {
+			deckCards.remove(card);
 		}
 	}
 	
-	public void unChoseCard(CardView card) {
-		for(int i = 0; i < registers.length; i++) {
-			if(registers[i].getCard() == card) {
-				registers[i].clear();
-				lowerArea.add(card);
-				deckCards.add(card);
-				break;
-			}
+	private void unChoseCard(CardView card) {
+		if(registerView.removeCard(card)) {
+			lowerArea.add(card);
+			deckCards.add(card);
 		}
 	}
 	

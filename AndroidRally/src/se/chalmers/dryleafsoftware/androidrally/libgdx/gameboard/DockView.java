@@ -39,7 +39,7 @@ public class DockView extends Image implements Comparable<DockView> {
 	@Override
 	public void draw(SpriteBatch spriteBatch, float f) {	
 		super.draw(spriteBatch, f);
-		font.draw(spriteBatch, "" + number, getX() + 20, getY() + 20);
+		font.draw(spriteBatch, "" + number, getX() + 16, getY() + 26);
 	}
 
 	@Override

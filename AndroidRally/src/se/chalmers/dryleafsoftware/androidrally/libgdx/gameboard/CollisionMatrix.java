@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
-import se.chalmers.dryleafsoftware.androidrally.sharred.MapBuilder;
 
 /**
  * 
@@ -52,6 +51,14 @@ public class CollisionMatrix {
 			}
 			break;
 		}
+	}
+	
+	public int getWidth() {
+		return this.walls.length;
+	}
+	
+	public int getHeight() {
+		return this.walls[0].length;
 	}
 	
 	/**
@@ -134,16 +141,19 @@ public class CollisionMatrix {
 	 * Checks if the specified values are valid, i.e. checking if a value is out of bounds.
 	 */
 	private boolean validWallPos(int x, int y, int dir) {
-		return(x < walls.length && y < walls[0].length && dir < walls[0][0].length 
-				&& x >= 0 && y >= 0 && dir >= 0);
+		return(validPos(x, y) && dir < walls[0][0].length && dir >= 0);
+	}
+	
+	public boolean validPos(int x, int y) {
+		return(x < walls.length && y < walls[0].length
+				&& x >= 0 && y >= 0);
 	}
 	
 	/*
 	 * Checks if the specified values are valid, i.e. checking if a value is out of bounds.
 	 */
 	private boolean validBlockedPos(int x, int y) {
-		return(x < dynamic.length && y < dynamic[0].length 
-				&& x >= 0 && y >= 0);
+		return validPos(x, y);
 	}
 	
 	/**

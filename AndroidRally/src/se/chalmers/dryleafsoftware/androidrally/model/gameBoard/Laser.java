@@ -7,7 +7,6 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
  *
  */
 public class Laser {
-	
 	private int positionX;
 	private int positionY;
 	private int direction;

@@ -11,13 +11,15 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 public interface BoardElement {
 
 	/**
-	 * This method will execute an action which should take place after a robot stopped on a tile.
+	 * This method will execute an action which should
+	 * take place after a robot stopped on a tile.
 	 * @param robot the robot the action will affect.
 	 */
 	public void action(Robot robot);
 	
 	/**
-	 * This method will execute an action which should take place directlyafter a robot walks on a tile.
+	 * This method will execute an action which should
+	 * take place <b>directly</b> after a robot walks on a tile.
 	 * @param robot the robot the action will affect.
 	 */
 	public void instantAction(Robot robot);

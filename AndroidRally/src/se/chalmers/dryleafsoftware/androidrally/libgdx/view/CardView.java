@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public class CardView extends Image implements Comparable<CardView> {
 	
 	private int priority;
-	private BitmapFont font;
+	private final BitmapFont font;
 	private final int index;
 
 	/**
@@ -23,11 +23,11 @@ public class CardView extends Image implements Comparable<CardView> {
 	 * @param priority The priority of the card.
 	 * @param index The index this card had when it was received from the dealer.
 	 */
-	public CardView(TextureRegion tr, int priority, int index) {
+	public CardView(TextureRegion tr, int priority, int index, BitmapFont font) {
 		super(tr);
 		this.priority = priority;
 		this.index = index;
-		font = new BitmapFont();
+		this.font = font;
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class CardView extends Image implements Comparable<CardView> {
 				spriteBatch,
 				"" + priority,
 				getX() + (getWidth() / 2 - font.getWrappedBounds("" + priority, 200f).width / 2), 
-				getY() + getHeight() - 5);
+				getY() + getHeight() - 11);
 	}
 
 	/**

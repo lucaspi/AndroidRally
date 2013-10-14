@@ -15,19 +15,23 @@
 		android:theme="@style/AppTheme" >
 		<activity
 			android:name="se.chalmers.dryleafsoftware.androidrally.MainActivity"
-			android:label="@string/app_name" >
+			android:label="@string/app_name" android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
+
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 		<activity
-            android:name="se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboard|keyboardHidden|orientation">
-            
-        </activity>
+			android:name="se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity"
+			android:configChanges="keyboard|keyboardHidden|orientation"
+			android:label="@string/app_name"
+			android:screenOrientation="portrait" >
+		</activity>
+		<activity
+			android:name="se.chalmers.dryleafsoftware.androidrally.GameConfigurationActivity"
+			android:label="@string/title_activity_game_configuration" android:screenOrientation="portrait">
+		</activity>
 	</application>
 
 </manifest>

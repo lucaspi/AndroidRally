@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -19,14 +20,19 @@ public class HolderAction extends GameAction {
 	public HolderAction(int duration) {
 		super(-1, duration);
 	}
+	
+	public HolderAction(int duration, int phase) {
+		this(duration);
+		this.setMoveRound(phase);
+	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
 	}
 
 	@Override
-	public void cleanUp(List<RobotView> robots) {
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		// Do nothing
 	}
 

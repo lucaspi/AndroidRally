@@ -32,22 +32,32 @@ public class RobotView extends Image  {
 	 * When the number of lives change.
 	 */
 	public static final String EVENT_LIFE_CHANGE = "lifeChange";
+	/**
+	 * When the player reaches a new checkpoint.
+	 */
+	public static final String EVENT_CHECKPOINT_CHANGE = "checkPointChange";
 
 	private int damage = 0, lives = MAX_LIVES;
 	private final int robotID;
 	private final LaserView laser;
+	private boolean hasFinished = false;
+	private int reachedCheckPoint = 0;
+	private final String name;
+	private boolean isDead = false;
 
 	/**
 	 * Creates a new instance of a robot with the specified ID-number.
 	 * @param robotID The ID-number of this robot.
 	 * @param texture The texture to use.
 	 * @param laser The laser this robot should use.
+	 * @param name The name of the robot.
 	 */
-	public RobotView(int robotID, TextureRegion texture, LaserView laser) {
+	public RobotView(int robotID, TextureRegion texture, LaserView laser, String name) {
 		super(texture);
 		this.setSize(40, 40);
 		this.robotID = robotID;
 		this.laser = laser;
+		this.name = name;
 		laser.setIsOuter(true);
 	}
 	
@@ -61,6 +71,40 @@ public class RobotView extends Image  {
 		laser.setOrigin(20, 20);
 		laser.setRotation(getRotation());
 		return laser;
+	}
+	
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+		setVisible(!isDead);
+	}
+	
+	public boolean isDead() {
+		return this.isDead;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public int getReachedCheckPoint() {
+		return this.reachedCheckPoint;
+	}
+	
+	public void setReachedCheckPoint(int checkPoint) {
+		pcs.firePropertyChange(EVENT_CHECKPOINT_CHANGE, this.reachedCheckPoint, checkPoint);
+		this.reachedCheckPoint = checkPoint;
+	}
+	
+	public boolean hasFinished() {
+		return hasFinished;
+	}
+	
+	public boolean isGameDead() {
+		return lives <= 0;
+	}
+	
+	public void setHasFinished(boolean hasFinished) {
+		this.hasFinished = hasFinished;
 	}
 	
 	/**

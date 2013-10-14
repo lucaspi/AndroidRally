@@ -9,30 +9,41 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
  * @author
  *
  */
-public abstract class AnimatedImage extends Image {
+public abstract class AnimatedElement extends Image {
 
 	private boolean enabled = false;
 	private int[] phaseMask = new int[]{0};
+	private int speed = 1;
 	
 	/**
 	 * Creates a new instance which will use the specified texture when rendering.
 	 * @param texture The texture to use when rendering.
 	 */
-	public AnimatedImage(TextureRegion texture) {
+	public AnimatedElement(TextureRegion texture) {
 		super(texture);
 	}
 	
 	/**
 	 * Will enable the animation if the image is specified for that phase.
 	 * @param phase The current phase.
+	 * @param speed The speed to animate at. 1 = normal speed.
 	 */
-	public void enable(int phase) {
+	public void enable(int phase, int speed) {
+		this.speed = speed;
 		for(int i = 0; i < phaseMask.length; i++) {
 			if(phase == phaseMask[i]) {
 				this.enabled = true;
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * Gives the speed of the animation. 1 = normal speed.
+	 * @return The speed of the animation.
+	 */
+	public int getRunSpeed() {
+		return this.speed;
 	}
 	
 	/**

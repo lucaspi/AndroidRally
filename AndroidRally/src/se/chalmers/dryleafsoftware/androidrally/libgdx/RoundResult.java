@@ -24,6 +24,10 @@ public class RoundResult {
 		this.actions = new ArrayList<List<GameAction>>();
 	}
 	
+	public void clear() {
+		actions.clear();
+	}
+	
 	/**
 	 * Sets the next list as the current.
 	 */

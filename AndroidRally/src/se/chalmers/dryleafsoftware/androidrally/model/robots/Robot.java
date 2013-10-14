@@ -132,30 +132,26 @@ public class Robot {
 	/**
 	 * Increase the damage with the value of the parameter.
 	 * <p>
-	 * If the damage rate is higher than the starting health the method die() is
-	 * called.
-	 * 
-	 * @param damage
-	 *            the amount of damage
+	 * Absolute value will be used so if damage
+	 * input is negative it will still damage the robot. Use repair(int repairAmount) instead for repairing.
+	 * @param damage the amount of damage
 	 */
 	public void damage(int damage) {
-		this.damage += damage;
-		if (damage > STARTING_HEALTH) {
-			die();
-		}else if(damage < 0){
-			damage = 0;
-		}
+		this.damage += Math.abs(damage);
 	}
 
 	/**
 	 * Called when damage is higher than starting health.
 	 * Decreases life with repairAmount
 	 * and set damage to one less.
+	 * <p>
+	 * Absolute value will be used so if repairAmount
+	 * input is negative it will still repair the robot. Use damage(int damage) instead for damaging robot.
 	 * @param repairAmount 
 	 */
 	public void repair(int repairAmount) {
 		if (this.damage > 0) {
-			damage -= repairAmount;
+			damage -= Math.abs(repairAmount);
 			if (damage < 0) {
 				damage = 0;
 			}

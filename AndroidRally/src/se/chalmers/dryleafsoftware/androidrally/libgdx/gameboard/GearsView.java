@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author 
  *
  */
-public class GearsView extends AnimatedImage {
+public class GearsView extends AnimatedElement {
 
 	private int direction = -1;
 	
@@ -28,6 +28,6 @@ public class GearsView extends AnimatedImage {
 
 	@Override
 	public void animate(float timeDelta) {
-		this.rotate(90 * timeDelta * direction);
+		this.rotate(90 * timeDelta * getRunSpeed() * direction);
 	}
 }

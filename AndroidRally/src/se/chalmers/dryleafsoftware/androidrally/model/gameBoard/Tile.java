@@ -2,11 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.model.gameBoard;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import com.badlogic.gdx.Game;
-
-import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**

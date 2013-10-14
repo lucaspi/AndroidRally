@@ -2,8 +2,10 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 
 import java.util.List;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
@@ -31,17 +33,21 @@ public class SingleAction extends GameAction {
 	}
 
 	@Override
-	public void action(List<RobotView> robots) {
+	public void action(List<RobotView> robots, MapBuilder map) {
 		start();
+		Vector2 pos = map.convertToMapY(posX, posY);
 		robots.get(getRobotID()).addAction(Actions.parallel(
-				Actions.moveTo(posX * 40,  640 - (posY+1) * 40, getDuration() / 1000f),
+				Actions.moveTo(pos.x, pos.y, getDuration() / 1000f),
 				Actions.rotateBy(getValidDir((int) robots.get(getRobotID()).getRotation(), -dir * 90),
 						getDuration() / 1000f)));
+		
 	}
 	
 	@Override
-	public void cleanUp(List<RobotView> robots) {
-		robots.get(getRobotID()).setPosition(posX * 40,  640 - (posY+1) * 40);
+	public void cleanUp(List<RobotView> robots, MapBuilder map) {
+		robots.get(getRobotID()).clearActions();
+		Vector2 pos = map.convertToMapY(posX, posY);
+		robots.get(getRobotID()).setPosition(pos.x, pos.y);
 		robots.get(getRobotID()).setRotation(-dir * 90);
 	}
 	

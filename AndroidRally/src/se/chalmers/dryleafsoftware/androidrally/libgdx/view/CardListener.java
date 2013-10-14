@@ -1,4 +1,5 @@
-package se.chalmers.dryleafsoftware.androidrally.libgdx;
+package se.chalmers.dryleafsoftware.androidrally.libgdx.view;
+
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
