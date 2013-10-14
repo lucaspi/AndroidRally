@@ -187,7 +187,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void startRoundTimer() {
 		reScheduleTimer();
-		endOfRoundDate = new Date(hoursEachRound * 3600000);
+		endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
 		timer.schedule(endOfRound, hoursEachRound * 3600000);
 	}
 
