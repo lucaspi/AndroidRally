@@ -635,6 +635,10 @@ public class GameModel {
 				robot.getXAsString() + robot.getYAsString());
 	}
 	
+	public Deck getDeck() {
+		return deck;
+	}
+
 	//TODO skriva javadoc till dessa
 	private void addRobotWon(Robot robot) {
 		allMoves.add(";W#" + robots.indexOf(robot));
