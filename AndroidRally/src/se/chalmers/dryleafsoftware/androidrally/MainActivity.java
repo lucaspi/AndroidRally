@@ -1,10 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
-import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.List;
-
+import se.chalmers.dryleafsoftware.androidrally.libgdx.Client;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +9,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -27,18 +26,34 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	
 	private ListView gameListView;
+	private Client client;
+	private int[] games;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-//		Client client = new Client();
+		
+		this.client = Client.getInstance();
 		
 		gameListView = (ListView) findViewById(R.id.currentGames);
-//		String[] games = client.getSavedGames();
-		String[] games = {"game1", "game2", "game3"};
-		ListAdapter gamesList = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, games);
+		games = client.getSavedGames();
+		String[] gameNames = new String[games.length];
+		for (int i = 0; i < gameNames.length; i++) {
+			gameNames[i] = "Game " + games[i];
+		}
+		ListAdapter gamesList = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, gameNames);
 		gameListView.setAdapter(gamesList);
+		//Starts the selected game when being tapped
+		gameListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View view, int position,
+					long id) {
+				startChosenGame(view, games[position]);
+			}
+			
+		});
 	}
 
 	@Override
@@ -69,13 +84,10 @@ public class MainActivity extends Activity {
 	 * 
 	 * @param view
 	 */
-	public void startChosenGame(View view) {
-		
-//		lv.get the chosen one
-//		configure the correct game to start
-//		Intent i = new Intent(getApplicationContext(), GameActivity.class);
-//		i.putExtra("GAME_ID", gameListView.getClicked()))
-//		startActivity(i);
+	public void startChosenGame(View view, int gameID) {
+		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+		i.putExtra("GAME_ID", gameID);
+		startActivity(i);
 	}
 
 	public void showToaster(CharSequence message) {

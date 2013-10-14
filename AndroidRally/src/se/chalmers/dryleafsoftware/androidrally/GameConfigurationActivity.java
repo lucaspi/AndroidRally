@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
+import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
+import se.chalmers.dryleafsoftware.androidrally.libgdx.Client;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,11 +19,15 @@ public class GameConfigurationActivity extends Activity {
 	public static final String HOURS_INTENT_EXTRA = "HOURS";
 	public static final String  CARD_TIME_INTENT_EXTRA = "CARDS";
 	public static final String  BOTS_INTENT_EXTRA = "BOTS";
+	
+	private Client client;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_configuration);
+		
+		this.client = Client.getInstance();
 		
 		//Initialize time configurators
 		roundTimeBar = (SeekBar)  findViewById(R.id.roundTimeBar);
@@ -51,10 +57,25 @@ public class GameConfigurationActivity extends Activity {
 	 */
 	public void startGame(View view) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
-		i.putExtra(HOURS_INTENT_EXTRA, roundTimeBar.getProgress() + 1);
-		i.putExtra(CARD_TIME_INTENT_EXTRA, (cardTimeBar.getProgress() + 1)*15);
-		i.putExtra(BOTS_INTENT_EXTRA, playersBar.getProgress() + 1);
+		GameSettings settings = new GameSettings(getNbrOfHumanPlayers(), getNbrOfBots(), getNbrOfHoursEachRound(), getNbrOfCardTimeSeconds());
+		client.createGame(settings);
 		startActivity(i);
+	}
+
+	private int getNbrOfCardTimeSeconds() {
+		return (cardTimeBar.getProgress() + 1) * 15;
+	}
+
+	private int getNbrOfHoursEachRound() {
+		return (roundTimeBar.getProgress() + 1);
+	}
+
+	private int getNbrOfBots() {
+		return (cardTimeBar.getProgress() + 1);
+	}
+
+	private int getNbrOfHumanPlayers() {
+		return 1;
 	}
 
 	private class BarListener implements OnSeekBarChangeListener {

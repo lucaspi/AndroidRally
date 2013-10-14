@@ -78,8 +78,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
 		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+		this.client = Client.getInstance();
 
-		this.client = new Client(1, GameSettings.getCurrentSettings());
 		this.messageStage = new MessageStage();
 		
 		this.gameBoard = new BoardView();

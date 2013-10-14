@@ -41,22 +41,33 @@ public class Client {
 	private final int clientID; // TODO: the client must be assigned a unique ID from server
 	private int robotID; // TODO: get robot ID from server
 	private int roundID = 0;
-	private GameSettings settings;
+	private static Client instance;
 		
 	/**
 	 * Creates a new client instance.
-	 * @param clientID The ID number of the player.
 	 */
-	public Client(int clientID, GameSettings settings) {
-		if (settings == null) {
-			this.settings = new GameSettings();
-		} else {
-			this.settings = settings;
-		}
-		this.controller = new GameController(this.settings.getNbrOfHumanPlayers(), this.settings.getNbrOfBots(),
-				this.settings.getHoursEachRound(), this.settings.getCardTimerSeconds(), this.settings.getMap());
-		this.clientID = clientID;
+	private Client() {
+		this.clientID = 0;
 		this.robotID = 0;
+	}
+	
+	/**
+	 * Gets the singleton instance of client
+	 */
+	public static synchronized Client getInstance() {
+		if (instance == null) {
+			instance = new Client();
+		}
+		return instance;
+	}
+	
+	/**
+	 * Creates a new game with the supplied settings
+	 * @param settings The settings to use for the game
+	 */
+	public void createGame(GameSettings settings) {
+		this.controller = new GameController(settings.getNbrOfHumanPlayers(), settings.getNbrOfBots(),
+				settings.getHoursEachRound(), settings.getCardTimerSeconds(), settings.getMap());
 		controller.newRound();
 	}
 	
