@@ -234,6 +234,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			}else{
 				currentStage = Stage.WAITING;
 				deckView.displayDrawCard();
+				drawCards();
 			}
 		}
 	}
@@ -279,9 +280,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		
 		// Other events:
 		else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
-			// Displays the cards and waits for the timer task.
-			deckView.setDeckCards(client.loadCards(), cardTexture);
-			deckView.setCardTick(cardTime);
+			drawCards();
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
 			onCardTimer();
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
@@ -297,6 +296,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				onRoundTimer();
 			}
 		}
+	}
+	
+	private void drawCards() {
+		deckView.setDeckCards(client.loadCards(), cardTexture);
+		deckView.setCardTick(cardTime);
 	}
 	
 	private void onCardTimer() {
