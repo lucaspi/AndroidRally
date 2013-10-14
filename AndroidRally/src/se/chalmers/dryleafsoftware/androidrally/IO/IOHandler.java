@@ -42,7 +42,7 @@ public class IOHandler {
 	 */
 	public static void save(String saveData, int gameID, String location) {		
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(location, saveData);
+		editor.putString(location + gameID, saveData);
 		System.out.println("(Saving) Location: \"" + location + gameID + "\", " + 
 				"data: \"" + saveData + "\"");
 		if(currentID == gameID) {
