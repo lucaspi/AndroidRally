@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -49,6 +50,58 @@ public class MainActivity extends Activity {
 		IOHandler.setPrefs(prefs);
 
 		gameListView = (ListView) findViewById(R.id.currentGames);
+
+		// Starts the selected game when being tapped
+		gameListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View view,
+					int position, long id) {
+				startChosenGame(view, games[position]);
+			}
+
+		});
+
+		// Deletes the selected game on longpress
+		gameListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapter, View view,
+					final int position, long id) {
+				LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
+						.getSystemService(LAYOUT_INFLATER_SERVICE);
+				View popupView = layoutInflater.inflate(R.layout.delete_popup, null);
+
+				final PopupWindow popupWindow = new PopupWindow(popupView,
+						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
+				Button deleteGame = (Button) popupView
+						.findViewById(R.id.yesButton);
+				Button noButton = (Button) popupView.findViewById(R.id.noButton);
+				
+				deleteGame.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						client.deleteGame(games[position]);
+						popupWindow.dismiss();
+						refreshGamesList();
+					}
+				});
+				
+				noButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						popupWindow.dismiss();
+					}
+				});
+				
+				popupWindow.showAsDropDown(findViewById(R.id.currentGames), 0, 0);
+				refreshGamesList();
+				return true;
+			}
+
+		});
 		refreshGamesList();
 	}
 
@@ -62,16 +115,20 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
 		case R.id.action_refresh:
 			showToaster("Refreshing");
 			refreshGamesList();
 			return true;
+
 		case R.id.action_help:
 			LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
 					.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View popupView = layoutInflater.inflate(R.layout.help, null);
+
 			final PopupWindow popupWindow = new PopupWindow(popupView,
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
 			Button closeHelp = (Button) popupView.findViewById(R.id.closeHelp);
 			closeHelp.setOnClickListener(new OnClickListener() {
 				@Override
@@ -79,8 +136,10 @@ public class MainActivity extends Activity {
 					popupWindow.dismiss();
 				}
 			});
-			popupWindow.showAtLocation(findViewById(R.id.action_help), Gravity.CENTER, 0, 0);
+			popupWindow.showAtLocation(findViewById(R.id.action_help),
+					Gravity.CENTER, 0, 0);
 			return true;
+
 		default:
 			return true;
 		}
@@ -96,16 +155,7 @@ public class MainActivity extends Activity {
 				getApplicationContext(), android.R.layout.simple_list_item_1,
 				gameNames);
 		gameListView.setAdapter(gamesList);
-		// Starts the selected game when being tapped
-		gameListView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view,
-					int position, long id) {
-				startChosenGame(view, games[position]);
-			}
-
-		});
 	}
 
 	/**
