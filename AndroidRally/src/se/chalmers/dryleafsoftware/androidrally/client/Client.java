@@ -2,13 +2,14 @@ package se.chalmers.dryleafsoftware.androidrally.client;
 
 import java.net.Socket;
 
-import se.chalmers.dryleafsoftware.androidrally.network.Connection;
+import se.chalmers.dryleafsoftware.androidrally.client.Connection;
 
 
 public class Client {
 	private Connection connection;
 	private String ID = loadID();
 	private String gameID = "-1";
+	private DataHandler dataHandler = new DataHandler(this);
 	
 	public Client(){
 		Socket s = null;
@@ -18,10 +19,10 @@ public class Client {
 			e.printStackTrace();
 			// TODO: handle exception
 		}
-		this.connection = new Connection(s, new DataHandler(this));
-		connection.start();
-//		connection.send(ID + "$");
-		connection.send(ID + "$" + gameID +"$");
+		this.connection = new Connection(s);
+		dataHandler.verifyClientID();
+		dataHandler.getNewGameID();
+//		dataHandler.handle(connection.send(ID + "$" + gameID +"$"), connection);
 	}
 
 	private String loadID() {

@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.network;
+package se.chalmers.dryleafsoftware.androidrally.server.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class Connection extends Thread{
 	private Socket socket;
 	private PrintWriter outputWriter;
 	private BufferedReader inputReader;
-	private IDataHandler dataHandler;
+	private DataHandler dataHandler;
 	
 	private Connection(){
 		super();
@@ -25,7 +25,7 @@ public class Connection extends Thread{
 	 * @param s
 	 * @param h
 	 */
-	public Connection(Socket s, IDataHandler dataHandler){
+	public Connection(Socket s, DataHandler dataHandler){
 		this();
 		this.socket=s;
 		this.dataHandler=dataHandler;

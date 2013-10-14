@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 
 public class ServerListener extends Thread{
 	private List<Client> clients = new ArrayList<Client>();

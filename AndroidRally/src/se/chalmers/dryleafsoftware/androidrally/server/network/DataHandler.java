@@ -2,12 +2,10 @@ package se.chalmers.dryleafsoftware.androidrally.server.network;
 
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.network.Connection;
-import se.chalmers.dryleafsoftware.androidrally.network.IDataHandler;
 import se.chalmers.dryleafsoftware.androidrally.server.Game;
 import se.chalmers.dryleafsoftware.androidrally.server.Switch;
 
-public class DataHandler implements IDataHandler{
+public class DataHandler{
 	private int newID = 0;
 	private int newGameID = 0;
 	private List<Game> games;
@@ -23,6 +21,7 @@ public class DataHandler implements IDataHandler{
 		if (clientID.equalsIgnoreCase("-1")){
 			clientID = generateNewClientID()+"";
 			connection.send(clientID + "$");
+			return;
 		}
 		
 		
@@ -44,6 +43,7 @@ public class DataHandler implements IDataHandler{
 			}
 
 			connection.send(clientID + "$" + (games.get(games.size()-1)).getID() + "$");
+			return;
 //			//TODO
 
 		} else {
@@ -62,7 +62,7 @@ public class DataHandler implements IDataHandler{
 				}
 			}				
 					//TODO send data
-
+			return;
 		}
 			
 	}

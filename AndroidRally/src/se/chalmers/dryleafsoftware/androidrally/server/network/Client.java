@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.server.network;
 
-import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 
 public class Client {
 	private Connection connection;

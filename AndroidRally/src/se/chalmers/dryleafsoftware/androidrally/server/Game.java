@@ -5,6 +5,11 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 
+/**
+ * This is a wrapper for the GameController.
+ * @author Vidar Eriksson
+ *
+ */
 public class Game extends Thread{
 	private GameController gameController = null;
 	private List<String> clientID = new ArrayList<String>();

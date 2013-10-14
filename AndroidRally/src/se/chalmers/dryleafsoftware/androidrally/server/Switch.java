@@ -1,6 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.server;
 
-import se.chalmers.dryleafsoftware.androidrally.network.Connection;
+import se.chalmers.dryleafsoftware.androidrally.server.network.Connection;
 
 public class Switch {
 
