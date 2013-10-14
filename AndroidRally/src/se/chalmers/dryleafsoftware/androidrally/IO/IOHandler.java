@@ -1,7 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.IO;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import android.content.SharedPreferences;
 
 /**
  * Helps with saving and loading from the application's private storage.
@@ -20,6 +19,21 @@ public class IOHandler {
 	 */
 	public static final String CLIENT_DATA = "saves/";
 	
+	private static final String PRIVATE_DATA = "data/settings";
+	private static final String ID_DATA = "data/idData";
+	
+	private static int currentID;
+	
+	private static SharedPreferences prefs;
+		
+	/**
+	 * Set what preferences to save to.
+	 * @param prefs The preferences to save to.
+	 */
+	public static void setPrefs(SharedPreferences prefs) {
+		IOHandler.prefs = prefs;
+	}
+	
 	/**
 	 * Saves the game with the specified ID. 
 	 * @param saveData The data to save.
@@ -27,10 +41,18 @@ public class IOHandler {
 	 * @param location The location to store the data. Use static values.
 	 */
 	public static void save(String saveData, int gameID, String location) {		
-		FileHandle file = Gdx.files.local(location + gameID);
-		file.writeString(saveData, false);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(location, saveData);
 		System.out.println("(Saving) Location: \"" + location + gameID + "\", " + 
 				"data: \"" + saveData + "\"");
+		if(currentID == gameID) {
+			editor.putInt(PRIVATE_DATA, currentID);
+			System.out.println("(Saving) LastID: \"" + currentID + "\"");
+		}
+		if(!isSaved(gameID)) {
+			editor.putString(ID_DATA, prefs.getString(ID_DATA, "") + ":" + gameID);
+		}
+		System.out.println("Commit: " + editor.commit());
 	}
 	
 	/**
@@ -49,15 +71,30 @@ public class IOHandler {
 	}
 	
 	/**
+	 * Gives the next empty ID which can be used to create a new game.
+	 * @return
+	 */
+	public static int getNewID() {
+		int id = prefs.getInt(PRIVATE_DATA, -1);
+		currentID = id -1;
+		System.out.println("New ID: " + currentID);
+		return id - 1;
+	}
+	
+	/**
 	 * Gives all the IDs of the games saved.
 	 * @return An array of all the IDs of all the games a client has saved on the phone.
 	 */
 	public static int[] getGameIDs() {		
-		FileHandle[] files = Gdx.files.local("saves/").list();
-		int[] ids = new int[files.length];
-		for(int i = 0; i < files.length; i++) {
-			ids[i] = Integer.parseInt(files[i].name());
-			System.out.println("Stored ID: \"" + ids[i] + "\"");
+		String data = prefs.getString(ID_DATA, null);
+		if(data == null) {
+			return new int[0];
+		}
+		String idString[] = data.substring(1).split(":");
+		int[] ids = new int[idString.length];
+		for(int i = 0; i < idString.length; i++) {
+			ids[i] = Integer.parseInt(idString[i]);
+			System.out.println("Loaded stored ID: " + ids[i]);
 		}
 		return ids;
 	}
@@ -68,7 +105,17 @@ public class IOHandler {
 	 * @param location The location to remove from. Use static values.
 	 */
 	public static void remove(int gameID, String location) {
-		Gdx.files.local(location + gameID).delete();
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(location + gameID);
+		StringBuilder sb = new StringBuilder();
+		int[] ids = getGameIDs();
+		for(int i = 0; i < ids.length; i++) {
+			if(ids[i] != gameID) {
+				sb.append(ids[i] + ":");
+			}
+		}
+		editor.putString(ID_DATA, sb.toString());
+		System.out.println("Commit: " + editor.commit());
 	}
 	
 	/**
@@ -78,8 +125,7 @@ public class IOHandler {
 	 * @return The data stored at the location.
 	 */
 	public static String load(int gameID, String location) {
-		FileHandle file = Gdx.files.local(location + gameID);
-		String data = file.readString();
+		String data = prefs.getString(location + gameID, null);
 		System.out.println("(Loading) Location: \"" + location + gameID + "\", " + 
 				"data: \"" + data + "\"");
 		return data;

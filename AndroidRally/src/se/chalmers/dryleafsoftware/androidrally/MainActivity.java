@@ -1,13 +1,11 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
-import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.List;
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +26,11 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// Sets where to save.
+		SharedPreferences prefs = this.getSharedPreferences(
+			      "androidRallyStorage", Context.MODE_PRIVATE);
+		IOHandler.setPrefs(prefs);
 	}
 
 	@Override

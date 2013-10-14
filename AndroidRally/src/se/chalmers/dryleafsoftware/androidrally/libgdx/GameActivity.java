@@ -1,8 +1,14 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import se.chalmers.dryleafsoftware.androidrally.GameConfigurationActivity;
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -30,9 +36,9 @@ public class GameActivity extends AndroidApplication {
 		int bots = config.getIntExtra(GameConfigurationActivity.BOTS_INTENT_EXTRA, 7);
 		int hours = config.getIntExtra(GameConfigurationActivity.HOURS_INTENT_EXTRA, 24);
 		int card = config.getIntExtra(GameConfigurationActivity.CARD_TIME_INTENT_EXTRA, 45);
-		
+				
 		GameSettings settings = new GameSettings(1, bots, hours, card);
 		GameSettings.setCurrentSettings(settings);
-		initialize(new GdxGame(3, true), cfg);
+		initialize(new GdxGame(IOHandler.getNewID(), true), cfg);
 	}
 }
