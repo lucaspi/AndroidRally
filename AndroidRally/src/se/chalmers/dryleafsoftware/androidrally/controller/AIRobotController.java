@@ -90,6 +90,10 @@ public class AIRobotController {
 		direction = robot.getDirection();
 		nextCheckPoint = robot.getLastCheckPoint() + 1;
 		checkpointPosition = nextCheckPoint();
+		//something is wrong if cards.size() <= 4. To few cards are dealt in that case
+		if (cards.size() <= 4) {
+			throw new ToFewCardsException("To few cards sent to the robot. cards.size() <= 4");
+		}
 		placeCards();
 		robot.setChosenCards(chosenCards);
 	}
