@@ -1,13 +1,14 @@
-package se.chalmers.dryleafsoftware.androidrally.controller;
+package se.chalmers.dryleafsoftware.androidrally.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * A timer that checks that the player places his cards on the right time.
+ */
 public class CardTimer {
-	
 	private int robotNbr;
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	public static final String CARD_TIME_OUT = "cardTimeOut";
@@ -15,6 +16,11 @@ public class CardTimer {
 	private Timer timer;
 	private TimerTask timeOut;
 	
+	/**
+	 * Create a new CardTimer.
+	 * @param seconds the length of the timer
+	 * @param robotID the robot that is supposed to have the timer
+	 */
 	public CardTimer(long seconds, int robotID) {
 		timer = new Timer();
 		this.seconds = seconds * 1000;
@@ -31,12 +37,18 @@ public class CardTimer {
 		timer.schedule(timeOut, seconds);
 	}
 
+	/**
+	 * Cancel the task and the timer will not send an event.
+	 */
 	public void cancelTask() {
 		if (timeOut != null) {
 			timeOut.cancel();
 		}
 	}
 	
+	/**
+	 * Set a new task to be able to start a new round. Is called by start().
+	 */
 	private void reSchedule() {
 		timeOut = new TimerTask() {
 			@Override
@@ -46,10 +58,16 @@ public class CardTimer {
 		};
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		pcs.addPropertyChangeListener(pcl);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener pcl) {
 		pcs.removePropertyChangeListener(pcl);
 	}
