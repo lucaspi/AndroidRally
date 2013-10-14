@@ -1,10 +1,12 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.Client;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.GameActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +37,10 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		this.client = Client.getInstance();
+		// Sets where to save.
+		SharedPreferences prefs = this.getSharedPreferences(
+			      "androidRallyStorage", Context.MODE_PRIVATE);
+		IOHandler.setPrefs(prefs);
 		
 		gameListView = (ListView) findViewById(R.id.currentGames);
 		games = client.getSavedGames();

@@ -19,14 +19,19 @@ public class Wrench implements BoardElement{
 		this.repairAmount = repairAmount;
 	}
 	
+	/**
+	 * Repairs the given robot with the repair amount given in the constructor.
+	 */
 	@Override
 	public void action(Robot robot) {
 		robot.repair(repairAmount);
 	}
 
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void instantAction(Robot robot) {
 		// Do nothing
 	}
-
 }

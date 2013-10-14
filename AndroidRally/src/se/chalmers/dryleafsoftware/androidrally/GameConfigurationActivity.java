@@ -71,7 +71,7 @@ public class GameConfigurationActivity extends Activity {
 	}
 
 	private int getNbrOfBots() {
-		return (cardTimeBar.getProgress() + 1);
+		return (playersBar.getProgress() + 1);
 	}
 
 	private int getNbrOfHumanPlayers() {

@@ -291,9 +291,9 @@ public class Client {
 	 */
 	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {	
 		// TODO: server input
-		System.out.println("To client: \"" + controller.getNbrOfPlayers() + "\"");
+		System.out.println("To client: \"" + controller.getNbrOfRobots() + "\"");
 		List<RobotView> robots = new ArrayList<RobotView>();	
-		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
+		for(int i = 0; i < Integer.parseInt(controller.getNbrOfRobots()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
 					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
 					"Player " + i);

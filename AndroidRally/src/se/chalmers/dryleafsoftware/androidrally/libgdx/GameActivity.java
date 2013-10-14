@@ -1,7 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx;
 
 import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -25,7 +24,7 @@ public class GameActivity extends AndroidApplication {
 		cfg.useAccelerometer = false;
 		cfg.useCompass = false;
 		
-//		int ID = getIntent().getIntExtra("GAME_ID", IOHandler.getNewID());
-		initialize(new GdxGame(0, true), cfg);
+		int ID = getIntent().getIntExtra("GAME_ID", IOHandler.getNewID());
+		initialize(new GdxGame(ID, true), cfg);
 	}
 }
