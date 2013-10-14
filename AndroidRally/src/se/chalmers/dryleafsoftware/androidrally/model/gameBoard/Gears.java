@@ -5,8 +5,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
  * Representing a gear on the gameBoard. Will turn the robot 90 degrees when standing on it.
- * @author Hagvall 0768-500991
- *
  */
 public class Gears implements BoardElement{
 	private boolean isTurnRight = false;
@@ -19,6 +17,9 @@ public class Gears implements BoardElement{
 		this.isTurnRight = isTurnRight;
 	}
 	
+	/**
+	 * Turns the robot in the direction given in the constructor.
+	 */
 	@Override
 	public void action(Robot robot) {
 		if (isTurnRight) {
@@ -28,9 +29,11 @@ public class Gears implements BoardElement{
 		}
 	}
 
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void instantAction(Robot robot) {
 		// Do nothing
 	}
-
 }
