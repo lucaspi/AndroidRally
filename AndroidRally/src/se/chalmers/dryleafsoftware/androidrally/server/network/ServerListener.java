@@ -38,7 +38,7 @@ public class ServerListener extends Thread{
         while (true) {
         	try {
         		Connection c = new Connection(serverSocket.accept(), dataHandler);
-				clients.add(new Client(c));
+				clients.add(new Client(c, dataHandler));
 				c.start();
 			} catch (IOException e) {
 				e.printStackTrace();

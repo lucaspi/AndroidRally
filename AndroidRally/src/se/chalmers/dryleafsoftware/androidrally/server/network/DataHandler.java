@@ -3,9 +3,10 @@ package se.chalmers.dryleafsoftware.androidrally.server.network;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.server.Game;
-import se.chalmers.dryleafsoftware.androidrally.server.Switch;
+import se.chalmers.dryleafsoftware.androidrally.server.Operator;
+import se.chalmers.dryleafsoftware.androidrally.shared.*;
 
-public class DataHandler{
+public class DataHandler implements IDataHandler{
 	private int newID = 0;
 	private int newGameID = 0;
 	private List<Game> games;
@@ -15,8 +16,9 @@ public class DataHandler{
 		this.games=games;
 		// TODO Auto-generated constructor stub
 	}
-
-	public void handle(String data, Connection connection) {
+	
+	@Override
+	public void handle(String data, IConnection connection) {
 		String clientID = data.substring(0, data.indexOf('$'));
 		if (clientID.equalsIgnoreCase("-1")){
 			clientID = generateNewClientID()+"";
@@ -53,7 +55,7 @@ public class DataHandler{
 					connection.send("gameexists");
 					for (String id : game.getClients()){
 						if (id.equalsIgnoreCase(clientID)){
-							Switch.handle(connection, clientID, game, data2.substring(data2.indexOf('$')+1));
+							Operator.handle(connection, clientID, game, data2.substring(data2.indexOf('$')+1));
 							break;
 						}
 					}
@@ -86,5 +88,6 @@ public class DataHandler{
 		// TODO Auto-generated method stub
 		return newID;
 	}
+
 	
 }

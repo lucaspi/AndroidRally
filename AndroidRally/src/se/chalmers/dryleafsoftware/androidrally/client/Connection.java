@@ -6,12 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import se.chalmers.dryleafsoftware.androidrally.shared.IConnection;
+
 /**
  * Handles the network connections for the server.
  * @author Vidar Eriksson
  *
  */
-public class Connection{
+public class Connection implements IConnection{
 	private Socket socket = null;
 	private PrintWriter outputWriter = null;
 	private BufferedReader inputReader = null;
@@ -37,6 +39,7 @@ public class Connection{
 	 * Sends data over the connection.
 	 * @param data the data to be sent over the connection.
 	 */
+	@Override
 	public String send(String data){
 		String inputLine = "";
 		

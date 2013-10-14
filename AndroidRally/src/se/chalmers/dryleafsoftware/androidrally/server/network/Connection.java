@@ -6,12 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import se.chalmers.dryleafsoftware.androidrally.shared.IConnection;
+
 /**
  * Handles the network connections for the server.
  * @author Vidar Eriksson
  *
  */
-public class Connection extends Thread{
+public class Connection extends Thread implements IConnection{
 	private Socket socket;
 	private PrintWriter outputWriter;
 	private BufferedReader inputReader;
@@ -65,9 +67,10 @@ public class Connection extends Thread{
 	 * Sends data over the connection.
 	 * @param data the data to be sent over the connection.
 	 */
-	public synchronized void send(String data){
+	public String send(String data){
 		System.out.println("Sent:" + data);
-		outputWriter.println(data);	
+		outputWriter.println(data);
+		return null;	
 	}
 	
 }

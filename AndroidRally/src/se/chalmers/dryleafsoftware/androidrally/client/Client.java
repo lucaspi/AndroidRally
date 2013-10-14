@@ -1,22 +1,21 @@
 package se.chalmers.dryleafsoftware.androidrally.client;
 
+import se.chalmers.dryleafsoftware.androidrally.shared.*;
 
 
-public class Client {
-	private Connection connection = new Connection();
-	private String ID = loadID();
+
+public class Client extends ACClient{
 	private String gameID = "-1";
-	private DataHandler dataHandler = new DataHandler(this);
-	
+
 	public Client(){
-		dataHandler.verifyClientID();
-		dataHandler.getNewGameID();
-//		dataHandler.handle(connection.send(ID + "$" + gameID +"$"), connection);
+		super(new Connection(), new DataHandler());
+		
+		getDataHandler().handle(getConnection().send(getID()+"$"), getConnection());
 	}
 
 	private String loadID() {
 		// TODO Auto-generated method stub
-		//TODO should load id from file on client.
+		//TODO should load id from file local on unit
 		return "-1";
 	}
 
@@ -25,22 +24,16 @@ public class Client {
 		this.gameID=s;		
 	}
 	
+	@Override
+	public void setID(String iD) {
+		super.setID(iD);
+		System.out.println("Client ID set to:" + iD);
+		
+	}
+	
 	public String getGameID() {
 		return this.gameID;		
 	}
 
-	public Connection getConnection() {
-		return connection;
-	}
-
-	public String getID() {
-		return this.ID;
-	}
-
-	public void setID(String iD) {
-		System.out.println("Client ID set to:" + iD);
-		this.ID = iD;
-	}
-	
 
 }

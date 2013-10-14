@@ -1,8 +1,9 @@
 package se.chalmers.dryleafsoftware.androidrally.client;
 
-import se.chalmers.dryleafsoftware.androidrally.client.Connection;
+import se.chalmers.dryleafsoftware.androidrally.shared.IConnection;
+import se.chalmers.dryleafsoftware.androidrally.shared.IDataHandler;
 
-public class DataHandler{
+public class DataHandler implements IDataHandler{
 	private Client client;
 	
 	public DataHandler(Client c) {
@@ -30,6 +31,13 @@ public class DataHandler{
 				! gameID.equalsIgnoreCase("0")){
 			client.setGameID(gameID);
 		}		
+	}
+
+	@Override
+	public void handle(String data, IConnection connection) {
+		// TODO Auto-generated method stub
+		System.out.println("DataHandle.handle() should not be called!");
+		
 	}
 
 }
