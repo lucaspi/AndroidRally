@@ -43,7 +43,7 @@ public class GameController implements PropertyChangeListener {
 	 * Creates a new GameController.
 	 * @param nbrOfHumanPlayers the number of playing people (for server-client games)
 	 * @param nbrOfBots the number of robots controlled by the computer
-	 * @param hoursEachRound how long time the players have to play their cards between the rounds (How long time they have before "Draw cards" is pressed.
+	 * @param hoursEachRound how long time the players have to play their cards between the rounds (How long time they have before "Draw cards" is pressed. Not used if nbrOfHumanPlayers == 1.
 	 * @param cardTimerSeconds the number of seconds a player have to place his/her cards when "Draw cards" is pressed
 	 * @param map a String map on the for such as yxxxxxxxxxxxxxxxxyxxxxx...
 	 */
@@ -348,7 +348,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public String getInitGameData() {
 		return cardTimerSeconds + ";" + hoursEachRound + ";" +
-				(isSinglePlayer() ? 0 : endOfRoundDate.getTime());
+				(isSinglePlayer() ? -1 : endOfRoundDate.getTime());
 	}
 
 	/**

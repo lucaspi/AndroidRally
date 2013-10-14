@@ -108,6 +108,11 @@ public class Client {
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
 	}
 	
+	public void deleteGame(int gameID) {
+		IOHandler.remove(gameID, IOHandler.CLIENT_DATA);
+		IOHandler.remove(gameID, IOHandler.SERVER_DATA);
+	}
+	
 	/**
 	 * Gives the number of rounds the view is behind.
 	 * @return The number of rounds the view is behind.

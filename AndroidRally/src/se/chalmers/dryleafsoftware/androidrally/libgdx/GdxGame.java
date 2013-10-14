@@ -286,7 +286,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
 			onRoundTimer();
-		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
+		}else if(event.getPropertyName().equals(MessageStage.EVENT_MENU)) {
+			client.deleteGame(gameID);
 			Gdx.app.exit();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
 			onCardTimer();
