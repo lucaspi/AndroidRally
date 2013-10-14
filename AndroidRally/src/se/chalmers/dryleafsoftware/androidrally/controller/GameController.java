@@ -348,7 +348,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public String getInitGameData() {
 		return cardTimerSeconds + ";" + hoursEachRound + ";" +
-				(isSinglePlayer() ? 0 : endOfRoundDate.getTime());
+				(isSinglePlayer() ? -1 : endOfRoundDate.getTime());
 	}
 
 	/**

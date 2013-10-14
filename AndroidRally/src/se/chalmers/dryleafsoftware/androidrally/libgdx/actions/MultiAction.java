@@ -42,6 +42,14 @@ public class MultiAction extends GameAction {
 		actions.add(a);
 		setDuration(Math.max(getDuration(), a.getDuration()));
 	}
+	
+	@Override
+	public void setDuration(int duration) {
+		super.setDuration(duration);
+		for(GameAction a : actions) {
+			a.setDuration(duration);
+		}
+	}
 
 	@Override
 	public void action(List<RobotView> robots, MapBuilder map) {
