@@ -1,5 +1,6 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.Client;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,11 +21,20 @@ import android.widget.Toast;
  * 
  */
 public class MainActivity extends Activity {
+	
+	private ListView gameListView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+//		Client client = new Client();
+		
+		gameListView = (ListView) findViewById(R.id.currentGames);
+//		String[] games = client.getSavedGames();
+		String[] games = {"game1", "game2", "game3"};
+		ListAdapter gamesList = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, games);
+		gameListView.setAdapter(gamesList);
 	}
 
 	@Override
@@ -54,10 +66,11 @@ public class MainActivity extends Activity {
 	 * @param view
 	 */
 	public void startChosenGame(View view) {
-		ListView lv = (ListView) view.findViewById(R.id.currentGames);
+		
 //		lv.get the chosen one
 //		configure the correct game to start
 //		Intent i = new Intent(getApplicationContext(), GameActivity.class);
+//		i.putExtra("GAME_ID", gameListView.getClicked()))
 //		startActivity(i);
 	}
 

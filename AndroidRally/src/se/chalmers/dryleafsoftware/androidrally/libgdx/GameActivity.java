@@ -27,6 +27,7 @@ public class GameActivity extends AndroidApplication {
 		cfg.useCompass = false;
 		
 		Intent config = getIntent();
+		
 		int bots = config.getIntExtra(GameConfigurationActivity.BOTS_INTENT_EXTRA, 7);
 		int hours = config.getIntExtra(GameConfigurationActivity.HOURS_INTENT_EXTRA, 24);
 		int card = config.getIntExtra(GameConfigurationActivity.CARD_TIME_INTENT_EXTRA, 45);
