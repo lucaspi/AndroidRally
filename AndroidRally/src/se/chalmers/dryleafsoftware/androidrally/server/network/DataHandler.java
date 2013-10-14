@@ -69,7 +69,7 @@ public class DataHandler implements IDataHandler{
 		
 
 	private Game createNewGame() {
-		Game g = new Game(generateNewGameID(), 60, 8, 24, 120, null);
+		Game g = new Game(generateNewGameID(), 30, 8, 24, 120, null);
 		// TODO Auto-generated method stub
 		return g;
 		

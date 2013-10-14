@@ -37,7 +37,7 @@ public class Game extends Thread{
 	
 	@Override
 	public void run(){
-		while (createdTime-System.currentTimeMillis()< (double) connectionTimer*1000){
+		while (System.currentTimeMillis()- createdTime< 1000* (double) connectionTimer){
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

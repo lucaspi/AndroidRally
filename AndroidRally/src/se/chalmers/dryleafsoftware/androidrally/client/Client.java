@@ -20,7 +20,7 @@ public class Client {
 		}
 		this.connection = new Connection(s, new DataHandler(this));
 		connection.start();
-		
+//		connection.send(ID + "$");
 		connection.send(ID + "$" + gameID +"$");
 	}
 
