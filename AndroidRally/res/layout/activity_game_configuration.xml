@@ -1,12 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingBottom="@dimen/activity_vertical_margin"
-	android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
-	android:paddingTop="@dimen/activity_vertical_margin"
-	tools:context=".GameConfigurationActivity" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background1"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".GameConfigurationActivity" >
 
     <Button
         android:id="@+id/startButton"
@@ -30,7 +31,8 @@
 		android:layout_alignParentLeft="true"
 		android:layout_below="@id/startButton"
 		android:text="@string/round_time"
-		android:textAppearance="?android:attr/textAppearanceSmall" />
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:textColor="#ffffff" />
 
 	<LinearLayout
 		android:id="@+id/roundTime"
@@ -50,7 +52,8 @@
 			android:id="@+id/roundTimeTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:text="@string/round_time_default" />
+			android:text="@string/round_time_default"
+			android:textColor="#ffffff" />
 
 	</LinearLayout>
 
@@ -61,7 +64,8 @@
 		android:layout_alignParentLeft="true"
 		android:layout_below="@+id/roundTime"
 		android:text="@string/card_time"
-		android:textAppearance="?android:attr/textAppearanceSmall" />
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:textColor="#ffffff" />
 
 	<LinearLayout
 		android:id="@+id/LinearLayout01"
@@ -81,7 +85,8 @@
 			android:id="@+id/cardTimeTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:text="@string/card_time_default" />
+			android:text="@string/card_time_default"
+			android:textColor="#ffffff" />
 
 	</LinearLayout>
 
@@ -92,7 +97,8 @@
 		android:layout_alignParentLeft="true"
 		android:layout_below="@+id/LinearLayout01"
 		android:text="@string/players_text"
-		android:textAppearance="?android:attr/textAppearanceSmall" />
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:textColor="#ffffff" />
 
 	<LinearLayout
 		android:id="@+id/LinearLayout02"
@@ -112,7 +118,9 @@
 			android:id="@+id/playersTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:text="@string/number_of_players_default" />
+			android:text="@string/number_of_players_default"
+			android:textColor="#ffffff" />
+
 	</LinearLayout>
 
 </RelativeLayout>
