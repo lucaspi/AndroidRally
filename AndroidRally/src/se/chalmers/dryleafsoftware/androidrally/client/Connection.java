@@ -12,27 +12,24 @@ import java.net.Socket;
  *
  */
 public class Connection{
-	private Socket socket;
-	private PrintWriter outputWriter;
-	private BufferedReader inputReader;
+	private Socket socket = null;
+	private PrintWriter outputWriter = null;
+	private BufferedReader inputReader = null;
 	
-	private Connection(){
-		super();
-	}
-	/**
-	 * Should always call this start() method.
-	 * @param s
-	 * @param h
-	 */
-	public Connection(Socket s){
-		this();
-		this.socket=s;
+	public Connection(){
+		super(); 
 		try {
+			socket = new Socket("176.10.217.200", 10000);
+			
 			outputWriter = new PrintWriter(socket.getOutputStream(), true);
 			inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		} catch (IOException e) {
+			
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			// TODO Auto-generated catch block
 		}
 	}
 	
@@ -41,39 +38,31 @@ public class Connection{
 	 * @param data the data to be sent over the connection.
 	 */
 	public String send(String data){
-		
-//		try {
-//			System.out.println(inputReader.readLine());
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		//TODO clear input reader?
-		
-		
-		
-		System.out.println("Sent:" + data);
-		outputWriter.println(data);
-
 		String inputLine = "";
-		try {
-			System.out.println("Waiting for data");
-			Thread.sleep(2000);
-			System.out.println("Done Waiting for data");
+		
+		//TODO clear input reader?
+		if (socket.isConnected()){
+			System.out.println("Sent:" + data);
+			outputWriter.println(data);
+	
+			
 			try {
-				inputLine = inputReader.readLine();
+				do {
+					inputLine = inputReader.readLine();
+					if (inputLine==null){
+						break;
+					}
+					System.out.println("Recived:" + inputLine);
+				} while (inputLine.charAt(0) == 'T');
+				
 			} catch (Exception e) {
+				System.out.println("Error! in send");
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-				// TODO: handle exception
 			}
 			
-		} catch (Exception e) {
-			System.out.println("Error!");
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
-		System.out.println("Recived:" + inputLine);
+			
 		return inputLine;
 	}
 	
