@@ -18,8 +18,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
  * This is the mainModel for AndroidRally.
- * 
- *
  */
 public class GameModel {
 	private GameBoard gameBoard;
@@ -75,6 +73,9 @@ public class GameModel {
 		handleImmobileActions();
 	}
 	
+	/**
+	 * Make conveyor belts move, check collision and so on.
+	 */
 	private void handleConveyorBelts(){
 		int maxTravelDistance = gameBoard.getMaxConveyorBeltDistance();
 		for (Robot robot : robots) {
@@ -124,7 +125,7 @@ public class GameModel {
 		}
 	}
 	
-	/*
+	/**
 	 * Handles all checkPoints reached and repair/damage done during a round.
 	 */
 	private void handleImmobileActions(){
@@ -155,6 +156,9 @@ public class GameModel {
 		addCheckPointReached(oldCheckPointReached);
 	}
 	
+	/**
+	 * Make gears turn.
+	 */
 	private void handleGears(){
 	    allMoves.add(";B4");
 	    for(int i = 0; i<robots.size(); i++){
@@ -175,6 +179,11 @@ public class GameModel {
 	    }
 	}
 
+	/**
+	 * Adds a string to the allMoves string with information that the robot has reached
+	 * a specific checkpoint.
+	 * @param oldCheckPoints TODO
+	 */
 	private void addCheckPointReached(int[] oldCheckPoints){
 		allMoves.add(";B6");
 		for(int i = 0; i<robots.size(); i++){
@@ -184,6 +193,11 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * Adds a string to the allMoves string with information that the robot is damaged
+	 * a specific amount.
+	 * @param oldRobotHealth TODO
+	 */
 	private void addDamageToAllMoves(int[] oldRobotHealth){
 		allMoves.add(";B5");
 		for(int i = 0; i<robots.size(); i++){
@@ -199,7 +213,7 @@ public class GameModel {
 
 	/**
 	 * Return the map as a String. With subStrings representing
-	 * a tile with it's boardelements.
+	 * a tile with it's board elements.
 	 * @return the map as a String
 	 */
 	public String getMap(){
@@ -216,8 +230,11 @@ public class GameModel {
 		return false;
 	}
 
-	/*
-	 * This method will only give proper answers if the robot moves one step in X-axis or Y-axis, not both.
+	/**
+	 * Checks if it is possible to move in a specific direction. 
+	 * <br>
+	 * This method will only give proper answers if the robot
+	 * moves one step in X-axis or Y-axis, not both.
 	 */
 	private boolean canMove(int x, int y, int direction){
 		if(direction == GameBoard.NORTH){
@@ -240,8 +257,9 @@ public class GameModel {
 		return false;
 	}
 
-	/*
-	 * This method will only give proper answers if the robot moves in X-axis or Y-axis, not both.
+	/**
+	 * This method will only give proper answers if the robot
+	 * moves in X-axis or Y-axis, not both.
 	 */
 	private boolean canMove(int oldX, int oldY, int x, int y){
 		if(oldY > y){
@@ -257,7 +275,14 @@ public class GameModel {
 		return true;
 	}
 
-	private void fireRobotLaser(int x, int y, int direction){
+	/**
+	 * Fire the robots' lasers.
+	 * @param robot A robot
+	 */
+	private void fireRobotLaser(Robot robot){
+		int x = robot.getX();
+		int y = robot.getY();
+		int direction = robot.getDirection();
 		if(canMove(x, y, direction)) {
 			if (direction == GameBoard.NORTH) {
 				fireLaser(x, y-1, direction);
@@ -271,6 +296,13 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * Fire lasers on the map. Also called by fireRobotLaser because of almost
+	 * same logic.
+	 * @param x coordinate on x-axis
+	 * @param y coordinate on y-axis
+	 * @param direction a specific direction such as GameBoard.[DIRECTION]
+	 */
 	private void fireLaser(int x, int y, int direction) {
 		boolean robotIsHit = false;
 		boolean isNoWall = true;
@@ -322,25 +354,18 @@ public class GameModel {
 			if (robot.isDead()) {
 				continue;
 			}
-			x = robot.getX();
-			y = robot.getY();
-			direction = robot.getDirection();
-			fireRobotLaser(x, y, direction);
+			fireRobotLaser(robot);
 		}
 	}
 
-	/*
+	/**
 	 * This method should only be called after conveyorBelts have moved all robots.
 	 * Size of oldPositions needs to be int[robots.size()][2]
 	 */
 	private void checkConveyorBeltCollides(int[][] oldPositions){
-		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
-				if(canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
-					addSimultaneousMove(robots.get(i));
-					nbrOfMovedRobots++;
-				}else{
+				if(!canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
 					robots.get(i).setX(oldPositions[i][0]);
 					robots.get(i).setY(oldPositions[i][1]);
 				}
@@ -349,34 +374,22 @@ public class GameModel {
 		
 		List<Robot> handleCollision = new ArrayList<Robot>();
 		for(int i = 0; i<robots.size(); i++){
-			for(int j = 0; j<robots.size(); j++){
-				if(i != j && robots.get(i).getX() == robots.get(j).getX() && 
-						robots.get(i).getY() == robots.get(j).getY()){
-					boolean robotIMove = oldPositions[i][0] != robots.get(i).getX() || oldPositions[i][1] != 
-							robots.get(i).getY();
-					boolean robotJMove = (oldPositions[j][0] != robots.get(j).getX() || 
-							oldPositions[j][1] != robots.get(j).getY());
-					// If both robots have moved to the same position by conveyorBelt, both should move back.
-					if(robotIMove && robotJMove){
-						robots.get(i).setX(oldPositions[i][0]);
-						robots.get(i).setY(oldPositions[i][1]);
-						robots.get(j).setX(oldPositions[j][0]);
-						robots.get(j).setY(oldPositions[j][1]);
-						
-						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
-						// for the code to work.
-						for(int k = 1; k<=nbrOfMovedRobots; k++){
-							if(allMoves.get(allMovesSize - k).contains(i + ":") || 
-									allMoves.get(allMovesSize - k).contains(j + ":")){
-								allMoves.remove(allMovesSize - k);
-							}
-						}
-						nbrOfMovedRobots -= 2;
-					}else{// Push robot
-						if(robotIMove){
+			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
+				addSimultaneousMove(robots.get(i));
+				for(int j = 0; j<robots.size(); j++){
+					if(i != j && !robots.get(j).isDead() && robots.get(i).getX() == robots.get(j).getX() && 
+							robots.get(i).getY() == robots.get(j).getY()){
+						// If both robots moved to the same tile by conveyorBelts, both should move back.
+						if((oldPositions[j][0] != robots.get(j).getX() || 
+								oldPositions[j][1] != robots.get(j).getY())){
+							robots.get(i).setX(oldPositions[i][0]);
+							robots.get(i).setY(oldPositions[i][1]);
+							robots.get(j).setX(oldPositions[j][0]);
+							robots.get(j).setY(oldPositions[j][1]);
+							
+							allMoves.remove(allMoves.size()-1);
+						}else{// Push robot
 							handleCollision.add(robots.get(i));
-						}else if(robotJMove){
-//							handleCollision.add(robots.get(j));//TODO remove else if if this fixes stackOverflow bug
 						}
 					}
 				}
@@ -387,8 +400,9 @@ public class GameModel {
 		}
 	}
 
-	/*
-	 * Return true if the collision needs to be reversed
+	/**
+	 * Handles collision between robots that are pushing each other.
+	 * Return true if the collision needs to be reversed.
 	 */
 	private boolean handleCollision(Robot robot, int oldX, int oldY){
 		// TODO fix stackOverFlow
@@ -506,7 +520,9 @@ public class GameModel {
 	}
 
 	/**
-	 * 
+	 * Checks if the game is over. It is over if a robot has reached the last
+	 * checkpoint or if all robots except one are dead.
+	 * It checks if robots are dead and if they have lost.
 	 * @return true if if game is over, else false
 	 */
 	private boolean checkGameStatus(){
@@ -567,6 +583,11 @@ public class GameModel {
 		}
 	}
 
+	/**
+	 * Tries to place a robot one the spawnpoint.
+	 * If another robot is standing on it a tile nearby is used as a spawnpoint.
+	 * @param robot A robot
+	 */
 	private void resetRobotPosition(Robot robot){
 		int distanceFromSpawnPoint = 0;
 		while(true){
@@ -598,6 +619,11 @@ public class GameModel {
 				robot.getXAsString() + robot.getYAsString());
 	}
 	
+	public Deck getDeck() {
+		return deck;
+	}
+
+	//TODO skriva javadoc till dessa
 	private void addRobotWon(Robot robot) {
 		allMoves.add(";W#" + robots.indexOf(robot));
 	}

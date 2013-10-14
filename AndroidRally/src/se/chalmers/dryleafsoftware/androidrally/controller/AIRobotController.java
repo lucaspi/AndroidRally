@@ -19,15 +19,11 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  * This class will not be able to guide robots through maps which is to tricky. The only
  * boardelements which this class will take into account is Holes and walls which it will
  * attempt to run around, other boardelements such as conveyor belt will not be considered.
- * 
- * 
- * @author
  *
  */
 public class AIRobotController {
 	private GameBoard gb;
 	private List<Card> chosenCards;
-	private Robot robot;
 	private int x;
 	private int y;
 	private int direction;
@@ -94,17 +90,17 @@ public class AIRobotController {
 		direction = robot.getDirection();
 		nextCheckPoint = robot.getLastCheckPoint() + 1;
 		checkpointPosition = nextCheckPoint();
-//		try {//TODO fix!!!
-			placeCards();
-//		} catch (Exception e) {
-//		} finally {
-			robot.setChosenCards(chosenCards);
-//		}
+		//something is wrong if cards.size() <= 4. To few cards are dealt in that case
+		if (cards.size() <= 4) {
+			throw new ToFewCardsException("To few cards sent to the robot. cards.size() <= 4");
+		}
+		placeCards();
+		robot.setChosenCards(chosenCards);
 	}
 
 	/**
 	 * This method will choose the cards for the robot. In most cases it will choose one 
-	 * card and then call itself.
+	 * card and then call itself again recursively.
 	 */
 	private void placeCards() {
 		if (chosenCards.size() >= 5) {

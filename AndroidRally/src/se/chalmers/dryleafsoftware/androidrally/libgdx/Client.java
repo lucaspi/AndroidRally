@@ -3,6 +3,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
@@ -35,28 +36,50 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Client {
 
-	// TODO: the client must somehow know which robotID the player has.
-	private final se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
-	private final int clientID, robotID;
+	
+	private se.chalmers.dryleafsoftware.androidrally.controller.GameController controller;
+	private final int clientID; // TODO: the client must be assigned a unique ID from server
+	private int robotID; // TODO: get robot ID from server
 	private int roundID = 0;
-	private GameSettings settings;
-	// TODO: load the clientID from the user's phone's data.
-	// TODO: save the clientID when assigned one from the server.
+	private static Client instance;
 		
 	/**
 	 * Creates a new client instance.
-	 * @param clientID The ID number of the player.
 	 */
-	public Client(int clientID, GameSettings settings) {
-		if (settings == null) {
-			this.settings = new GameSettings();
-		} else {
-			this.settings = settings;
-		}
-		this.controller = new GameController(this.settings.getNbrOfHumanPlayers(), this.settings.getNbrOfBots(),
-				this.settings.getHoursEachRound(), this.settings.getCardTimerSeconds(), this.settings.getMap());
-		this.clientID = clientID;
+	private Client() {
+		this.clientID = 0;
 		this.robotID = 0;
+	}
+	
+	/**
+	 * Gets the singleton instance of client
+	 */
+	public static synchronized Client getInstance() {
+		if (instance == null) {
+			instance = new Client();
+		}
+		return instance;
+	}
+	
+	/**
+	 * Creates a new game with the supplied settings
+	 * @param settings The settings to use for the game
+	 */
+	public void createGame(GameSettings settings) {
+		resetGameValues();
+		this.controller = new GameController(settings.getNbrOfHumanPlayers(), settings.getNbrOfBots(),
+				settings.getHoursEachRound(), settings.getCardTimerSeconds(), settings.getMap());
+		controller.newRound();
+	}
+	
+	private void resetGameValues() {
+		roundID = 0;
+		robotID = 0; // TODO: from server!
+	}
+	
+	public void loadGame(int gameID) {
+		resetGameValues();
+		this.controller = new GameController(IOHandler.load(gameID, IOHandler.SERVER_DATA));
 		controller.newRound();
 	}
 	
@@ -90,11 +113,11 @@ public class Client {
 		}	
 		System.out.println("From client: \"" + sb.toString() + "\"");
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
-		for(int i = 0; i < 0; i++) {
-			if(i != robotID) {
-				controller.setChosenCardsToRobot(i, "-1:-1:-1:-1:-1"); // TODO: remove
-			}
-		}
+	}
+	
+	public void deleteGame(int gameID) {
+		IOHandler.remove(gameID, IOHandler.CLIENT_DATA);
+		IOHandler.remove(gameID, IOHandler.SERVER_DATA);
 	}
 	
 	/**
@@ -206,6 +229,46 @@ public class Client {
 		return result;	
 	}
 	
+	/**
+	 * Loads the data needed to restore the game board.
+	 * @param gameID
+	 * @return
+	 */
+	public String getSavedBoardData(int gameID) {
+		String data = IOHandler.load(gameID, IOHandler.CLIENT_DATA);
+		String[] chunks = data.split("c");
+		String[] clientData = chunks[0].split(":");
+		this.robotID = Integer.parseInt(clientData[0]);
+		this.roundID = Integer.parseInt(clientData[1]);
+		
+		return chunks[1];
+	}
+	
+	/**
+	 * Saves the current game.
+	 * @param gameID
+	 */
+	public void saveCurrentGame(int gameID, String boardData) {
+		// Force save of server data:
+		controller.save(gameID);
+		
+		// Save client specific data:
+		StringBuilder sb = new StringBuilder();
+		sb.append(robotID + ":");
+		sb.append(robotID);
+		sb.append("c");
+		sb.append(boardData);
+		IOHandler.save(sb.toString(), gameID, IOHandler.CLIENT_DATA);
+	}
+	
+	/**
+	 * Gives an array of gameID's of all the games the client is playing.
+	 * @return
+	 */
+	public int[] getSavedGames() {
+		return IOHandler.getGameIDs();
+	}
+	
 	/*
 	 * Creates a new action by reading the string provided.
 	 */
@@ -228,6 +291,10 @@ public class Client {
 		return temp;
 	}
 	
+	public List<RobotView> getRobots(Texture texture) {
+		return getRobots(texture, null);
+	}
+	
 	/**
 	 * Gives all the players robots in the current game as a list.
 	 * @param texture The textures to use when displaying the robots.
@@ -236,13 +303,15 @@ public class Client {
 	 */
 	public List<RobotView> getRobots(Texture texture, Vector2[] dockPositions) {	
 		// TODO: server input
-		System.out.println("To client: \"" + controller.getNbrOfPlayers() + "\"");
+		System.out.println("To client: \"" + controller.getNbrOfRobots() + "\"");
 		List<RobotView> robots = new ArrayList<RobotView>();	
-		for(int i = 0; i < Integer.parseInt(controller.getNbrOfPlayers()); i++) {
+		for(int i = 0; i < Integer.parseInt(controller.getNbrOfRobots()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
 					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
-					"Player " + i);
-			robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+					"Player " + (i + 1));
+			if(dockPositions != null) {
+				robot.setPosition(dockPositions[i].x, dockPositions[i].y);
+			}
 			robot.setOrigin(20, 20);
 			robots.add(robot);
 		}		

@@ -13,8 +13,6 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.LaserView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.DockView;
-
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,13 +21,11 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 
 /**
  * This view class displays everything on the game area.
@@ -39,7 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
  */
 public class BoardView extends Stage {
 
-	private final List<RobotView> robots = new ArrayList<RobotView>();
+	private List<RobotView> robots = new ArrayList<RobotView>();
 	private final List<AnimatedElement> animated = new ArrayList<AnimatedElement>();
 	private final Vector2[] docks = new Vector2[8];
 	private final Group container; 
@@ -84,6 +80,47 @@ public class BoardView extends Stage {
 		boardCamera.position.set(240, 400, 0f);
 		boardCamera.update();
 		setCamera(boardCamera);
+	}
+	
+	public void restore(String data, Texture texture) {
+		String[] chunks = data.split("b");		
+		createBoard(texture, chunks[1]);
+		
+		String[] robots = chunks[0].split("a");
+		for(int i = 0; i < robots.length; i++) {
+			String[] r = robots[i].split(":");
+			float x = Float.parseFloat(r[0]);
+			float y = Float.parseFloat(r[1]);
+			float rot = Float.parseFloat(r[2]);
+			int lives = Integer.parseInt(r[3]);
+			int damage = Integer.parseInt(r[4]);
+			RobotView robot = getRobots().get(i);
+			robot.setX(x);
+			robot.setY(y);
+			robot.setRotation(rot);
+			robot.setLives(lives);
+			robot.setDamage(damage);
+			container.removeActor(robot);
+			container.addActor(robot);
+		}
+	}
+	
+	// [robot]b[robot]b[robot]ba[map]
+	public String getSaveData() {
+		StringBuilder sb = new StringBuilder();
+		
+		// [x]:[y]:[dir]:[lives]:[damage]
+		for(RobotView r : getRobots()) {
+			sb.append(r.getX() + ":");
+			sb.append(r.getY() + ":");
+			sb.append(r.getRotation() + ":");
+			sb.append(r.getLives() + ":");
+			sb.append(r.getDamage());
+			sb.append("a");
+		}
+		sb.append("b");
+		sb.append(mapBuilder.getMap());
+		return sb.toString();
 	}
 	
 	/**
@@ -200,9 +237,9 @@ public class BoardView extends Stage {
 		container.setSize(mapBuilder.getWidth() * 40,
 				mapBuilder.getHeight() * 40);	
 		scrollContainer.setSize(480, 480);
-		pane.setScrollPercentY(100);
 		pane.setScrollingDisabled(mapBuilder.getWidth() < 12, mapBuilder.getHeight() < 12);
 		pane.layout();
+		pane.setScrollPercentY(100);
 	}
 	
 	public MapBuilder getMapBuilder() {
@@ -274,17 +311,13 @@ public class BoardView extends Stage {
 		return this.robots;
 	}
 	
-	/**
-	 * Gives the robot with the specified robot ID-number.
-	 * @param robotID The ID-number to look for.
-	 * @return The robot with the specified ID.
-	 */
-	public RobotView getRobot(int robotID) {
-		for(RobotView p : robots) {
-			if(p.getRobotID() == robotID) {
-				return p;
-			}
+	public void setRobots(List<RobotView> robots) {
+		for(RobotView r : this.robots) {
+			container.removeActor(r);
 		}
-		return null;
+		this.robots = robots;
+		for(RobotView r : this.robots) {
+			container.addActor(r);
+		}
 	}
 }

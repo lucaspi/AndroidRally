@@ -36,12 +36,14 @@ public abstract class MapBuilder {
 	DIR_WEST = 3;
 
 	private final String[][] map;
+	private final String mapData;
 	
 	/**
 	 * Creates a new instance which will load the map provided.
 	 * @param indata The map to load supplied as a String.
 	 */
 	public MapBuilder(String indata) {
+		this.mapData = indata;
 		String[] mapY = indata.substring(1).split("y");
 		map = new String[mapY.length][];
 		for(int i = 0; i < map.length; i++) {
@@ -49,6 +51,10 @@ public abstract class MapBuilder {
 		}
 		width = map.length;
 		height = map[0].length;
+	}
+	
+	public String getMap() {
+		return this.mapData;
 	}
 	
 	public void build() {

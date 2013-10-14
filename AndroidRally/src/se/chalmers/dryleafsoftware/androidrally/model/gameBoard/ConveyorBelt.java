@@ -5,7 +5,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 /**
  * Representing a Conveyor belt on a gameBoard. Contains data of how a robot
  * standing on it should move.
- * @author
  *
  */
 public class ConveyorBelt implements BoardElement{
@@ -32,6 +31,9 @@ public class ConveyorBelt implements BoardElement{
 		robot.move(1, direction);
 	}
 
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void instantAction(Robot robot) {
 		// Do nothing

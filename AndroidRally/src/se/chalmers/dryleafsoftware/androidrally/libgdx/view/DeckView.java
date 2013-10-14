@@ -53,6 +53,7 @@ public class DeckView extends Stage {
 	private final Table allPlayerInfo; // The panel with all the players' info
 	private final RegisterView registerView;
 	private final TextButtonStyle buttonStyle;
+	private final TextButton runButton;
 
 	
 	public static final String EVENT_PAUSE = "pause";
@@ -84,6 +85,8 @@ public class DeckView extends Stage {
 	 * Specifying that the info button has been pressed.
 	 */
 	public static final String EVENT_INFO = "info";
+	
+	public static final String EVENT_RUN = "run";
 	
 	private final Timer timer;	
 	private final Label timerLabel;
@@ -155,28 +158,35 @@ public class DeckView extends Stage {
 				new Texture(Gdx.files.internal("textures/button9patchpressed.png")), 4, 4, 4, 4));
 		buttonStyle = new TextButtonStyle(buttonTexture, buttonTexturePressed, null);
 		buttonStyle.font = new BitmapFont();
-				
-		// TODO: Remove this dummy button!
-        TextButton dummy = new TextButton("Force round", buttonStyle);
-        dummy.setPosition(280, 60);
-        dummy.setSize(100, 20);
-        statusBar.add(dummy); // Border
-        dummy.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_ROUND, 0, 1);
-    		}
-    	});
-        TextButton dummy2 = new TextButton("Send cards", buttonStyle);
-        dummy2.setPosition(380, 60);
-        dummy2.setSize(100, 20);
-        statusBar.add(dummy2); // Border
-        dummy2.addListener(new ClickListener() {
-    		@Override
-    		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(TIMER_CARDS, 0, 1);
-    		}
-    	});
+		buttonStyle.pressedOffsetX = 1;
+		buttonStyle.pressedOffsetY = -1;
+		
+		TextButtonStyle	playStyle = new TextButtonStyle(
+				new TextureRegionDrawable(new TextureRegion(compTexture, 0, 192, 64, 64)),
+				new TextureRegionDrawable(new TextureRegion(compTexture, 64, 192, 64, 64)),
+				null);
+		playStyle.disabled = new TextureRegionDrawable(
+				new TextureRegion(compTexture, 128, 192, 64, 64));
+		playStyle.font = new BitmapFont();
+		playStyle.fontColor = Color.WHITE;
+		playStyle.disabledFontColor = Color.GRAY;
+		playStyle.pressedOffsetX = 1;
+		playStyle.pressedOffsetY = -1;
+		
+		runButton = new TextButton("\r\nRun", playStyle);
+		runButton.setPosition(410, 20);
+		runButton.setSize(64, 64);
+		runButton.setDisabled(true);
+		registerView.add(runButton);
+		runButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if(!runButton.isDisabled()) {
+					runButton.setDisabled(true);
+					pcs.firePropertyChange(EVENT_RUN, 0, 1);
+				}
+			}
+		});
         
 		playPanel = buildPlayerPanel();		
 		drawPanel = buildDrawCardPanel();	
@@ -198,10 +208,11 @@ public class DeckView extends Stage {
 					if(roundTick - MAX_PING == 0) {
 						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
 						System.out.println("-------------------------------------ROund timer!-----------");
-						roundTick = DeckView.this.roundTime;
 					}
 				}
-				setTimerLabel(cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING));
+				int timerTick = cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING);
+				timerLabel.setVisible(timerTick > 0);
+				setTimerLabel(timerTick);
 			}
 		}, 1000, 1000);
 
@@ -252,14 +263,25 @@ public class DeckView extends Stage {
     	scrollContainer.defaults().width(240);
     	ScrollPane pane = new ScrollPane(scrollContainer);
     	allPlayerInfo.add(pane);
+    	
+    	NinePatchDrawable divider = new NinePatchDrawable(new NinePatch(
+				new Texture(Gdx.files.internal("textures/divider.png")), 63, 63, 0, 0));
     	for(int i = 0; i < robots.size(); i++) {
     		if(i != robotID) {    			
     	    	scrollContainer.add(new LifeView(compTexture, robots.get(i)));
     	    	scrollContainer.add(new DamageView(compTexture, robots.get(i)));
     			scrollContainer.row();
+    			if(i != robots.size() - 1) {
+    				scrollContainer.add(new Image(divider)).colspan(2).width(420).pad(3);
+    				scrollContainer.row();
+    			}
     		}
     	}
     	scrollContainer.debug();
+	}
+	
+	public void resetRoundTimer() {
+		roundTick = DeckView.this.roundTime;
 	}
 	
 	/*
@@ -428,7 +450,9 @@ public class DeckView extends Stage {
 		for(String card : input.split(":")) {
 			int prio = Integer.parseInt(card);	
 			CardView cv = buildCard(prio, texture, i, cardFont);
-
+			
+			System.out.println("registerView: " + registerView);
+			System.out.println("register[i]: " + registerView.getRegister(i));
 			registerView.getRegister(i).setCard(cv);
 			registerView.getRegister(i).displayOverlay(Register.UNFOCUS);
 			i++;
@@ -515,6 +539,7 @@ public class DeckView extends Stage {
 			cv.addListener(cl);
 			cv.addListener(cardListener);
 		}
+		runButton.setDisabled(false);
 	}
 	
 	public void displayOpponentInfo() {

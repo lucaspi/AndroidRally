@@ -4,7 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
@@ -19,8 +19,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.TimeUtils;
 
 
 /**
@@ -62,45 +60,56 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	};
 	private int playSpeed = 1;
 	private Stage currentStage = Stage.WAITING; 
+	private final int gameID;
+	private final boolean singlePlayer;
+	
+	public GdxGame(int gameID, boolean singlePlayer) {
+		super();
+		this.gameID = gameID;
+		this.singlePlayer = singlePlayer;
+		System.out.println("Creating game with ID: " + gameID);
+	}
 
 	@Override
 	public void create() {
-		this.client = new Client(1, GameSettings.getCurrentSettings());
-		this.gameBoard = new BoardView();	
-		this.messageStage = new MessageStage();
-		
-		String[] gameData = client.getGameData().split(";");
-		this.cardTime = Integer.parseInt(gameData[0]);
-		int roundTime = Integer.parseInt(gameData[1]) * 3600;
-		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - TimeUtils.millis()) / 1000;
-		// Roundtime shouldn't be too long.
-		
-		messageStage.addListener(this);
-
 		// Only load the textures once.
 		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
 		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		gameBoard.createBoard(boardTexture, client.getMap());
+		this.client = Client.getInstance();
+
+		this.messageStage = new MessageStage();
 		
-		players = client.getRobots(boardTexture, gameBoard.getDocksPositions());
-		for(RobotView player : players) {
-			gameBoard.addRobot(player);
-		}		
+		this.gameBoard = new BoardView();
+		if(IOHandler.isSaved(gameID)) { // If we can load from file.
+			client.loadGame(gameID);
+			players = client.getRobots(boardTexture);
+			gameBoard.setRobots(players);
+			gameBoard.restore(client.getSavedBoardData(gameID), boardTexture);
+		}else{ // If we need to start a new game.
+			gameBoard.createBoard(boardTexture, client.getMap());
+			players = client.getRobots(boardTexture, gameBoard.getDocksPositions());
+			gameBoard.setRobots(players);
+		}	
 		players.get(client.getRobotID()).addListener(
 				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
+		
+		String[] gameData = client.getGameData().split(";");
+		this.cardTime = Integer.parseInt(gameData[0]);
+		int roundTime = Integer.parseInt(gameData[1]) * 3600;
+		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - System.currentTimeMillis()) / 1000;
+		// Roundtime shouldn't be too long.
+		
+		messageStage.addListener(this);		
 		
 		this.deckView = new DeckView(players, client.getRobotID(), roundTime); 
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		deckView.setRoundTick(roundTimeLeft);
-		
-		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
-		Gdx.input.setInputProcessor(im);
-		Gdx.input.setCatchBackKey(true);
+		if(!singlePlayer) {
+			deckView.setRoundTick(roundTimeLeft);
+		}
 		
 		// Look to see if the client is behind.
 		if(client.getRoundsBehind() > 0) {
@@ -108,6 +117,11 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			result = client.getRoundResult();
 			deckView.setChosenCards(client.loadCards(), cardTexture);
 		}
+
+		//Creates an input multiplexer to be able to use multiple listeners
+		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
+		Gdx.input.setInputProcessor(im);
+		Gdx.input.setCatchBackKey(true);
 	}
 	
 	/*
@@ -180,8 +194,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void skipAllActions() {
 		int roundID = client.getRoundID();
-		while((actions == null || !actions.isEmpty() || (actions.isEmpty() && result.hasNext()))
-				&& roundID == client.getRoundID()) {
+		while(result != null && 
+				(((actions == null || actions.isEmpty()) && result.hasNext()) || !actions.isEmpty())
+				&& roundID == client.getRoundID() ) {
 			skipCardActions();
 		}
 	}
@@ -266,21 +281,45 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		
 		// Other events:
 		else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
-			// Displays the cards and waits for the timer task.
-			deckView.setDeckCards(client.loadCards(), cardTexture);
-			deckView.setCardTick(cardTime);
+			drawCards();
 		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
-			client.sendCard(deckView.getChosenCards());
-			deckView.displayWaiting();
-			currentStage = Stage.WAITING;
-			deckView.setCardTick(-1);
-			deckView.setChosenCards(client.loadCards(), cardTexture);
+			onCardTimer();
 		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
-			deckView.displayPlayOptions();
-			result = client.getRoundResult();
-		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
+			onRoundTimer();
+		}else if(event.getPropertyName().equals(MessageStage.EVENT_MENU)) {
+			client.deleteGame(gameID);
 			Gdx.app.exit();
+		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
+			onCardTimer();
+			onRoundTimer();
+			handleSave();
+		}else if(event.getPropertyName().equals(DeckView.EVENT_RUN)) {
+			onCardTimer();
+			if(singlePlayer) {
+				onRoundTimer();
+			}
+		}
+	}
+	
+	private void drawCards() {
+		deckView.setDeckCards(client.loadCards(), cardTexture);
+		deckView.setCardTick(cardTime);
+	}
+	
+	private void onCardTimer() {
+		client.sendCard(deckView.getChosenCards());
+		deckView.displayWaiting();
+		currentStage = Stage.WAITING;
+		deckView.setCardTick(-1);
+		deckView.setChosenCards(client.loadCards(), cardTexture);
+	}
+	
+	private void onRoundTimer() {
+		deckView.displayPlayOptions();
+		result = client.getRoundResult();
+		if(!singlePlayer) {
+			deckView.resetRoundTimer();
 		}
 	}
 
@@ -304,8 +343,15 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		update();
 		
 //		Table.drawDebug(deckView);
-		Table.drawDebug(gameBoard);
+//		Table.drawDebug(gameBoard);
 //		Table.drawDebug(messageStage);
+		
+	}
+	
+	private void handleSave() {
+		skipAllActions();
+		client.saveCurrentGame(gameID, gameBoard.getSaveData());
+		Gdx.app.exit();
 	}
 
 	@Override
@@ -327,7 +373,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 				if(deckView.isCardTimerOn()) {
 					messageStage.dispCloseMessage();
 				}else{
-					Gdx.app.exit();
+					handleSave();
 				}
 			}
 			return false;

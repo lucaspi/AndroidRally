@@ -34,6 +34,10 @@ public class Move extends Card implements Comparable {
 		return distance;
 	}
 
+	/**
+	 * Used to be able to sort a list of Move cards
+	 * with the highest priority first in the list.
+	 */
 	@Override
 	public int compareTo(Object o) {
 		return ((Move)o).getDistance() - this.getDistance();

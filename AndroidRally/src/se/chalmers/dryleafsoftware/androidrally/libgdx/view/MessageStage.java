@@ -39,7 +39,8 @@ public class MessageStage extends Stage {
 	private final Drawable backGround;
 	private final LabelStyle labelStyle;
 	
-	public static final String EVENT_OK = "messageOk";
+	public static final String EVENT_MENU = "messageOk";
+	public static final String EVENT_EXIT = "exitGame";
 	
 	public MessageStage() {
 		super();
@@ -104,7 +105,7 @@ public class MessageStage extends Stage {
         exit.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_OK, 0, 1);
+    			pcs.firePropertyChange(EVENT_EXIT, 0, 1);
     		}
     	});
         
@@ -190,12 +191,11 @@ public class MessageStage extends Stage {
         gameOverButton.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_OK, 0, 1);
+    			pcs.firePropertyChange(EVENT_MENU, 0, 1);
     		}
     	});
 		
-		setInputCatcher(panel.getX(), panel.getY(), 
-				panel.getWidth(), panel.getHeight());	
+        setInputCatcher(0, 0, 480, 800);		
 		container.add(panel);
 	}
 	

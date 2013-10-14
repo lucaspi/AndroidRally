@@ -45,6 +45,7 @@ public class SingleAction extends GameAction {
 	
 	@Override
 	public void cleanUp(List<RobotView> robots, MapBuilder map) {
+		robots.get(getRobotID()).clearActions();
 		Vector2 pos = map.convertToMapY(posX, posY);
 		robots.get(getRobotID()).setPosition(pos.x, pos.y);
 		robots.get(getRobotID()).setRotation(-dir * 90);

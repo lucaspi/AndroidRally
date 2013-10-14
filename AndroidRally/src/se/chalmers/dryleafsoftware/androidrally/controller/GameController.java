@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.controller;
 
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -9,11 +8,16 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
+import se.chalmers.dryleafsoftware.androidrally.model.CardTimer;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
-
+/**
+ * Class that holds the GameModel and is the controller part.
+ */
 public class GameController implements PropertyChangeListener {
 	private GameModel gameModel;
 	private Timer timer;
@@ -33,15 +37,18 @@ public class GameController implements PropertyChangeListener {
 	private int cardTimerSeconds;
 	private Date endOfRoundDate;
 	
-//	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxx36x36:37xxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26x17xx1x103x103x103x103x103xxxxyxxxx26x36xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
-//	private static final String testMap = "yxx18x28xxxxyx38x48x58x68xxxyxxxxxxxyxxxxxxxyxxxxxxxyxxxxxxx12";
-//	private static final String testMap = "yxx18x28xxxxxxxxxxxxxxxxxxxxxxxxyx38x48x58x68xxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx12yxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-//	private static final String testMap = "yxx18x28x38xxxxxyxxxxxxxxxyxxxxxxxxxyxxxxxxxxxyxxxxxx12xxx";
-	
-//	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26x36xx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
 	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
 
-	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
+	/**
+	 * Creates a new GameController.
+	 * @param nbrOfHumanPlayers the number of playing people (for server-client games)
+	 * @param nbrOfBots the number of robots controlled by the computer
+	 * @param hoursEachRound how long time the players have to play their cards between the rounds (How long time they have before "Draw cards" is pressed. Not used if nbrOfHumanPlayers == 1.
+	 * @param cardTimerSeconds the number of seconds a player have to place his/her cards when "Draw cards" is pressed
+	 * @param map a String map on the for such as yxxxxxxxxxxxxxxxxyxxxxx...
+	 */
+	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound,
+			int cardTimerSeconds, String map) {
 		this.nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
 		this.nbrOfHumanPlayers = Math.max(this.nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
 		this.nbrOfBots = Math.min(nbrOfBots, 8 - this.nbrOfHumanPlayers);
@@ -72,6 +79,112 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 
+	/**
+	 * Resume a game using a the data of a saved game.
+	 * @param saveData a String with the data used to resume a game
+	 */
+	public GameController(String saveData) {	
+		this(1, Integer.parseInt(saveData.split("b")[0].split(":")[2]) - 1, 
+				Integer.parseInt(saveData.split("b")[0].split(":")[1]), 
+				Integer.parseInt(saveData.split("b")[0].split(":")[0]), 
+				saveData.split("b")[2]);
+		String[] dataChunks = saveData.split("b");
+	
+		// Chunk 1:
+		int robotIndex = 0;
+		for(String robotData : dataChunks[1].split("c")) {			
+			String[] subChunks = robotData.split("a");
+	
+			// [xx][yy][dir][damage][lives]:[checkpoint]:[spawn xx][spawn yy]
+			String[] data = subChunks[0].split(":");
+			int posX = Integer.parseInt(data[0].substring(0, 2));
+			int posY = Integer.parseInt(data[0].substring(2, 4));
+			int direction = Integer.parseInt(data[0].substring(4, 5));
+			int hp = Integer.parseInt(data[0].substring(5, 6));
+			int life = Integer.parseInt(data[0].substring(6, 7));
+	
+			int checkPoint = Integer.parseInt(data[1]);
+	
+			int spawnX = Integer.parseInt(data[2].substring(0, 2));
+			int spawnY = Integer.parseInt(data[2].substring(2, 4));
+	
+	
+			// Cards
+			List<Card> cards = new ArrayList<Card>();
+			String[] cardData = subChunks[1].split(":");
+			for(int i = 0; i < 5; i++) {
+				cards.add(gameModel.getDeck().getCard(Integer.parseInt(cardData[i])));
+			}
+			Robot robot = gameModel.getRobots().get(robotIndex);
+			robot.setChosenCards(cards);
+			robot.setX(spawnX);
+			robot.setY(spawnY);
+			robot.newSpawnPoint();
+			robot.setX(posX);
+			robot.setY(posY);
+			for(int j = Robot.STARTING_LIFE; j > life; j--) {
+				robot.die();
+			}
+			robot.damage(Robot.STARTING_HEALTH - hp);
+			for(int j = 1; j <= checkPoint; j++) {
+				robot.reachCheckPoint(j);
+			}
+			switch(direction) {
+			case 1:
+				robot.turn(TurnType.RIGHT);
+				break;
+			case 2:
+				robot.turn(TurnType.UTURN);
+				break;
+			case 3:
+				robot.turn(TurnType.LEFT);
+				break;
+			}
+			robotIndex++;
+		}
+	}
+
+	/**
+	 * Saves the game of a specific ID.
+	 * @param gameID the ID of the game running
+	 */
+	public void save(int gameID) {
+			// [timer data]b[robotinfo]a[robotcards]c[robotinfo]a[robotcards]cb[map]
+			StringBuilder sb = new StringBuilder();
+			sb.append(cardTimerSeconds + ":");
+			sb.append(hoursEachRound + ":");
+			sb.append(gameModel.getRobots().size());
+			sb.append("b");
+			
+	//		[xx][yy][dir][damage][lives]:[checkpoint]:[spawn xx][spawn yy]
+			for(Robot r : gameModel.getRobots()) {
+				sb.append(String.format("%02d", r.getX()));
+				sb.append(String.format("%02d", r.getY()));
+				sb.append(r.getDirection());
+				sb.append(r.getHealth());
+				sb.append(r.getLife());
+				sb.append(":");
+				sb.append(r.getLastCheckPoint());
+				sb.append(":");
+				sb.append(String.format("%02d", r.getSpawnPointX()));
+				sb.append(String.format("%02d", r.getSpawnPointY()));
+				sb.append("a");	
+				for(Card c : r.getChosenCards()) {
+					if(c != null) {
+						sb.append(c.getPriority() + ":");
+					}else{
+						sb.append("-1:");
+					}
+				}
+				sb.append("c");
+			}
+			sb.append("b" + gameModel.getMap());
+			IOHandler.save(sb.toString(), gameID, IOHandler.SERVER_DATA);
+		}
+
+	/**
+	 * Set random cards for robots that haven't placed their cards when the time is up.
+	 */
 	private void handleRemainingRobots() {
 		for (int i = 0; i < gameModel.getRobots().size(); i++) {
 			if (!gameModel.getRobots().get(i).haveSentCards()) {
@@ -79,29 +192,38 @@ public class GameController implements PropertyChangeListener {
 			}
 		}
 	}
-
+	
 	/**
-	 * Timer is scheduled to what hoursEachRound is set to.
-	 * 24 hours as default.
+	 * Timer is scheduled to what hoursEachRound is set to
+	 * (<b>IF</b> reScheduleTask() is called). 
 	 */
 	public void startRoundTimer() {
-		reScheduleTimer();
-		endOfRoundDate = new Date(hoursEachRound * 3600000);
-		timer.schedule(endOfRound, hoursEachRound * 3600000);
+		if (!isSinglePlayer()) {
+			endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
+			timer.schedule(endOfRound, hoursEachRound * 3600000);
+		}
 	}
 
+	/**
+	 * Stops the round timer.
+	 */
 	public void stopRoundTimer() {
 		endOfRound.cancel();
 	}
 	
-	private void reScheduleTimer() {
+	/**
+	 * Called every time a new round is created. Called by startRoundTimer().
+	 */
+	public void reScheduleTask() {
 		endOfRound = new TimerTask() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
 			public synchronized void run() {
 				isRunRunning = true;
-				stopRoundTimer();
+				if (!isSinglePlayer()) {
+					stopRoundTimer();
+				}
 				handleRemainingRobots();
 				
 				gameModel.moveRobots();
@@ -154,21 +276,17 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 	
+	/**
+	 * Return a string representing the last chosen cards from a specific robot.
+	 * @param robotID the id of the robot to get cards for.
+	 * @return a string representing the last chosen cards from a specific robot.
+	 */
 	private String getCurrentChosenCards(int robotID){
 		StringBuilder sb = new StringBuilder();
 		for(Card card : gameModel.getRobots().get(robotID).getChosenCards()) {
 			sb.append(card.getPriority() + ":");
 		}
 		return sb.toString();
-	}
-	
-	/**
-	 * Return a string representing the last chosen cards from a specific robot.
-	 * @param robotID the id of the robot to get cards for.
-	 * @return a string representing the last chosen cards from a specific robot.
-	 */
-	public String getChosenCards(int robotID){
-		return gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 	}
 
 	/**
@@ -204,7 +322,7 @@ public class GameController implements PropertyChangeListener {
 	 * @param robotID the index of the robot in the GameModel's robot list.
 	 * @return the robot's cards represented as a string (not chosen cards).
 	 */
-	public String getCards(int robotID) {
+	private String getCards(int robotID) {
 		List<Card> cards = gameModel.getRobots().get(robotID).getCards();
 		Card[] chosenCards = gameModel.getRobots().get(robotID).getChosenCards();
 		StringBuilder sb = new StringBuilder();
@@ -229,7 +347,8 @@ public class GameController implements PropertyChangeListener {
 	 * @return Data the client needs when connecting.
 	 */
 	public String getInitGameData() {
-		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRoundDate.getTime();
+		return cardTimerSeconds + ";" + hoursEachRound + ";" +
+				(isSinglePlayer() ? -1 : endOfRoundDate.getTime());
 	}
 
 	/**
@@ -241,10 +360,11 @@ public class GameController implements PropertyChangeListener {
 	 * round has ended (unless the game is over).
 	 */
 	public void newRound() {
-		System.out.println("------------------------newRound---------------------------");
-		
 		gameModel.dealCards();
-		startRoundTimer();
+		reScheduleTask();
+		if (!isSinglePlayer()) {
+			startRoundTimer();
+		}
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < nbrOfRobots; i++) {
 			cardTimer[i].cancelTask();
@@ -263,8 +383,8 @@ public class GameController implements PropertyChangeListener {
 		return mapAsString;
 	}
 	
-	public String getNbrOfPlayers() {
-		return "" + nbrOfRobots;
+	public String getNbrOfRobots() {
+		return String.valueOf(nbrOfRobots);
 	}
 	
 	/**
@@ -299,7 +419,21 @@ public class GameController implements PropertyChangeListener {
 		return allMoves.size();
 	}
 	
+	/**
+	 * Sets random chosen cards for a specific robot.
+	 * @param robotID a specific robots ID in the robot list in GameModel
+	 */
 	private void setRandomCards(int robotID) {
 		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
+	}
+	
+	/**
+	 * To know if the round timer is to be used or
+	 * not it's necessary to know whether it's a
+	 * single player game or not.
+	 * @return true if there is only 1 human player, else false
+	 */
+	private boolean isSinglePlayer() {
+		return nbrOfHumanPlayers == 1;
 	}
 }
