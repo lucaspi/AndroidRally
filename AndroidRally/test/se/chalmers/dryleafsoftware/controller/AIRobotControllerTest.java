@@ -17,7 +17,7 @@ public class AIRobotControllerTest {
 		GameModel gm = new GameModel(2, testMap);
 		AIRobotController ai = new AIRobotController(gm.getGameBoard());
 		
-		for(int j = 0; j < 100000; j++) {
+		for(int j = 0; j < 100000; j++) { //make 100000 rounds to be sure it works
 			gm.dealCards();
 			for(Robot robot: gm.getRobots()) {
 				ai.makeMove(robot);
