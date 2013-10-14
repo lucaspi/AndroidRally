@@ -208,10 +208,11 @@ public class DeckView extends Stage {
 					if(roundTick - MAX_PING == 0) {
 						pcs.firePropertyChange(TIMER_ROUND, 0, 1);
 						System.out.println("-------------------------------------ROund timer!-----------");
-						roundTick = DeckView.this.roundTime;
 					}
 				}
-				setTimerLabel(cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING));
+				int timerTick = cardTick > 0 ? cardTick : Math.max(0, roundTick - MAX_PING);
+				timerLabel.setVisible(timerTick > 0);
+				setTimerLabel(timerTick);
 			}
 		}, 1000, 1000);
 
@@ -277,6 +278,10 @@ public class DeckView extends Stage {
     		}
     	}
     	scrollContainer.debug();
+	}
+	
+	public void resetRoundTimer() {
+		roundTick = DeckView.this.roundTime;
 	}
 	
 	/*

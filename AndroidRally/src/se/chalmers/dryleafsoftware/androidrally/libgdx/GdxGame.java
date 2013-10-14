@@ -235,7 +235,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			}else{
 				currentStage = Stage.WAITING;
 				deckView.displayDrawCard();
-				drawCards();
 			}
 		}
 	}
@@ -290,6 +289,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
+			onCardTimer();
+			onRoundTimer();
 			handleSave();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_RUN)) {
 			onCardTimer();
@@ -315,6 +316,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private void onRoundTimer() {
 		deckView.displayPlayOptions();
 		result = client.getRoundResult();
+		if(!singlePlayer) {
+			deckView.resetRoundTimer();
+		}
 	}
 
 	@Override
@@ -365,7 +369,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		public boolean keyDown(int arg0) {
 			if(arg0 == Keys.BACK || arg0 == Keys.BACKSPACE){
 				if(deckView.isCardTimerOn()) {
-					onCardTimer();
 					messageStage.dispCloseMessage();
 				}else{
 					handleSave();
