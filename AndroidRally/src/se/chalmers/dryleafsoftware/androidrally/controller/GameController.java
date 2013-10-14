@@ -47,9 +47,8 @@ public class GameController implements PropertyChangeListener {
 	 * @param cardTimerSeconds the number of seconds a player have to place his/her cards when "Draw cards" is pressed
 	 * @param map a String map on the for such as yxxxxxxxxxxxxxxxxyxxxxx...
 	 */
-	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
-		System.out.println("Bots: " + nbrOfBots);
-		System.out.println("Humans: " + nbrOfHumanPlayers);
+	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound,
+			int cardTimerSeconds, String map) {
 		this.nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
 		this.nbrOfHumanPlayers = Math.max(this.nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
 		this.nbrOfBots = Math.min(nbrOfBots, 8 - this.nbrOfHumanPlayers);
@@ -195,12 +194,14 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	/**
-	 * Timer is scheduled to what hoursEachRound is set to.
+	 * Timer is scheduled to what hoursEachRound is set to
+	 * (<b>IF</b> reScheduleTask() is called). 
 	 */
 	public void startRoundTimer() {
-		reScheduleTimer();
-		endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
-		timer.schedule(endOfRound, hoursEachRound * 3600000);
+		if (!isSinglePlayer()) {
+			endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
+			timer.schedule(endOfRound, hoursEachRound * 3600000);
+		}
 	}
 
 	/**
@@ -213,14 +214,16 @@ public class GameController implements PropertyChangeListener {
 	/**
 	 * Called every time a new round is created. Called by startRoundTimer().
 	 */
-	private void reScheduleTimer() {
+	public void reScheduleTask() {
 		endOfRound = new TimerTask() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
 			public synchronized void run() {
 				isRunRunning = true;
-				stopRoundTimer();
+				if (!isSinglePlayer()) {
+					stopRoundTimer();
+				}
 				handleRemainingRobots();
 				
 				gameModel.moveRobots();
@@ -357,7 +360,10 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void newRound() {
 		gameModel.dealCards();
-		startRoundTimer();
+		reScheduleTask();
+		if (!isSinglePlayer()) {
+			startRoundTimer();
+		}
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < nbrOfRobots; i++) {
 			cardTimer[i].cancelTask();
@@ -418,5 +424,15 @@ public class GameController implements PropertyChangeListener {
 	 */
 	private void setRandomCards(int robotID) {
 		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
+	}
+	
+	/**
+	 * To know if the round timer is to be used or
+	 * not it's necessary to know whether it's a
+	 * single player game or not.
+	 * @return true if there is only 1 human player, else false
+	 */
+	private boolean isSinglePlayer() {
+		return nbrOfHumanPlayers == 1;
 	}
 }

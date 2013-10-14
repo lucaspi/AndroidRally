@@ -26,7 +26,7 @@ import android.widget.Toast;
  * 
  */
 public class MainActivity extends Activity {
-	
+
 	private ListView gameListView;
 	private Client client;
 	private int[] games;
@@ -35,31 +35,14 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		this.client = Client.getInstance();
 		// Sets where to save.
-		SharedPreferences prefs = this.getSharedPreferences(
-			      "androidRallyStorage", Context.MODE_PRIVATE);
+		SharedPreferences prefs = this.getSharedPreferences("androidRallyStorage", Context.MODE_PRIVATE);
 		IOHandler.setPrefs(prefs);
-		
-		gameListView = (ListView) findViewById(R.id.currentGames);
-		games = client.getSavedGames();
-		String[] gameNames = new String[games.length];
-		for (int i = 0; i < gameNames.length; i++) {
-			gameNames[i] = "Game " + games[i];
-		}
-		ListAdapter gamesList = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, gameNames);
-		gameListView.setAdapter(gamesList);
-		//Starts the selected game when being tapped
-		gameListView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long id) {
-				startChosenGame(view, games[position]);
-			}
-			
-		});
+		gameListView = (ListView) findViewById(R.id.currentGames);
+		refreshGamesList();
 	}
 
 	@Override
@@ -73,8 +56,8 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			// TODO: refresh()
 			showToaster("Refreshing");
+			refreshGamesList();
 			return true;
 		case R.id.action_help:
 			// Todo: help someone
@@ -84,7 +67,29 @@ public class MainActivity extends Activity {
 			return true;
 		}
 	}
-	
+
+	private void refreshGamesList() {
+		games = client.getSavedGames();
+		String[] gameNames = new String[games.length];
+		for (int i = 0; i < gameNames.length; i++) {
+			gameNames[i] = "Game " + games[i];
+		}
+		ListAdapter gamesList = new ArrayAdapter<String>(
+				getApplicationContext(), android.R.layout.simple_list_item_1,
+				gameNames);
+		gameListView.setAdapter(gamesList);
+		// Starts the selected game when being tapped
+		gameListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View view,
+					int position, long id) {
+				startChosenGame(view, games[position]);
+			}
+
+		});
+	}
+
 	/**
 	 * Starts the chosen game
 	 * 
@@ -101,10 +106,10 @@ public class MainActivity extends Activity {
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
-	
 
 	public void startConfiguration(View view) {
-		Intent i = new Intent(getApplicationContext(), GameConfigurationActivity.class);
+		Intent i = new Intent(getApplicationContext(),
+				GameConfigurationActivity.class);
 		startActivity(i);
 	}
 

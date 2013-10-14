@@ -378,34 +378,29 @@ public class GameModel {
 		
 		List<Robot> handleCollision = new ArrayList<Robot>();
 		for(int i = 0; i<robots.size(); i++){
-			for(int j = 0; j<robots.size(); j++){
-				if(i != j && robots.get(i).getX() == robots.get(j).getX() && 
-						robots.get(i).getY() == robots.get(j).getY()){
-					boolean robotIMove = oldPositions[i][0] != robots.get(i).getX() || oldPositions[i][1] != 
-							robots.get(i).getY();
-					boolean robotJMove = (oldPositions[j][0] != robots.get(j).getX() || 
-							oldPositions[j][1] != robots.get(j).getY());
-					// If both robots have moved to the same position by conveyorBelt, both should move back.
-					if(robotIMove && robotJMove){
-						robots.get(i).setX(oldPositions[i][0]);
-						robots.get(i).setY(oldPositions[i][1]);
-						robots.get(j).setX(oldPositions[j][0]);
-						robots.get(j).setY(oldPositions[j][1]);
-						
-						int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
-						// for the code to work.
-						for(int k = 1; k<=nbrOfMovedRobots; k++){
-							if(allMoves.get(allMovesSize - k).contains(i + ":") || 
-									allMoves.get(allMovesSize - k).contains(j + ":")){
-								allMoves.remove(allMovesSize - k);
+			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
+				for(int j = 0; j<robots.size(); j++){
+					if(i != j && !robots.get(j).isDead() && robots.get(i).getX() == robots.get(j).getX() && 
+							robots.get(i).getY() == robots.get(j).getY()){
+						// If both robots moved to the same tile by conveyorBelts, both should move back.
+						if((oldPositions[j][0] != robots.get(j).getX() || 
+								oldPositions[j][1] != robots.get(j).getY())){
+							robots.get(i).setX(oldPositions[i][0]);
+							robots.get(i).setY(oldPositions[i][1]);
+							robots.get(j).setX(oldPositions[j][0]);
+							robots.get(j).setY(oldPositions[j][1]);
+							
+							int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
+							// for the code to work.
+							for(int k = 1; k<=nbrOfMovedRobots; k++){
+								if(allMoves.get(allMovesSize - k).contains(i + ":") || 
+										allMoves.get(allMovesSize - k).contains(j + ":")){
+									allMoves.remove(allMovesSize - k);
+								}
 							}
-						}
-						nbrOfMovedRobots -= 2;
-					}else{// Push robot
-						if(robotIMove){
+							nbrOfMovedRobots -= 2;
+						}else{// Push robot
 							handleCollision.add(robots.get(i));
-						}else if(robotJMove){
-//							handleCollision.add(robots.get(j));//TODO remove this if it fixes stackOverflow bug in placeCards
 						}
 					}
 				}
