@@ -363,13 +363,9 @@ public class GameModel {
 	 * Size of oldPositions needs to be int[robots.size()][2]
 	 */
 	private void checkConveyorBeltCollides(int[][] oldPositions){
-		int nbrOfMovedRobots = 0;
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
-				if(canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
-					addSimultaneousMove(robots.get(i));
-					nbrOfMovedRobots++;
-				}else{
+				if(!canMove(robots.get(i).getX(), robots.get(i).getY(), oldPositions[i][0], oldPositions[i][1])){
 					robots.get(i).setX(oldPositions[i][0]);
 					robots.get(i).setY(oldPositions[i][1]);
 				}
@@ -379,6 +375,7 @@ public class GameModel {
 		List<Robot> handleCollision = new ArrayList<Robot>();
 		for(int i = 0; i<robots.size(); i++){
 			if(!robots.get(i).isDead() && (robots.get(i).getX() != oldPositions[i][0] || robots.get(i).getY() != oldPositions[i][1])){
+				addSimultaneousMove(robots.get(i));
 				for(int j = 0; j<robots.size(); j++){
 					if(i != j && !robots.get(j).isDead() && robots.get(i).getX() == robots.get(j).getX() && 
 							robots.get(i).getY() == robots.get(j).getY()){
@@ -390,15 +387,7 @@ public class GameModel {
 							robots.get(j).setX(oldPositions[j][0]);
 							robots.get(j).setY(oldPositions[j][1]);
 							
-							int allMovesSize = allMoves.size();// The size will change during the loop, but must stay the same
-							// for the code to work.
-							for(int k = 1; k<=nbrOfMovedRobots; k++){
-								if(allMoves.get(allMovesSize - k).contains(i + ":") || 
-										allMoves.get(allMovesSize - k).contains(j + ":")){
-									allMoves.remove(allMovesSize - k);
-								}
-							}
-							nbrOfMovedRobots -= 2;
+							allMoves.remove(allMoves.size()-1);
 						}else{// Push robot
 							handleCollision.add(robots.get(i));
 						}
