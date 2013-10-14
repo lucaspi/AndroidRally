@@ -116,8 +116,8 @@ public class GameController implements PropertyChangeListener {
 			for(int i = 0; i < 5; i++) {
 				cards.add(gameModel.getDeck().getCard(Integer.parseInt(cardData[i])));
 			}
-			
 			Robot robot = gameModel.getRobots().get(robotIndex);
+			robot.setChosenCards(cards);
 			robot.setX(spawnX);
 			robot.setY(spawnY);
 			robot.newSpawnPoint();
@@ -130,7 +130,6 @@ public class GameController implements PropertyChangeListener {
 			for(int j = 1; j <= checkPoint; j++) {
 				robot.reachCheckPoint(j);
 			}
-			robot.setChosenCards(cards);
 			switch(direction) {
 			case 1:
 				robot.turn(TurnType.RIGHT);
@@ -142,8 +141,6 @@ public class GameController implements PropertyChangeListener {
 				robot.turn(TurnType.LEFT);
 				break;
 			}
-	
-	
 			robotIndex++;
 		}
 	}
