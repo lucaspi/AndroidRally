@@ -33,6 +33,6 @@ public class GameActivity extends AndroidApplication {
 		int card = config.getIntExtra(GameConfigurationActivity.CARD_TIME_INTENT_EXTRA, 45);
 		
 		GameSettings settings = new GameSettings(1, bots, hours, card);
-		initialize(new GdxGame(), cfg);
+		initialize(new GdxGame(1, true), cfg);
 	}
 }

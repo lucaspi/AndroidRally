@@ -40,6 +40,7 @@ public class MessageStage extends Stage {
 	private final LabelStyle labelStyle;
 	
 	public static final String EVENT_OK = "messageOk";
+	public static final String EVENT_EXIT = "exitGame";
 	
 	public MessageStage() {
 		super();
@@ -104,7 +105,7 @@ public class MessageStage extends Stage {
         exit.addListener(new ClickListener() {
     		@Override
     		public void clicked(InputEvent event, float x, float y) {
-    			pcs.firePropertyChange(EVENT_OK, 0, 1);
+    			pcs.firePropertyChange(EVENT_EXIT, 0, 1);
     		}
     	});
         

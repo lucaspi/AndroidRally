@@ -25,7 +25,8 @@ public class RegisterView extends Table {
 		registers = new Register[5];
 		for(int i = 0; i < 5; i++) {
 			registers[i] = new Register(texture, i);
-			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
+//			registers[i].setPosition(480 / 5 * (i+0.5f) - registers[i].getWidth()/2 , 0);
+			registers[i].setPosition((registers[i].getWidth() + 3) * i + 3, 0);
 			add(registers[i]);			
 		}
 	}

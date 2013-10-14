@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally;
 
-import se.chalmers.dryleafsoftware.androidrally.libgdx.Client;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -79,6 +78,7 @@ public class MainActivity extends Activity {
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	
 
 	public void startConfiguration(View view) {
 		Intent i = new Intent(getApplicationContext(), GameConfigurationActivity.class);

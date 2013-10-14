@@ -61,7 +61,7 @@ public class GameSettings {
 	}
 
 	public static GameSettings getCurrentSettings() {
-		return new GameSettings(nbr_of_human_players, nbr_of_human_players, hours_each_round, card_timer_seconds, map);
+		return new GameSettings(nbr_of_human_players, nbr_of_bots, hours_each_round, card_timer_seconds, map);
 	}
 
 }
