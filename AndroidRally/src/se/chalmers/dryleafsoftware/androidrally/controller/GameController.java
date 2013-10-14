@@ -111,10 +111,10 @@ public class GameController implements PropertyChangeListener {
 	
 	
 			// Cards
-			List<Integer> cards = new ArrayList<Integer>();
+			List<Card> cards = new ArrayList<Card>();
 			String[] cardData = subChunks[1].split(":");
 			for(int i = 0; i < 5; i++) {
-				cards.add(Integer.parseInt(cardData[i]));
+				cards.add(gameModel.getDeck().getCard(Integer.parseInt(cardData[i])));
 			}
 			
 			Robot r = gameModel.getRobots().get(robotIndex);

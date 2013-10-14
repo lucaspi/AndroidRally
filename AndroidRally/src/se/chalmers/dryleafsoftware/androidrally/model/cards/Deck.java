@@ -67,4 +67,19 @@ public class Deck {
 	public List<Card> getCards() {
 		return cards;
 	}
+	
+	/**
+	 * Get a specific card from deck.
+	 * @param prio the priority of the wanted card
+	 * @return the wanted card. Null if its not in the deck.
+	 */
+	public Card getCard(int prio) {
+		for (Card card : cards) {
+			if (card.getPriority() == prio) {
+				cards.remove(card);
+				return card;
+			}
+		}
+		return null;
+	}
 }
