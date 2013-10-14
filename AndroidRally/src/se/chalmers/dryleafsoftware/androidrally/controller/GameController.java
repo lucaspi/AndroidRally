@@ -100,7 +100,7 @@ public class GameController implements PropertyChangeListener {
 			String[] data = subChunks[0].split(":");
 			int posX = Integer.parseInt(data[0].substring(0, 2));
 			int posY = Integer.parseInt(data[0].substring(2, 4));
-			int dir = Integer.parseInt(data[0].substring(4, 5));
+			int direction = Integer.parseInt(data[0].substring(4, 5));
 			int hp = Integer.parseInt(data[0].substring(5, 6));
 			int life = Integer.parseInt(data[0].substring(6, 7));
 	
@@ -117,28 +117,29 @@ public class GameController implements PropertyChangeListener {
 				cards.add(gameModel.getDeck().getCard(Integer.parseInt(cardData[i])));
 			}
 			
-			Robot r = gameModel.getRobots().get(robotIndex);
-			r.setX(spawnX);
-			r.setY(spawnY);
-			r.newSpawnPoint();
-			r.setX(posX);
-			r.setY(posY);
+			Robot robot = gameModel.getRobots().get(robotIndex);
+			robot.setX(spawnX);
+			robot.setY(spawnY);
+			robot.newSpawnPoint();
+			robot.setX(posX);
+			robot.setY(posY);
 			for(int j = Robot.STARTING_LIFE; j > life; j--) {
-				r.die();
+				robot.die();
 			}
-			r.damage(Robot.STARTING_HEALTH - hp);
+			robot.damage(Robot.STARTING_HEALTH - hp);
 			for(int j = 1; j <= checkPoint; j++) {
-				r.reachCheckPoint(j);
+				robot.reachCheckPoint(j);
 			}
-			switch(dir) {
+			robot.setChosenCards(cards);
+			switch(direction) {
 			case 1:
-				r.turn(TurnType.RIGHT);
+				robot.turn(TurnType.RIGHT);
 				break;
 			case 2:
-				r.turn(TurnType.UTURN);
+				robot.turn(TurnType.UTURN);
 				break;
 			case 3:
-				r.turn(TurnType.LEFT);
+				robot.turn(TurnType.LEFT);
 				break;
 			}
 	
