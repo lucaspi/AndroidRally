@@ -16,5 +16,7 @@
 	<string name="number_of_players_default">4 bots</string>
 	<string name="start_button">Start Game</string>
 	<string name="set_up_button">Set up game</string>
+	<string name="new_game">Start new game</string>
+	<string name="start_game">Start game</string>
 
 </resources>

@@ -33,7 +33,6 @@ public class GameActivity extends AndroidApplication {
 		
 		GameSettings settings = new GameSettings(1, bots, hours, card);
 		GameSettings.setCurrentSettings(settings);
-		
-		initialize(new GdxGame(), cfg);
+		initialize(new GdxGame(1, true), cfg);
 	}
 }

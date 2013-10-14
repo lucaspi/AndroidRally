@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.model.cards.Card;
+import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.gameModel.GameModel;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
@@ -42,6 +44,8 @@ public class GameController implements PropertyChangeListener {
 	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
 
 	public GameController(int nbrOfHumanPlayers, int nbrOfBots, int hoursEachRound, int cardTimerSeconds, String map) {
+		System.out.println("Bots: " + nbrOfBots);
+		System.out.println("Humans: " + nbrOfHumanPlayers);
 		this.nbrOfHumanPlayers = Math.min(nbrOfHumanPlayers, 8); //So that no one can send in corrupt values.
 		this.nbrOfHumanPlayers = Math.max(this.nbrOfHumanPlayers, 1); //1-8 players and no more than 8 robots incl. bots.
 		this.nbrOfBots = Math.min(nbrOfBots, 8 - this.nbrOfHumanPlayers);
@@ -78,6 +82,103 @@ public class GameController implements PropertyChangeListener {
 				setRandomCards(i);
 			}
 		}
+	}
+	
+	public GameController(String saveData) {	
+		this(1, Integer.parseInt(saveData.split("b")[0].split(":")[2]) - 1, 
+				Integer.parseInt(saveData.split("b")[0].split(":")[1]), 
+				Integer.parseInt(saveData.split("b")[0].split(":")[0]), 
+				saveData.split("b")[2]);
+		String[] dataChunks = saveData.split("b");
+
+		// Chunk 1:
+		int robotIndex = 0;
+		for(String robotData : dataChunks[1].split("c")) {			
+			String[] subChunks = robotData.split("a");
+
+			// [xx][yy][dir][damage][lives]:[checkpoint]:[spawn xx][spawn yy]
+			String[] data = subChunks[0].split(":");
+			int posX = Integer.parseInt(data[0].substring(0, 2));
+			int posY = Integer.parseInt(data[0].substring(2, 4));
+			int dir = Integer.parseInt(data[0].substring(4, 5));
+			int hp = Integer.parseInt(data[0].substring(5, 6));
+			int life = Integer.parseInt(data[0].substring(6, 7));
+
+			int checkPoint = Integer.parseInt(data[1]);
+
+			int spawnX = Integer.parseInt(data[2].substring(0, 2));
+			int spawnY = Integer.parseInt(data[2].substring(2, 4));
+
+
+			// Cards
+			List<Integer> cards = new ArrayList<Integer>();
+			String[] cardData = subChunks[1].split(":");
+			for(int i = 0; i < 5; i++) {
+				cards.add(Integer.parseInt(cardData[i]));
+			}
+			
+			Robot r = gameModel.getRobots().get(robotIndex);
+			r.setX(spawnX);
+			r.setY(spawnY);
+			r.newSpawnPoint();
+			r.setX(posX);
+			r.setY(posY);
+			for(int j = Robot.STARTING_LIFE; j > life; j--) {
+				r.die();
+			}
+			r.damage(Robot.STARTING_HEALTH - hp);
+			for(int j = 1; j <= checkPoint; j++) {
+				r.reachCheckPoint(j);
+			}
+			switch(dir) {
+			case 1:
+				r.turn(TurnType.RIGHT);
+				break;
+			case 2:
+				r.turn(TurnType.UTURN);
+				break;
+			case 3:
+				r.turn(TurnType.LEFT);
+				break;
+			}
+
+
+			robotIndex++;
+		}
+	}
+
+	public void save(int gameID) {
+		// [timer data]b[robotinfo]a[robotcards]c[robotinfo]a[robotcards]cb[map]
+		StringBuilder sb = new StringBuilder();
+		sb.append(cardTimerSeconds + ":");
+		sb.append(hoursEachRound + ":");
+		sb.append(gameModel.getRobots().size());
+		sb.append("b");
+		
+//		[xx][yy][dir][damage][lives]:[checkpoint]:[spawn xx][spawn yy]
+		for(Robot r : gameModel.getRobots()) {
+			sb.append(String.format("%02d", r.getX()));
+			sb.append(String.format("%02d", r.getY()));
+			sb.append(r.getDirection());
+			sb.append(r.getHealth());
+			sb.append(r.getLife());
+			sb.append(":");
+			sb.append(r.getLastCheckPoint());
+			sb.append(":");
+			sb.append(String.format("%02d", r.getSpawnPointX()));
+			sb.append(String.format("%02d", r.getSpawnPointY()));
+			sb.append("a");	
+			for(Card c : r.getChosenCards()) {
+				if(c != null) {
+					sb.append(c.getPriority() + ":");
+				}else{
+					sb.append("-1:");
+				}
+			}
+			sb.append("c");
+		}
+		sb.append("b" + gameModel.getMap());
+		IOHandler.save(sb.toString(), gameID, IOHandler.SERVER_DATA);
 	}
 
 	/**
@@ -302,4 +403,6 @@ public class GameController implements PropertyChangeListener {
 	private void setRandomCards(int robotID) {
 		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
 	}
+
+	
 }
