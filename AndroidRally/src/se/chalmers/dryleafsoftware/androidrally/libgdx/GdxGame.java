@@ -67,6 +67,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		super();
 		this.gameID = gameID;
 		this.singlePlayer = singlePlayer;
+		System.out.println("Creating game with ID: " + gameID);
 	}
 
 	@Override

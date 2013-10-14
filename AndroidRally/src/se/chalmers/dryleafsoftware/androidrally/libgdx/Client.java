@@ -66,12 +66,19 @@ public class Client {
 	 * @param settings The settings to use for the game
 	 */
 	public void createGame(GameSettings settings) {
+		resetGameValues();
 		this.controller = new GameController(settings.getNbrOfHumanPlayers(), settings.getNbrOfBots(),
 				settings.getHoursEachRound(), settings.getCardTimerSeconds(), settings.getMap());
 		controller.newRound();
 	}
 	
+	private void resetGameValues() {
+		roundID = 0;
+		robotID = 0; // TODO: from server!
+	}
+	
 	public void loadGame(int gameID) {
+		resetGameValues();
 		this.controller = new GameController(IOHandler.load(gameID, IOHandler.SERVER_DATA));
 		controller.newRound();
 	}
