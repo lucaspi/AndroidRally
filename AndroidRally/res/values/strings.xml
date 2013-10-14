@@ -20,5 +20,8 @@
 	<string name="start_game">Create game</string>
 	<string name="help">Placeholder for help</string>
 	<string name="close_help">Done</string>
+	<string name="gamemode">Game mode</string>
+	<string name="singleplayer">Single player</string>
+	<string name="multiplayer">Multiplayer</string>
 
 </resources>
