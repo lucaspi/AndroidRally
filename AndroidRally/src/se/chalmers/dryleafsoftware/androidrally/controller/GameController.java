@@ -275,21 +275,17 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 	
+	/**
+	 * Return a string representing the last chosen cards from a specific robot.
+	 * @param robotID the id of the robot to get cards for.
+	 * @return a string representing the last chosen cards from a specific robot.
+	 */
 	private String getCurrentChosenCards(int robotID){
 		StringBuilder sb = new StringBuilder();
 		for(Card card : gameModel.getRobots().get(robotID).getChosenCards()) {
 			sb.append(card.getPriority() + ":");
 		}
 		return sb.toString();
-	}
-	
-	/**
-	 * Return a string representing the last chosen cards from a specific robot.
-	 * @param robotID the id of the robot to get cards for.
-	 * @return a string representing the last chosen cards from a specific robot.
-	 */
-	public String getChosenCards(int robotID){
-		return gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 	}
 
 	/**
@@ -362,8 +358,6 @@ public class GameController implements PropertyChangeListener {
 	 * round has ended (unless the game is over).
 	 */
 	public void newRound() {
-		System.out.println("------------------------newRound---------------------------");
-		
 		gameModel.dealCards();
 		startRoundTimer();
 		nbrOfRobotsDone = 0;
@@ -384,8 +378,8 @@ public class GameController implements PropertyChangeListener {
 		return mapAsString;
 	}
 	
-	public String getNbrOfPlayers() {
-		return "" + nbrOfRobots;
+	public String getNbrOfRobots() {
+		return String.valueOf(nbrOfRobots);
 	}
 	
 	/**
@@ -420,9 +414,11 @@ public class GameController implements PropertyChangeListener {
 		return allMoves.size();
 	}
 	
+	/**
+	 * Sets random chosen cards for a specific robot.
+	 * @param robotID a specific robots ID in the robot list in GameModel
+	 */
 	private void setRandomCards(int robotID) {
 		setChosenCardsToRobot(robotID, ":-1:-1:-1:-1:-1");
 	}
-
-	
 }
