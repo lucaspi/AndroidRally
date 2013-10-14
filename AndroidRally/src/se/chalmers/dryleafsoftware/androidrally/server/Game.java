@@ -5,22 +5,23 @@ import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 
-public class Game {
+public class Game extends Thread{
 	private GameController gameController = null;
 	private List<String> clientID = new ArrayList<String>();
-	private int ID = -1;
-	private int connectionTimer;//TODO något som räknar när denna tid är nådd och tillåter sedan clientrs to start
+	private String ID = "-1";
+	private int connectionTimer;//TODO något som räknar när denna tid är nådd och tillåter sedan clients to start
 	private int numberOfPlayers;
 	private int hoursEachRound;
 	private int cardTimerSeconds;
 	private String map;
 	private boolean hasStarted = false;
+	private double createdTime;
 	
 	private Game(){
 		super();
 	}
 	
-	public Game(int id, int connectionTimer, int nbrOfPlayers,
+	public Game(String id, int connectionTimer, int nbrOfPlayers,
 			int hoursEachRound, int cardTimerSeconds, String map) {
 		this();
 		this.ID = id;
@@ -29,8 +30,26 @@ public class Game {
 		this.hoursEachRound=hoursEachRound;
 		this.cardTimerSeconds=cardTimerSeconds;
 		this.map=map;
+		createdTime = System.currentTimeMillis();
+		this.start();
+
 	}
 	
+	@Override
+	public void run(){
+		while (createdTime-System.currentTimeMillis()< (double) connectionTimer*1000){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		hasStarted=true;
+		gameController = new GameController(clientID.size(), numberOfPlayers-clientID.size(), hoursEachRound, cardTimerSeconds, map);
+		
+	}
+
 
 	public GameController getGameController() {
 		return gameController;
@@ -46,7 +65,7 @@ public class Game {
 	 * 
 	 * @return The ID for this game.
 	 */
-	public int getID() {
+	public String getID() {
 		return ID;
 	}
 	/**
@@ -61,4 +80,5 @@ public class Game {
 			return false;
 		}
 	}
+
 }

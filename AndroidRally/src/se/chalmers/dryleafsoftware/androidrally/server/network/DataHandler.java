@@ -5,6 +5,7 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.network.Connection;
 import se.chalmers.dryleafsoftware.androidrally.network.IDataHandler;
 import se.chalmers.dryleafsoftware.androidrally.server.Game;
+import se.chalmers.dryleafsoftware.androidrally.server.Switch;
 
 public class DataHandler implements IDataHandler{
 	private int newID = 0;
@@ -48,10 +49,16 @@ public class DataHandler implements IDataHandler{
 		} else {
 			connection.send("Test, game id search");
 			for (Game game : games){
-				for (String s : game.getClients() ){
-					if (s.equalsIgnoreCase(gameID)){
-						connection.send("gameexists");
+				if (game.getID().equalsIgnoreCase(gameID)){
+					connection.send("gameexists");
+					for (String id : game.getClients()){
+						if (id.equalsIgnoreCase(clientID)){
+							Switch.handle(connection, clientID, game, data2.substring(data2.indexOf('$')+1));
+							break;
+						}
 					}
+					break;
+					
 				}
 			}				
 					//TODO send data
@@ -68,10 +75,10 @@ public class DataHandler implements IDataHandler{
 		
 	}
 
-	private int generateNewGameID() {
+	private String generateNewGameID() {
 		newGameID++;
 		// TODO Auto-generated method stub
-		return newGameID;
+		return newGameID+"";
 	}
 
 	private int generateNewClientID() {
