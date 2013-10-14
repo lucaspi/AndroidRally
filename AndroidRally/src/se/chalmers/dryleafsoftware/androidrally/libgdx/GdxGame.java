@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
-import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.GameAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.CheckPointHandler;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
@@ -20,7 +19,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 /**
@@ -108,7 +106,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		this.deckView = new DeckView(players, client.getRobotID(), roundTime); 
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		deckView.setRoundTick(roundTimeLeft);
+		if(!singlePlayer) {
+			deckView.setRoundTick(roundTimeLeft);
+		}
 		
 		// Look to see if the client is behind.
 		if(client.getRoundsBehind() > 0) {
@@ -235,7 +235,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			}else{
 				currentStage = Stage.WAITING;
 				deckView.displayDrawCard();
-				drawCards();
 			}
 		}
 	}
@@ -290,6 +289,8 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_OK)) {
 			Gdx.app.exit();
 		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
+			onCardTimer();
+			onRoundTimer();
 			handleSave();
 		}else if(event.getPropertyName().equals(DeckView.EVENT_RUN)) {
 			onCardTimer();
@@ -315,6 +316,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private void onRoundTimer() {
 		deckView.displayPlayOptions();
 		result = client.getRoundResult();
+		if(!singlePlayer) {
+			deckView.resetRoundTimer();
+		}
 	}
 
 	@Override
@@ -365,7 +369,6 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		public boolean keyDown(int arg0) {
 			if(arg0 == Keys.BACK || arg0 == Keys.BACKSPACE){
 				if(deckView.isCardTimerOn()) {
-					onCardTimer();
 					messageStage.dispCloseMessage();
 				}else{
 					handleSave();

@@ -43,7 +43,7 @@ public class GameController implements PropertyChangeListener {
 	 * Creates a new GameController.
 	 * @param nbrOfHumanPlayers the number of playing people (for server-client games)
 	 * @param nbrOfBots the number of robots controlled by the computer
-	 * @param hoursEachRound how long time the players have to play their cards between the rounds (How long time they have before "Draw cards" is pressed.
+	 * @param hoursEachRound how long time the players have to play their cards between the rounds (How long time they have before "Draw cards" is pressed. Not used if nbrOfHumanPlayers == 1.
 	 * @param cardTimerSeconds the number of seconds a player have to place his/her cards when "Draw cards" is pressed
 	 * @param map a String map on the for such as yxxxxxxxxxxxxxxxxyxxxxx...
 	 */
@@ -194,12 +194,14 @@ public class GameController implements PropertyChangeListener {
 	}
 	
 	/**
-	 * Timer is scheduled to what hoursEachRound is set to.
+	 * Timer is scheduled to what hoursEachRound is set to
+	 * (<b>IF</b> reScheduleTask() is called). 
 	 */
 	public void startRoundTimer() {
-		reScheduleTimer();
-		endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
-		timer.schedule(endOfRound, hoursEachRound * 3600000);
+		if (!isSinglePlayer()) {
+			endOfRoundDate = new Date(System.currentTimeMillis() + hoursEachRound * 3600000);
+			timer.schedule(endOfRound, hoursEachRound * 3600000);
+		}
 	}
 
 	/**
@@ -212,14 +214,16 @@ public class GameController implements PropertyChangeListener {
 	/**
 	 * Called every time a new round is created. Called by startRoundTimer().
 	 */
-	private void reScheduleTimer() {
+	public void reScheduleTask() {
 		endOfRound = new TimerTask() {
 			/* Method that is executing if the round time is out or
 			 * all robots are done playing their cards. */
 			@Override
 			public synchronized void run() {
 				isRunRunning = true;
-				stopRoundTimer();
+				if (!isSinglePlayer()) {
+					stopRoundTimer();
+				}
 				handleRemainingRobots();
 				
 				gameModel.moveRobots();
@@ -343,7 +347,8 @@ public class GameController implements PropertyChangeListener {
 	 * @return Data the client needs when connecting.
 	 */
 	public String getInitGameData() {
-		return cardTimerSeconds + ";" + hoursEachRound + ";" + endOfRoundDate.getTime();
+		return cardTimerSeconds + ";" + hoursEachRound + ";" +
+				(isSinglePlayer() ? 0 : endOfRoundDate.getTime());
 	}
 
 	/**
@@ -356,7 +361,10 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void newRound() {
 		gameModel.dealCards();
-		startRoundTimer();
+		reScheduleTask();
+		if (!isSinglePlayer()) {
+			startRoundTimer();
+		}
 		nbrOfRobotsDone = 0;
 		for (int i = nbrOfHumanPlayers ; i < nbrOfRobots; i++) {
 			cardTimer[i].cancelTask();
