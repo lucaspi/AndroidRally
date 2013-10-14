@@ -87,9 +87,10 @@ public class IOHandler {
 	 */
 	public static int[] getGameIDs() {		
 		String data = prefs.getString(ID_DATA, null);
-		if(data == null) {
+		if(data == null || data.length() == 0) {
 			return new int[0];
 		}
+		System.out.println("IDs: \"" + data + "\"");
 		String idString[] = data.substring(1).split(":");
 		int[] ids = new int[idString.length];
 		for(int i = 0; i < idString.length; i++) {
@@ -111,7 +112,8 @@ public class IOHandler {
 		int[] ids = getGameIDs();
 		for(int i = 0; i < ids.length; i++) {
 			if(ids[i] != gameID) {
-				sb.append(ids[i] + ":");
+				sb.append(":" + ids[i]);
+				System.out.println("Saving ID: " + ids[i]);
 			}
 		}
 		editor.putString(ID_DATA, sb.toString());

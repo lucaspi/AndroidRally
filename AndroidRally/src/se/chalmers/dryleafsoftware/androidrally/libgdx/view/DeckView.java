@@ -450,7 +450,9 @@ public class DeckView extends Stage {
 		for(String card : input.split(":")) {
 			int prio = Integer.parseInt(card);	
 			CardView cv = buildCard(prio, texture, i, cardFont);
-
+			
+			System.out.println("registerView: " + registerView);
+			System.out.println("register[i]: " + registerView.getRegister(i));
 			registerView.getRegister(i).setCard(cv);
 			registerView.getRegister(i).displayOverlay(Register.UNFOCUS);
 			i++;

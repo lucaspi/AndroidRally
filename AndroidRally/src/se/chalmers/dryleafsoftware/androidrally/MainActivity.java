@@ -8,14 +8,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 /**
@@ -38,7 +44,8 @@ public class MainActivity extends Activity {
 
 		this.client = Client.getInstance();
 		// Sets where to save.
-		SharedPreferences prefs = this.getSharedPreferences("androidRallyStorage", Context.MODE_PRIVATE);
+		SharedPreferences prefs = this.getSharedPreferences(
+				"androidRallyStorage", Context.MODE_PRIVATE);
 		IOHandler.setPrefs(prefs);
 
 		gameListView = (ListView) findViewById(R.id.currentGames);
@@ -60,8 +67,19 @@ public class MainActivity extends Activity {
 			refreshGamesList();
 			return true;
 		case R.id.action_help:
-			// Todo: help someone
-			showToaster("Helping");
+			LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
+					.getSystemService(LAYOUT_INFLATER_SERVICE);
+			View popupView = layoutInflater.inflate(R.layout.help, null);
+			final PopupWindow popupWindow = new PopupWindow(popupView,
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			Button closeHelp = (Button) popupView.findViewById(R.id.closeHelp);
+			closeHelp.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					popupWindow.dismiss();
+				}
+			});
+			popupWindow.showAtLocation(findViewById(R.id.action_help), Gravity.CENTER, 0, 0);
 			return true;
 		default:
 			return true;

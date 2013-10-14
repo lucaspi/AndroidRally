@@ -66,12 +66,19 @@ public class Client {
 	 * @param settings The settings to use for the game
 	 */
 	public void createGame(GameSettings settings) {
+		resetGameValues();
 		this.controller = new GameController(settings.getNbrOfHumanPlayers(), settings.getNbrOfBots(),
 				settings.getHoursEachRound(), settings.getCardTimerSeconds(), settings.getMap());
 		controller.newRound();
 	}
 	
+	private void resetGameValues() {
+		roundID = 0;
+		robotID = 0; // TODO: from server!
+	}
+	
 	public void loadGame(int gameID) {
+		resetGameValues();
 		this.controller = new GameController(IOHandler.load(gameID, IOHandler.SERVER_DATA));
 		controller.newRound();
 	}
@@ -106,6 +113,11 @@ public class Client {
 		}	
 		System.out.println("From client: \"" + sb.toString() + "\"");
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1)); // TODO: server
+	}
+	
+	public void deleteGame(int gameID) {
+		IOHandler.remove(gameID, IOHandler.CLIENT_DATA);
+		IOHandler.remove(gameID, IOHandler.SERVER_DATA);
 	}
 	
 	/**

@@ -18,5 +18,7 @@
 	<string name="set_up_button">Set up game</string>
 	<string name="new_game">Start new game</string>
 	<string name="start_game">Create game</string>
+	<string name="help">Placeholder for help</string>
+	<string name="close_help">Done</string>
 
 </resources>
