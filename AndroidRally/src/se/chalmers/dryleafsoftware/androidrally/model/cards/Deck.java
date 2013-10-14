@@ -10,6 +10,9 @@ import java.util.List;
 public class Deck {
 	private List<Card> cards;
 	
+	/**
+	 * Creates a new card deck with different move and turn cards.
+	 */
 	public Deck() {
 		cards = new ArrayList<Card>();
 		
