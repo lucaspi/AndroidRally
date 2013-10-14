@@ -365,6 +365,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		public boolean keyDown(int arg0) {
 			if(arg0 == Keys.BACK || arg0 == Keys.BACKSPACE){
 				if(deckView.isCardTimerOn()) {
+					onCardTimer();
 					messageStage.dispCloseMessage();
 				}else{
 					handleSave();
