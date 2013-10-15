@@ -287,6 +287,9 @@ public class Robot {
 			List<Card> tempCards = new ArrayList<Card>();
 			tempCards.addAll(cards);
 			for (int i = 0; i < 5; i++) {
+				tempCards.remove(chosenCards[i]);
+			}
+			for (int i = 0; i < 5; i++) {
 				if (this.chosenCards[i] == null) {
 					this.chosenCards[i] = tempCards.remove(random
 							.nextInt(tempCards.size()));
