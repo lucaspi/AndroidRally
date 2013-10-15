@@ -287,7 +287,7 @@ public class Client {
 	 */
 	public String loadCards() {	
 		String temp = controller.getCards(roundID + 1, robotID);
-		System.out.println("To client: \"" + temp + "\"");
+		System.out.println("To client: \"" + temp + "\", round: " + roundID);
 		return temp;
 	}
 	
@@ -308,7 +308,7 @@ public class Client {
 		for(int i = 0; i < Integer.parseInt(controller.getNbrOfRobots()); i++) {
 			RobotView robot = new RobotView(i, new TextureRegion(texture, i * 64, 448, 64, 64),
 					new LaserView(new TextureRegion(texture, 64 * i, 384, 64, 64), 0), 
-					"Player " + i);
+					"Player " + (i + 1));
 			if(dockPositions != null) {
 				robot.setPosition(dockPositions[i].x, dockPositions[i].y);
 			}

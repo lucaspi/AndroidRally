@@ -37,9 +37,9 @@ public class GameController implements PropertyChangeListener {
 	private int cardTimerSeconds;
 	private Date endOfRoundDate;
 	
-	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26xxx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxxx26xx88:16xxyxxxxxxx113xxxxxxxxx";
-
-	/**
+	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26x07xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxx16:17x26xx88:16xxyxxxxxxx113xxxxxxxxx";
+	/*
+	 * *
 	 * Creates a new GameController.
 	 * @param nbrOfHumanPlayers the number of playing people (for server-client games)
 	 * @param nbrOfBots the number of robots controlled by the computer
@@ -169,8 +169,9 @@ public class GameController implements PropertyChangeListener {
 				sb.append(String.format("%02d", r.getSpawnPointX()));
 				sb.append(String.format("%02d", r.getSpawnPointY()));
 				sb.append("a");	
-				for(Card c : r.getChosenCards()) {
-					if(c != null) {
+				for(int i = 0; i < r.getChosenCards().length; i++) {
+					Card c = r.getChosenCards()[i];
+					if(c != null && i >= r.getHealth()) {
 						sb.append(c.getPriority() + ":");
 					}else{
 						sb.append("-1:");
