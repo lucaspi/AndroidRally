@@ -93,6 +93,7 @@ public class AIRobotController {
 		int lockedCards = 0;
 		for(int i = 0; i < 5; i++){
 			if(robot.getChosenCards()[i] != null){
+				removeCardFromLists(robot.getChosenCards()[i]);
 				lockedCards++;
 			}
 		}
@@ -108,8 +109,8 @@ public class AIRobotController {
 	 * This method will choose the cards for the robot. In most cases it will choose one 
 	 * card and then call itself again recursively.
 	 */
-	private void placeCards(int numberOfCards) {
-		if (chosenCards.size() >= (5-numberOfCards)) {
+	private void placeCards(int lockedCards) {
+		if (chosenCards.size() >= (5-lockedCards)) {
 			return;
 		}
 		boolean cardAdded = false;
@@ -173,7 +174,7 @@ public class AIRobotController {
 		if(!cardAdded){
 			randomizeCard();
 		}
-		placeCards(numberOfCards);
+		placeCards(lockedCards);
 	}
 	
 	/**
