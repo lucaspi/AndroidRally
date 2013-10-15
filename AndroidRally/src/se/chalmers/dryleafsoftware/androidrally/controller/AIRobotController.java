@@ -90,11 +90,17 @@ public class AIRobotController {
 		direction = robot.getDirection();
 		nextCheckPoint = robot.getLastCheckPoint() + 1;
 		checkpointPosition = nextCheckPoint();
+		int lockedCards = 0;
+		for(int i = 0; i < 5; i++){
+			if(robot.getChosenCards()[i] != null){
+				lockedCards++;
+			}
+		}
 		//something is wrong if cards.size() <= 4. To few cards are dealt in that case
 		if (cards.size() <= 4) {
 			throw new ToFewCardsException("To few cards sent to the robot. cards.size() <= 4");
 		}
-		placeCards();
+		placeCards(lockedCards);
 		robot.setChosenCards(chosenCards);
 	}
 
@@ -102,8 +108,8 @@ public class AIRobotController {
 	 * This method will choose the cards for the robot. In most cases it will choose one 
 	 * card and then call itself again recursively.
 	 */
-	private void placeCards() {
-		if (chosenCards.size() >= 5) {
+	private void placeCards(int numberOfCards) {
+		if (chosenCards.size() >= (5-numberOfCards)) {
 			return;
 		}
 		boolean cardAdded = false;
@@ -167,7 +173,7 @@ public class AIRobotController {
 		if(!cardAdded){
 			randomizeCard();
 		}
-		placeCards();
+		placeCards(numberOfCards);
 	}
 	
 	/**
@@ -444,6 +450,6 @@ public class AIRobotController {
 			addChosenCard(card);
 			return true;
 		}
-		return false;//empty list
+		return false;// List is empty
 	}
 }
