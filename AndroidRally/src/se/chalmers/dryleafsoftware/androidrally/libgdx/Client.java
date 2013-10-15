@@ -287,7 +287,7 @@ public class Client {
 	 */
 	public String loadCards() {	
 		String temp = controller.getCards(roundID + 1, robotID);
-		System.out.println("To client: \"" + temp + "\"");
+		System.out.println("To client: \"" + temp + "\", round: " + roundID);
 		return temp;
 	}
 	

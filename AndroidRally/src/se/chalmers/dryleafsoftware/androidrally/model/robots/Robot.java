@@ -330,7 +330,8 @@ public class Robot {
 	 *            chosen
 	 */
 	public void setChosenCards(List<Card> chosenCards) {
-		for (int i = 0; i < 5; i++) {
+		System.out.println("Setting chosencards to robot, length: " + chosenCards.size());
+		for (int i = 0; i < Math.min(5, chosenCards.size()); i++) {
 			if (this.chosenCards[i] == null) {
 				System.out.println("Setting chosencard " + i + ", prio:" + 
 						(chosenCards.get(i) == null ? "-1" : chosenCards.get(i).getPriority()));

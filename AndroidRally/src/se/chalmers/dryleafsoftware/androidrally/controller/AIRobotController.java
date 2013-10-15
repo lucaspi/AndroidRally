@@ -93,11 +93,12 @@ public class AIRobotController {
 		int lockedCards = 0;
 		for(int i = 0; i < 5; i++){
 			if(robot.getChosenCards()[i] != null){
+				removeCardFromLists(robot.getChosenCards()[i]);
 				lockedCards++;
 			}
 		}
 		//something is wrong if cards.size() <= 4. To few cards are dealt in that case
-		if (cards.size() <= 4) {
+		if (cards.size() <= 4 - lockedCards) {
 			throw new ToFewCardsException("To few cards sent to the robot. cards.size() <= 4");
 		}
 		placeCards(lockedCards);
@@ -220,6 +221,8 @@ public class AIRobotController {
 	 */
 	private int[] nextCheckPoint() {
 		int[] xy = new int[2];
+		System.out.println("gb.getCheckPoints().size(): " + gb.getCheckPoints().size());
+		System.out.println("nextCheckPoint: " + nextCheckPoint);
 		for(int i = 0; i <= 1; i++) {
 			xy[i] = gb.getCheckPoints().get(nextCheckPoint)[i];
 		}

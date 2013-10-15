@@ -38,6 +38,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private BoardView gameBoard;
 	private DeckView deckView;
 	private MessageStage messageStage;
+	private boolean holdClose;
 	
 	// Time to choose cards.
 	private int cardTime;
@@ -209,12 +210,15 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		action.cleanUp(gameBoard.getRobots(), gameBoard.getMapBuilder());
 		actions.remove(action);
 		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
+			holdClose = true;
 			handleGameOver();
 			return false;
 		}else if(phase == GameAction.SPECIAL_PHASE_WON) {
+			holdClose = true;
 			handleGameWon();
 			return false;
 		}else if(actions.isEmpty()) {
+			holdClose = false;
 			nextCard();
 		}
 		return true;
@@ -351,7 +355,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	private void handleSave() {
 		skipAllActions();
 		client.saveCurrentGame(gameID, gameBoard.getSaveData());
-		Gdx.app.exit();
+		if(!holdClose) {
+			Gdx.app.exit();
+		}
 	}
 
 	@Override
