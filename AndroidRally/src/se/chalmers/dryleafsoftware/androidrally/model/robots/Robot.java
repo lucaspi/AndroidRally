@@ -88,12 +88,21 @@ public class Robot {
 	 * @see Deck
 	 */
 	public void addCards(List<Card> cards) {
+		System.out.println("Cards: " + cards.size());
 		this.cards = cards;
+		int i = 0;
 		for (Card card : chosenCards) {
 			if (card != null) {
+				System.out.println("Chosencard: " + i + ", " + card.getPriority());
 				this.cards.add(card);
 			}
+			i++;
 		}
+		System.out.print("Robot cards:");
+		for(Card car : cards) {
+			System.out.print("," + car.getPriority());
+		}
+		System.out.println("");
 	}
 
 	/**
@@ -276,6 +285,8 @@ public class Robot {
 	public void setChosenCards(List<Card> chosenCards) {
 		for (int i = 0; i < 5; i++) {
 			if (this.chosenCards[i] == null) {
+				System.out.println("Setting chosencard " + i + ", prio:" + 
+						(chosenCards.get(i) == null ? "-1" : chosenCards.get(i).getPriority()));
 				this.chosenCards[i] = chosenCards.get(i);
 			}
 		}

@@ -169,8 +169,9 @@ public class GameController implements PropertyChangeListener {
 				sb.append(String.format("%02d", r.getSpawnPointX()));
 				sb.append(String.format("%02d", r.getSpawnPointY()));
 				sb.append("a");	
-				for(Card c : r.getChosenCards()) {
-					if(c != null) {
+				for(int i = 0; i < r.getChosenCards().length; i++) {
+					Card c = r.getChosenCards()[i];
+					if(c != null && i >= r.getHealth()) {
 						sb.append(c.getPriority() + ":");
 					}else{
 						sb.append("-1:");
