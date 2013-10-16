@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 
 		});
 
-		// Deletes the selected game on longpress
+		// Deletes the selected game on longpress with a popup 
 		gameListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view,
@@ -102,6 +102,11 @@ public class MainActivity extends Activity {
 			}
 
 		});
+		refreshGamesList();
+	}
+	
+	@Override
+	protected void onResume() {
 		refreshGamesList();
 	}
 
