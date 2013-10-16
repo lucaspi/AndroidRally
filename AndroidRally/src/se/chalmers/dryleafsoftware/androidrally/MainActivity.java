@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
 					}
 				});
 				
-				popupWindow.showAsDropDown(findViewById(R.id.currentGames), 0, 0);
+				popupWindow.showAtLocation(findViewById(R.id.currentGames), Gravity.CENTER, 0, 0);
 				refreshGamesList();
 				return true;
 			}
