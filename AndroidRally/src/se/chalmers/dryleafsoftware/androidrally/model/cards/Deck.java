@@ -77,6 +77,7 @@ public class Deck {
 		for (Card card : cards) {
 			if (card.getPriority() == prio) {
 				cards.remove(card);
+				System.out.println("Deck returning " + card.getPriority() + ", (" + prio + ")");
 				return card;
 			}
 		}

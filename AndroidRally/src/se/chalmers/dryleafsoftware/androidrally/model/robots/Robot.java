@@ -31,6 +31,11 @@ public class Robot {
 	private boolean hasLost;
 	private String lastRoundChosenCards;
 
+	/**
+	 * Creates a new robot with the specified starting position.
+	 * @param startX the starting position in the x-axis.
+	 * @param startY the starting position in the y-axis.
+	 */
 	public Robot(int startX, int startY) {
 		positionX = startX;
 		positionY = startY;
@@ -88,12 +93,21 @@ public class Robot {
 	 * @see Deck
 	 */
 	public void addCards(List<Card> cards) {
+		System.out.println("Cards: " + cards.size());
 		this.cards = cards;
+		int i = 0;
 		for (Card card : chosenCards) {
 			if (card != null) {
+				System.out.println("Chosencard: " + i + ", " + card.getPriority());
 				this.cards.add(card);
 			}
+			i++;
 		}
+		System.out.print("Robot cards:");
+		for(Card car : cards) {
+			System.out.print("," + car.getPriority());
+		}
+		System.out.println("");
 	}
 
 	/**
@@ -215,18 +229,35 @@ public class Robot {
 		}
 	}
 
+	/**
+	 * Return the last checkpoint the robot reached.
+	 * @return the last checkpoint the robot reached.
+	 */
 	public int getLastCheckPoint() {
 		return checkpoint;
 	}
 
+	/**
+	 * Return the robot's position in the x-axis.
+	 * @return the robot's position in the x-axis.
+	 */
 	public int getX() {
 		return positionX;
 	}
 
+	/**
+	 * Return the robot's position in the y-axis.
+	 * @return the robot's position in the y-axis.
+	 */
 	public int getY() {
 		return positionY;
 	}
 
+	/**
+	 * Return the postion in the x-axis with a two digit number.
+	 * ints < 10 will be have a 0 in front.
+	 * @return the postion in the y-axis with a two digit number.
+	 */
 	public String getXAsString() {
 		if (positionX >= 10 || positionX < 0) {
 			return positionX + "";
@@ -235,6 +266,11 @@ public class Robot {
 		}
 	}
 
+	/**
+	 * Return the postion in the y-axis with a two digit number.
+	 * ints < 10 will be have a 0 in front.
+	 * @return the postion in the y-axis with a two digit number.
+	 */
 	public String getYAsString() {
 		if (positionY >= 10 || positionY < 0) {
 			return positionY + "";
@@ -243,22 +279,42 @@ public class Robot {
 		}
 	}
 
+	/**
+	 * Set the robot's position in the x-axis.
+	 * @param x the robot's position in the x-axis.
+	 */
 	public void setX(int x) {
 		positionX = x;
 	}
 
+	/**
+	 * Set the robot's position in the y-axis.
+	 * @param y the robot's position in the y-axis.
+	 */
 	public void setY(int y) {
 		positionY = y;
 	}
 
+	/**
+	 * Return the direction of the robot.
+	 * @return the direction of the robot.
+	 */
 	public int getDirection() {
 		return robotDirection;
 	}
 
+	/**
+	 * Return the amount of lives remaining.
+	 * @return the amount of lives remaining.
+	 */
 	public int getLife() {
 		return life;
 	}
 
+	/**
+	 * Return the chosen cards.
+	 * @return the chosen cards. The length is 5.
+	 */
 	public Card[] getChosenCards() {
 		return chosenCards;
 	}
@@ -274,13 +330,20 @@ public class Robot {
 	 *            chosen
 	 */
 	public void setChosenCards(List<Card> chosenCards) {
-		for (int i = 0; i < 5; i++) {
+		System.out.println("Setting chosencards to robot, length: " + chosenCards.size());
+		for (int i = 0; i < Math.min(5, chosenCards.size()); i++) {
 			if (this.chosenCards[i] == null) {
+				System.out.println("Setting chosencard " + i + ", prio:" + 
+						(chosenCards.get(i) == null ? "-1" : chosenCards.get(i).getPriority()));
 				this.chosenCards[i] = chosenCards.get(i);
 			}
 		}
 	}
 
+	/**
+	 * If a robot hasn't chosen all cards, the empty spots (registers) will be
+	 * randomized.
+	 */
 	public void fillEmptyCardRegisters() {
 		if (!hasLost) { // locked cards shouldn't be able to be randomized
 			Random random = new Random();
@@ -298,6 +361,10 @@ public class Robot {
 		}
 	}
 
+	/**
+	 * Return all cards the robot got.
+	 * @return all cards the robot got.
+	 */
 	public List<Card> getCards() {
 		return cards;
 	}
@@ -312,10 +379,18 @@ public class Robot {
 		return sentCards;
 	}
 
+	/**
+	 * Set whether the robot has decided cards the current round.
+	 * @param sentCards whether the robot has decided cards the current round.
+	 */
 	public void setSentCards(boolean sentCards) {
 		this.sentCards = sentCards;
 	}
 
+	/**
+	 * Return whether the robot is dead at the moment.
+	 * @return whether the robot is dead at the moment.
+	 */
 	public boolean isDead() {
 		return isDead;
 	}
