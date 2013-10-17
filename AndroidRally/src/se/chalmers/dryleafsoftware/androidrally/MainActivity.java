@@ -142,9 +142,9 @@ public class MainActivity extends Activity {
 		String[] gameNames = new String[games.length];
 		for (int i = 0; i < gameNames.length; i++) {
 			if (games[i] < 0) {
-				gameNames[i] = "Private game " + Math.abs(games[i]);
+				gameNames[i] = "Single player game " + Math.abs(games[i]);
 			} else {
-				gameNames[i] = "Public game " + games[i];
+				gameNames[i] = "Multiplayer game " + games[i];
 			}
 		}
 		ListAdapter gamesList = new ArrayAdapter<String>(
