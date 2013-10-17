@@ -19,6 +19,7 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  * Class that holds the GameModel and is the controller part.
  */
 public class GameController implements PropertyChangeListener {
+	public static final int PING_TIME = 1;
 	private GameModel gameModel;
 	private Timer timer;
 	private TimerTask endOfRound;
@@ -83,7 +84,7 @@ public class GameController implements PropertyChangeListener {
 		timer = new Timer();
 		cardTimer = new CardTimer[nbrOfRobots];
 		for (int i = 0; i < nbrOfRobots; i++) {
-			cardTimer[i] = new CardTimer(this.cardTimerSeconds, i); // let the time be a variable
+			cardTimer[i] = new CardTimer(this.cardTimerSeconds + PING_TIME, i); // let the time be a variable
 			cardTimer[i].addPropertyChangeListener(this);
 		}
 	}
