@@ -1,27 +1,31 @@
 package se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard;
 
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
- * This view class only displays the laser beam. For proper collision when drawing, use
- * <code>setCollisionMatrix()</code>.
+ * This view class only displays the laser beam. For proper collision when
+ * drawing, use <code>setCollisionMatrix()</code>.
  * 
  * @author
- *
+ * 
  */
 public class LaserView extends AnimatedElement {
-	
+
 	private CollisionMatrix collisionMatrix;
 	private boolean hasCalc = false;
 	private boolean outer = false;
-	
+
 	/**
 	 * Creates a new laser which will use the specified texture.
-	 * @param texture The texture of the laser beam.
-	 * @param x The X-coordinate. (In array).
-	 * @param y The Y-coordinate. (In array).
-	 * @param dir The direction to shot.
+	 * 
+	 * @param texture
+	 *            The texture of the laser beam.
+	 * @param x
+	 *            The X-coordinate. (In array).
+	 * @param y
+	 *            The Y-coordinate. (In array).
+	 * @param dir
+	 *            The direction to shot.
 	 */
 	public LaserView(TextureRegion texture, int dir) {
 		super(texture);
@@ -29,97 +33,98 @@ public class LaserView extends AnimatedElement {
 		setVisible(false);
 		setPhaseMask(5);
 	}
-	
-	/**
-	 * Sets where the laser is located on the tile. If it is "outer" then it is placed
-	 * on the border of the tile facing out, otherwise it will be pointing inward, i.e. the laser will
-	 * pass through the tile it is on. However, it will always face the direction it is specified
-	 * to face.
-	 * @param outer 
-	 */
-	public void setIsOuter(boolean outer) {
-		this.outer = outer;
-	}
-	
-	/**
-	 * Set to use proper collision.
-	 * @param collisionMatrix Array of booleans describing collision.
-	 */
-	public void setCollisionMatrix(CollisionMatrix collisionMatrix) {
-		this.collisionMatrix = collisionMatrix;
-		hasCalc = false;
-	}
-	
+
 	@Override
 	public void enable(int phase, int speed) {
 		super.enable(phase, speed);
 		setVisible(isEnabled());
 	}
-	
+
 	@Override
 	public void disable() {
 		super.disable();
 		setVisible(false);
 	}
-	
+
 	private int calcHeight() {
-		System.out.println("Widht: " + collisionMatrix.getWidth()+ "h: " + collisionMatrix.getHeight());
 		int length = 0;
 		int x = (int) (getX() / 40);
 		int y = collisionMatrix.getHeight() - 1 - (int) (getY() / 40);
-		int dir = ((int)(getRotation() / -90) + 4) % 4;
-		if((!outer && collisionMatrix.isBlocked(x, y)) || !collisionMatrix.validPos(x, y)) {
-			System.out.println("Length 1: 0");
+		int dir = ((int) (getRotation() / -90) + 4) % 4;
+		if ((!outer && collisionMatrix.isBlocked(x, y))
+				|| !collisionMatrix.validPos(x, y)) {
 			return 0;
 		}
-		switch(dir) {
+		switch (dir) {
 		case MapBuilder.DIR_NORTH:
-			length = 40 * (y+1);
-			for(int i = 0; i <= y; i++) {
-				if(collisionMatrix.cannotTravel(x, y-i, dir)) {
-					length = 40 * (i+1);
+			length = 40 * (y + 1);
+			for (int i = 0; i <= y; i++) {
+				if (collisionMatrix.cannotTravel(x, y - i, dir)) {
+					length = 40 * (i + 1);
 					break;
 				}
 			}
 			break;
 		case MapBuilder.DIR_SOUTH:
-			length = 40 * (collisionMatrix.getHeight()-y);
-			for(int i = y; i <= collisionMatrix.getHeight(); i++) {
-				if(collisionMatrix.cannotTravel(x, i, dir)) {
-					length = 40 * (i-y+1);
+			length = 40 * (collisionMatrix.getHeight() - y);
+			for (int i = y; i <= collisionMatrix.getHeight(); i++) {
+				if (collisionMatrix.cannotTravel(x, i, dir)) {
+					length = 40 * (i - y + 1);
 					break;
 				}
 			}
 			break;
 		case MapBuilder.DIR_WEST:
-			length = 40 * (x+1);
-			for(int i = 0; i <= x; i++) {
-				if(collisionMatrix.cannotTravel(x-i, y, dir)) {
-					length = 40 * (i+1);
+			length = 40 * (x + 1);
+			for (int i = 0; i <= x; i++) {
+				if (collisionMatrix.cannotTravel(x - i, y, dir)) {
+					length = 40 * (i + 1);
 					break;
 				}
 			}
 			break;
 		case MapBuilder.DIR_EAST:
-			length = 40 * (collisionMatrix.getWidth()-x);
-			for(int i = x; i <= collisionMatrix.getWidth(); i++) {
-				if(collisionMatrix.cannotTravel(i, y, dir)) {
-					length = 40 * (i-x+1);
+			length = 40 * (collisionMatrix.getWidth() - x);
+			for (int i = x; i <= collisionMatrix.getWidth(); i++) {
+				if (collisionMatrix.cannotTravel(i, y, dir)) {
+					length = 40 * (i - x + 1);
 					break;
 				}
 			}
 			break;
 		}
-		System.out.println("Length: " + length);
 		return length;
 	}
 
 	@Override
 	public void animate(float timeDelta) {
-		if(!hasCalc) {
+		if (!hasCalc) {
 			setHeight(calcHeight());
 			layout();
 			hasCalc = true;
 		}
+	}
+
+	/**
+	 * Sets where the laser is located on the tile. If it is "outer" then it is
+	 * placed on the border of the tile facing out, otherwise it will be
+	 * pointing inward, i.e. the laser will pass through the tile it is on.
+	 * However, it will always face the direction it is specified to face.
+	 * 
+	 * @param outer
+	 */
+	public void setIsOuter(boolean outer) {
+		this.outer = outer;
+	}
+
+	/**
+	 * Set to use proper collision.
+	 * 
+	 * @param collisionMatrix
+	 *            Array of booleans describing collision.
+	 */
+	public void setCollisionMatrix(CollisionMatrix collisionMatrix) {
+		this.collisionMatrix = collisionMatrix;
+		hasCalc = false;
 	}
 }

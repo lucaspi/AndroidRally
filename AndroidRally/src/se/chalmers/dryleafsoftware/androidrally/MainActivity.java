@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 
 		});
 
-		// Deletes the selected game on longpress with a popup 
+		// Deletes the selected game on longpress with a popup dialog
 		gameListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view,
@@ -74,12 +74,11 @@ public class MainActivity extends Activity {
 				final PopupWindow popupWindow = new PopupWindow(popupView,
 						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-				Button deleteGame = (Button) popupView
-						.findViewById(R.id.yesButton);
+				Button deleteGame = (Button) popupView.findViewById(R.id.yesButton);
 				Button noButton = (Button) popupView.findViewById(R.id.noButton);
-				
+
 				deleteGame.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						client.deleteGame(games[position]);
@@ -87,16 +86,17 @@ public class MainActivity extends Activity {
 						refreshGamesList();
 					}
 				});
-				
+
 				noButton.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						popupWindow.dismiss();
 					}
 				});
-				
-				popupWindow.showAtLocation(findViewById(R.id.currentGames), Gravity.CENTER, 0, 0);
+
+				popupWindow.showAtLocation(findViewById(R.id.currentGames),
+						Gravity.CENTER, 0, 0);
 				refreshGamesList();
 				return true;
 			}
@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
 		});
 		refreshGamesList();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -141,9 +141,9 @@ public class MainActivity extends Activity {
 		games = client.getSavedGames();
 		String[] gameNames = new String[games.length];
 		for (int i = 0; i < gameNames.length; i++) {
-			if(games[i] < 0) {
+			if (games[i] < 0) {
 				gameNames[i] = "Private game " + Math.abs(games[i]);
-			}else{
+			} else {
 				gameNames[i] = "Public game " + games[i];
 			}
 		}
@@ -158,19 +158,31 @@ public class MainActivity extends Activity {
 	 * Starts the chosen game
 	 * 
 	 * @param view
+	 * @param gameID The ID of the game
 	 */
-	public void startChosenGame(View view, int gameID) {
+	protected void startChosenGame(View view, int gameID) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
 		i.putExtra("GAME_ID", gameID);
 		startActivity(i);
 	}
 
+	/**
+	 * Shows a toaster with a message
+	 * 
+	 * @param message
+	 *            the message to show
+	 */
 	public void showToaster(CharSequence message) {
 		Context context = getApplicationContext();
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
 
+	/**
+	 * Starts the activity with configuration of a new game
+	 * 
+	 * @param view
+	 */
 	public void startConfiguration(View view) {
 		Intent i = new Intent(getApplicationContext(),
 				GameConfigurationActivity.class);
