@@ -10,15 +10,18 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 /**
  * Action for when the robot falls out of the map.
  * 
- * @author 
- *
+ * @author
+ * 
  */
 public class FallAction extends GameAction {
 
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
-	 * @param robotID The ID of the robot to handle.
-	 * @param duration The duration of the action in millis.
+	 * 
+	 * @param robotID
+	 *            The ID of the robot to handle.
+	 * @param duration
+	 *            The duration of the action in millis.
 	 */
 	public FallAction(int robotID, int duration) {
 		super(robotID, duration);
@@ -29,7 +32,7 @@ public class FallAction extends GameAction {
 		start();
 		robots.get(getRobotID()).addAction(
 				Actions.parallel(Actions.fadeOut(getDuration() / 1000f),
-				Actions.scaleTo(0.3f, 0.3f, getDuration() / 1000f)));
+						Actions.scaleTo(0.3f, 0.3f, getDuration() / 1000f)));
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class FallAction extends GameAction {
 		robots.get(getRobotID()).clearActions();
 		robots.get(getRobotID()).addAction(
 				Actions.parallel(Actions.fadeOut(0),
-				Actions.scaleTo(0.3f, 0.3f, 0)));
+						Actions.scaleTo(0.3f, 0.3f, 0)));
 		robots.get(getRobotID()).setDead(true);
 	}
 

@@ -5,20 +5,23 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 /**
  * Representing a checkpoint on a game board.
  */
-public class CheckPoint implements BoardElement{
+public class CheckPoint implements BoardElement {
 	private int nbrOfCheckPoint;
-	
+
 	/**
 	 * Creates a new checkpoint with the specified number.
-	 * @param checkPoint the number the checkpoint will represent.
+	 * 
+	 * @param checkPoint
+	 *            the number the checkpoint will represent.
 	 */
-	public CheckPoint(int checkPoint){
+	public CheckPoint(int checkPoint) {
 		this.nbrOfCheckPoint = checkPoint;
 	}
-	
+
 	/**
-	 * Calls robot's method reachCheckPoint with the
-	 * check point number given in the constructor as parameter.
+	 * Calls robot's method reachCheckPoint with the check point number given in
+	 * the constructor as parameter.
+	 * 
 	 * @see Robot
 	 */
 	@Override

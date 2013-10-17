@@ -20,50 +20,47 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 
-
 /**
  * 
  * 
  * @author
- *
+ * 
  */
 public class GdxGame implements ApplicationListener, PropertyChangeListener {
 
 	private List<RobotView> players;
 	private Client client;
-	
+
 	private List<GameAction> actions;
 	private RoundResult result;
-		
+
 	private BoardView gameBoard;
 	private DeckView deckView;
 	private MessageStage messageStage;
 	private boolean holdClose;
-	
+
 	// Time to choose cards.
 	private int cardTime;
-	
+
 	private Texture boardTexture, cardTexture;
-			
-	/*
-	 *  Stages for specifying which stage the game is currently in:
-	 *  WAITING: Nothing needs to update.
-	 *  ACTIONS: Showing the actions of the last round.
-	 *  	- STEP_ACTION: Waits for user input when done showing one card's actions.
-	 *  	- PLAY_ACTION: Do not wait for user input, plays all card's action in sequence.
-	 *  	- SKIP_ACTION: Skips to the outcome.
-	 *  CHOOSING_CARDS : Waiting for timer to reach zero or player to send cards.
-	 */	
-	private static enum Stage { 
-		WAITING,
-		PLAY,
-		PAUSE
+
+	private static enum Stage {
+		WAITING, PLAY, PAUSE
 	};
+
 	private int playSpeed = 1;
-	private Stage currentStage = Stage.WAITING; 
+	private Stage currentStage = Stage.WAITING;
 	private final int gameID;
 	private final boolean singlePlayer;
-	
+
+	/**
+	 * Creates a new game.
+	 * 
+	 * @param gameID
+	 *            The ID of the game.
+	 * @param singlePlayer
+	 *            Specify if the game is singleplayer or not.
+	 */
 	public GdxGame(int gameID, boolean singlePlayer) {
 		super();
 		this.gameID = gameID;
@@ -74,57 +71,63 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	@Override
 	public void create() {
 		// Only load the textures once.
-		boardTexture = new Texture(Gdx.files.internal("textures/boardElements.png"));
+		boardTexture = new Texture(
+				Gdx.files.internal("textures/boardElements.png"));
 		boardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		cardTexture = new Texture(Gdx.files.internal("textures/card.png"));
 		cardTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
+
 		this.client = Client.getInstance();
 
 		this.messageStage = new MessageStage();
-		
+
 		this.gameBoard = new BoardView();
-		if(IOHandler.isSaved(gameID)) { // If we can load from file.
+		if (IOHandler.isSaved(gameID)) { // If we can load from file.
 			client.loadGame(gameID);
 			players = client.getRobots(boardTexture);
 			gameBoard.setRobots(players);
 			gameBoard.restore(client.getSavedBoardData(gameID), boardTexture);
-		}else{ // If we need to start a new game.
+		} else { // If we need to start a new game.
 			gameBoard.createBoard(boardTexture, client.getMap());
-			players = client.getRobots(boardTexture, gameBoard.getDocksPositions());
+			players = client.getRobots(boardTexture,
+					gameBoard.getDocksPositions());
 			gameBoard.setRobots(players);
-		}	
-		players.get(client.getRobotID()).addListener(
-				new CheckPointHandler(gameBoard.getCheckPoints(), boardTexture));
-		
+		}
+		players.get(client.getRobotID())
+				.addListener(
+						new CheckPointHandler(gameBoard.getCheckPoints(),
+								boardTexture));
+
 		String[] gameData = client.getGameData().split(";");
 		this.cardTime = Integer.parseInt(gameData[0]);
 		int roundTime = Integer.parseInt(gameData[1]) * 3600;
-		int roundTimeLeft = (int)(Long.parseLong(gameData[2]) - System.currentTimeMillis()) / 1000;
+		int roundTimeLeft = (int) (Long.parseLong(gameData[2]) - System
+				.currentTimeMillis()) / 1000;
 		// Roundtime shouldn't be too long.
-		
-		messageStage.addListener(this);		
-		
-		this.deckView = new DeckView(players, client.getRobotID(), roundTime); 
+
+		messageStage.addListener(this);
+
+		this.deckView = new DeckView(players, client.getRobotID(), roundTime);
 		deckView.addListener(this);
 		deckView.displayDrawCard();
-		if(!singlePlayer) {
+		if (!singlePlayer) {
 			deckView.setRoundTick(roundTimeLeft);
 		}
-		
+
 		// Look to see if the client is behind.
-		if(client.getRoundsBehind() > 0) {
+		if (client.getRoundsBehind() > 0) {
 			deckView.displayPlayOptions();
 			result = client.getRoundResult();
-			deckView.setChosenCards(client.loadCards(), cardTexture);
+			deckView.setChosenCards(client.getCards(), cardTexture);
 		}
 
-		//Creates an input multiplexer to be able to use multiple listeners
-		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage, gameBoard, deckView);
+		// Creates an input multiplexer to be able to use multiple listeners
+		InputMultiplexer im = new InputMultiplexer(inputProcess, messageStage,
+				gameBoard, deckView);
 		Gdx.input.setInputProcessor(im);
 		Gdx.input.setCatchBackKey(true);
 	}
-	
+
 	/*
 	 * Handle the game when the client has died.
 	 */
@@ -132,7 +135,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.dispGameOver(gameBoard.getRobots());
 		stopGame();
 	}
-	
+
 	/*
 	 * Will handle everything needed to stop the game from continuing.
 	 */
@@ -144,7 +147,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		deckView.setRoundTick(-1);
 		currentStage = Stage.WAITING;
 	}
-	
+
 	/*
 	 * Handle the game when someone won.
 	 */
@@ -152,15 +155,16 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.dispGameWon(gameBoard.getRobots());
 		stopGame();
 	}
-	
+
 	/**
 	 * The main update loop.
 	 */
 	public void update() {
-		if(currentStage.equals(Stage.PLAY)) {
+		if (currentStage.equals(Stage.PLAY)) {
 			updateActions();
-		}else if(currentStage.equals(Stage.PAUSE) && actions != null && !actions.isEmpty()) {
-			if(actions.get(0).isDone()) {
+		} else if (currentStage.equals(Stage.PAUSE) && actions != null
+				&& !actions.isEmpty()) {
+			if (actions.get(0).isDone()) {
 				gameBoard.stopAnimations();
 				cleanAndRemove(actions.get(0));
 				currentStage = Stage.WAITING;
@@ -172,17 +176,17 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 * Skips all actions on the current card and then waits.
 	 */
 	private void skipCardActions() {
-		if(actions == null || actions.isEmpty()) {
+		if (actions == null || actions.isEmpty()) {
 			nextCard();
 		}
 		// Remove all actions
-		for(RobotView r : gameBoard.getRobots()) {
+		for (RobotView r : gameBoard.getRobots()) {
 			r.clearActions();
 		}
 		// Do all actions
 		int i = actions.size();
-		while(i-- > 0) {
-			if(!cleanAndRemove(actions.get(0))) {
+		while (i-- > 0) {
+			if (!cleanAndRemove(actions.get(0))) {
 				return;
 			}
 		}
@@ -195,13 +199,13 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void skipAllActions() {
 		int roundID = client.getRoundID();
-		while(result != null && 
-				(((actions == null || actions.isEmpty()) && result.hasNext()) || !actions.isEmpty())
-				&& roundID == client.getRoundID() ) {
+		while (result != null
+				&& (((actions == null || actions.isEmpty()) && result.hasNext()) || !actions
+						.isEmpty()) && roundID == client.getRoundID()) {
 			skipCardActions();
 		}
 	}
-	
+
 	/*
 	 * Will return true as long as the game should continue.
 	 */
@@ -209,15 +213,15 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		int phase = action.getPhase();
 		action.cleanUp(gameBoard.getRobots(), gameBoard.getMapBuilder());
 		actions.remove(action);
-		if(phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
+		if (phase == GameAction.SPECIAL_PHASE_GAMEOVER) {
 			holdClose = true;
 			handleGameOver();
 			return false;
-		}else if(phase == GameAction.SPECIAL_PHASE_WON) {
+		} else if (phase == GameAction.SPECIAL_PHASE_WON) {
 			holdClose = true;
 			handleGameWon();
 			return false;
-		}else if(actions.isEmpty()) {
+		} else if (actions.isEmpty()) {
 			holdClose = false;
 			nextCard();
 		}
@@ -225,19 +229,18 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	}
 
 	private void nextCard() {
-		if(result.hasNext()) {
+		if (result.hasNext()) {
 			actions = result.getNextResult();
 			deckView.getRegisters().nextHighLight();
-		}else{
+		} else {
 			client.incrementRound();
 			deckView.getRegisters().clearHighLight();
-			System.out.println("Nbr behind: " + client.getRoundsBehind());
-			if(client.getRoundsBehind() > 0) {
+			if (client.getRoundsBehind() > 0) {
 				currentStage = Stage.WAITING;
 				deckView.displayPlayOptions();
-				deckView.setChosenCards(client.loadCards(), cardTexture);
+				deckView.setChosenCards(client.getCards(), cardTexture);
 				result = client.getRoundResult();
-			}else{
+			} else {
 				currentStage = Stage.WAITING;
 				deckView.displayDrawCard();
 			}
@@ -249,18 +252,20 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	 */
 	private void updateActions() {
 		// Remove and continue if last action complete.
-		if((actions == null || actions.isEmpty())) {
+		if ((actions == null || actions.isEmpty())) {
 			nextCard();
 			return;
-		}else if(actions.get(0).isDone() || !actions.get(0).isRunning()) {
-			if(actions.get(0).isDone()) {
+		} else if (actions.get(0).isDone() || !actions.get(0).isRunning()) {
+			if (actions.get(0).isDone()) {
 				cleanAndRemove(actions.get(0));
 			}
 			gameBoard.stopAnimations();
 			int syncSpeed = playSpeed;
-			if(!actions.isEmpty()) {
-				actions.get(0).setDuration(actions.get(0).getDuration() / syncSpeed);
-				actions.get(0).action(gameBoard.getRobots(), gameBoard.getMapBuilder());
+			if (!actions.isEmpty()) {
+				actions.get(0).setDuration(
+						actions.get(0).getDuration() / syncSpeed);
+				actions.get(0).action(gameBoard.getRobots(),
+						gameBoard.getMapBuilder());
 				gameBoard.setAnimate(actions.get(0).getPhase(), syncSpeed);
 			}
 		}
@@ -269,60 +274,63 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		// Play events:
-		if(event.getPropertyName().equals(DeckView.EVENT_PLAY)) {
+		if (event.getPropertyName().equals(DeckView.EVENT_PLAY)) {
 			currentStage = Stage.PLAY;
 			playSpeed = 1;
-		}else if(event.getPropertyName().equals(DeckView.EVENT_PAUSE)) {
+		} else if (event.getPropertyName().equals(DeckView.EVENT_PAUSE)) {
 			currentStage = Stage.PAUSE;
-		}else if(event.getPropertyName().equals(DeckView.EVENT_FASTFORWARD)) {
+		} else if (event.getPropertyName().equals(DeckView.EVENT_FASTFORWARD)) {
 			currentStage = Stage.PLAY;
 			playSpeed = 2;
-		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP_ALL)) {
+		} else if (event.getPropertyName().equals(DeckView.EVENT_STEP_ALL)) {
 			skipAllActions();
-		}else if(event.getPropertyName().equals(DeckView.EVENT_STEP_CARD)) {
+		} else if (event.getPropertyName().equals(DeckView.EVENT_STEP_CARD)) {
 			skipCardActions();
 		}
-		
+
 		// Other events:
-		else if(event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
+		else if (event.getPropertyName().equals(DeckView.EVENT_DRAW_CARDS)) {
 			drawCards();
-		}else if(event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
+		} else if (event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
 			onCardTimer();
-		}else if(event.getPropertyName().equals(DeckView.TIMER_ROUND)
+		} else if (event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
 			onRoundTimer();
-		}else if(event.getPropertyName().equals(MessageStage.EVENT_MENU)) {
+		} else if (event.getPropertyName().equals(MessageStage.EVENT_MENU)) {
 			client.deleteGame(gameID);
 			Gdx.app.exit();
-		}else if(event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
+		} else if (event.getPropertyName().equals(MessageStage.EVENT_EXIT)) {
 			onCardTimer();
 			onRoundTimer();
 			handleSave();
-		}else if(event.getPropertyName().equals(DeckView.EVENT_RUN)) {
+		} else if (event.getPropertyName().equals(DeckView.EVENT_RUN)) {
 			onCardTimer();
-			if(singlePlayer) {
+			if (singlePlayer) {
 				onRoundTimer();
 			}
 		}
 	}
-	
+
+	/*
+	 * Displays new cards.
+	 */
 	private void drawCards() {
-		deckView.setDeckCards(client.loadCards(), cardTexture);
+		deckView.setDeckCards(client.getCards(), cardTexture);
 		deckView.setCardTick(cardTime);
 	}
-	
+
 	private void onCardTimer() {
 		client.sendCard(deckView.getChosenCards());
 		deckView.displayWaiting();
 		currentStage = Stage.WAITING;
 		deckView.setCardTick(-1);
-		deckView.setChosenCards(client.loadCards(), cardTexture);
+		deckView.setChosenCards(client.getCards(), cardTexture);
 	}
-	
+
 	private void onRoundTimer() {
 		deckView.displayPlayOptions();
 		result = client.getRoundResult();
-		if(!singlePlayer) {
+		if (!singlePlayer) {
 			deckView.resetRoundTimer();
 		}
 	}
@@ -345,17 +353,12 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 		messageStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		messageStage.draw();
 		update();
-		
-//		Table.drawDebug(deckView);
-//		Table.drawDebug(gameBoard);
-//		Table.drawDebug(messageStage);
-		
 	}
-	
+
 	private void handleSave() {
 		skipAllActions();
 		client.saveCurrentGame(gameID, gameBoard.getSaveData());
-		if(!holdClose) {
+		if (!holdClose) {
 			Gdx.app.exit();
 		}
 	}
@@ -371,43 +374,50 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	@Override
 	public void resume() {
 	}
-	
+
 	private InputProcessor inputProcess = new InputProcessor() {
 		@Override
 		public boolean keyDown(int arg0) {
-			if(arg0 == Keys.BACK || arg0 == Keys.BACKSPACE){
-				if(deckView.isCardTimerOn()) {
+			if (arg0 == Keys.BACK || arg0 == Keys.BACKSPACE) {
+				if (deckView.isCardTimerOn()) {
 					messageStage.dispCloseMessage();
-				}else{
+				} else {
 					handleSave();
 				}
 			}
 			return false;
 		}
+
 		@Override
 		public boolean keyTyped(char arg0) {
 			return false;
 		}
+
 		@Override
 		public boolean keyUp(int arg0) {
 			return false;
 		}
+
 		@Override
 		public boolean mouseMoved(int arg0, int arg1) {
 			return false;
 		}
+
 		@Override
 		public boolean scrolled(int arg0) {
 			return false;
 		}
+
 		@Override
 		public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 			return false;
 		}
+
 		@Override
 		public boolean touchDragged(int arg0, int arg1, int arg2) {
 			return false;
 		}
+
 		@Override
 		public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
 			return false;

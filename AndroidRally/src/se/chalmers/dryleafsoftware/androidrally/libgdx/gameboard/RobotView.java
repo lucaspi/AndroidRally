@@ -9,10 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 /**
  * This view renders a robot.
  * 
- * @author 
- *
+ * @author
+ * 
  */
-public class RobotView extends Image  {
+public class RobotView extends Image {
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -47,12 +47,18 @@ public class RobotView extends Image  {
 
 	/**
 	 * Creates a new instance of a robot with the specified ID-number.
-	 * @param robotID The ID-number of this robot.
-	 * @param texture The texture to use.
-	 * @param laser The laser this robot should use.
-	 * @param name The name of the robot.
+	 * 
+	 * @param robotID
+	 *            The ID-number of this robot.
+	 * @param texture
+	 *            The texture to use.
+	 * @param laser
+	 *            The laser this robot should use.
+	 * @param name
+	 *            The name of the robot.
 	 */
-	public RobotView(int robotID, TextureRegion texture, LaserView laser, String name) {
+	public RobotView(int robotID, TextureRegion texture, LaserView laser,
+			String name) {
 		super(texture);
 		this.setSize(40, 40);
 		this.robotID = robotID;
@@ -60,9 +66,39 @@ public class RobotView extends Image  {
 		this.name = name;
 		laser.setIsOuter(true);
 	}
-	
+
+	/**
+	 * Gives <code>true</code> if the robot has lost all its lives.
+	 * 
+	 * @return <code>true</code> if the robot has lost all its lives.
+	 */
+	public boolean isGameDead() {
+		return lives <= 0;
+	}
+
+	/**
+	 * Adds the specified listener.
+	 * 
+	 * @param listener
+	 *            The listener to add.
+	 */
+	public void addListener(PropertyChangeListener listener) {
+		pcs.addPropertyChangeListener(listener);
+	}
+
+	/**
+	 * Removes the specified listener.
+	 * 
+	 * @param listener
+	 *            The listener to remove.
+	 */
+	public void removeListener(PropertyChangeListener listener) {
+		pcs.removePropertyChangeListener(listener);
+	}
+
 	/**
 	 * Gives the laser this robot has.
+	 * 
 	 * @return This robot's laser.
 	 */
 	public LaserView getLaser() {
@@ -72,97 +108,121 @@ public class RobotView extends Image  {
 		laser.setRotation(getRotation());
 		return laser;
 	}
-	
-	public void setDead(boolean isDead) {
-		this.isDead = isDead;
-		setVisible(!isDead);
-		System.out.println("Robot " + robotID + ", visible: " + !isDead);
-	}
-	
-	public boolean isDead() {
-		return this.isDead;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
-	public int getReachedCheckPoint() {
-		return this.reachedCheckPoint;
-	}
-	
-	public void setReachedCheckPoint(int checkPoint) {
-		pcs.firePropertyChange(EVENT_CHECKPOINT_CHANGE, this.reachedCheckPoint, checkPoint);
-		this.reachedCheckPoint = checkPoint;
-	}
-	
-	public boolean hasFinished() {
-		return hasFinished;
-	}
-	
-	public boolean isGameDead() {
-		return lives <= 0;
-	}
-	
-	public void setHasFinished(boolean hasFinished) {
-		this.hasFinished = hasFinished;
-	}
-	
-	/**
-	 * Gives the number of lives the robot has left.
-	 * @return The number of lives the robot has left.
-	 */
-	public int getLives() {
-		return this.lives;
-	}
-	
-	/**
-	 * Sets how many lives the robot has left.
-	 * @param lives The number of lives the robot has left.
-	 */
-	public void setLives(int lives) {
-		pcs.firePropertyChange(EVENT_LIFE_CHANGE, this.lives, lives);
-		this.lives = lives;
-	}
-	
-	/**
-	 * Gives the number of damage tokens this robot has.
-	 * @return The number of damage tokens this robot has.
-	 */
-	public int getDamage() {
-		return this.damage;
-	}
-	
-	/**
-	 * Sets how many damage tokens this robot has.
-	 * @param damage The number of tokens this robot has.
-	 */
-	public void setDamage(int damage) {
-		pcs.firePropertyChange(EVENT_DAMAGE_CHANGE, this.damage, damage);
-		this.damage = damage;
-	}
-	
+
 	/**
 	 * Gives the ID-number of the robot.
+	 * 
 	 * @return The ID-number of the robot.
 	 */
 	public int getRobotID() {
 		return robotID;
 	}
-	
+
 	/**
-	 * Adds the specified listener.
-	 * @param listener The listener to add.
+	 * Gives the number of damage tokens this robot has.
+	 * 
+	 * @return The number of damage tokens this robot has.
 	 */
-	public void addListener(PropertyChangeListener listener) {
-		pcs.addPropertyChangeListener(listener);
+	public int getDamage() {
+		return this.damage;
 	}
-	
+
 	/**
-	 * Removes the specified listener.
-	 * @param listener The listener to remove.
+	 * Sets how many damage tokens this robot has.
+	 * 
+	 * @param damage
+	 *            The number of tokens this robot has.
 	 */
-	public void removeListener(PropertyChangeListener listener) {
-		pcs.removePropertyChangeListener(listener);
+	public void setDamage(int damage) {
+		pcs.firePropertyChange(EVENT_DAMAGE_CHANGE, this.damage, damage);
+		this.damage = damage;
+	}
+
+	/**
+	 * Gives the number of lives the robot has left.
+	 * 
+	 * @return The number of lives the robot has left.
+	 */
+	public int getLives() {
+		return this.lives;
+	}
+
+	/**
+	 * Sets how many lives the robot has left.
+	 * 
+	 * @param lives
+	 *            The number of lives the robot has left.
+	 */
+	public void setLives(int lives) {
+		pcs.firePropertyChange(EVENT_LIFE_CHANGE, this.lives, lives);
+		this.lives = lives;
+	}
+
+	/**
+	 * Gives <code>true</code> if the robot has finished.
+	 * 
+	 * @return <code>true</code> if the robot has finished.
+	 */
+	public boolean hasFinished() {
+		return hasFinished;
+	}
+
+	/**
+	 * Sets if the robot has finished or not.
+	 * 
+	 * @param hasFinished
+	 *            If the robot has finished or not.
+	 */
+	public void setHasFinished(boolean hasFinished) {
+		this.hasFinished = hasFinished;
+	}
+
+	/**
+	 * Gives <code>true</code> if the robot is dead.
+	 * 
+	 * @return <code>true</code> if the robot is dead.
+	 */
+	public boolean isDead() {
+		return this.isDead;
+	}
+
+	/**
+	 * Sets if the robot is dead or not.
+	 * 
+	 * @param isDead
+	 *            Sets if the robot is dead or not.
+	 */
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+		setVisible(!isDead);
+		System.out.println("Robot " + robotID + ", visible: " + !isDead);
+	}
+
+	/**
+	 * Gives the name of the robot.
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Gives the last checkpoint the robot reached.
+	 * 
+	 * @return The last checkpoint the robot reached.
+	 */
+	public int getReachedCheckPoint() {
+		return this.reachedCheckPoint;
+	}
+
+	/**
+	 * Sets the last reached checkpoint.
+	 * 
+	 * @param checkPoint
+	 *            The last reached checkpoint.
+	 */
+	public void setReachedCheckPoint(int checkPoint) {
+		pcs.firePropertyChange(EVENT_CHECKPOINT_CHANGE, this.reachedCheckPoint,
+				checkPoint);
+		this.reachedCheckPoint = checkPoint;
 	}
 }
