@@ -101,12 +101,6 @@ public class AIRobotController {
 				lockedCards++;
 			}
 		}
-		// something is wrong if cards.size() <= 4. To few cards are dealt in
-		// that case
-		if (cards.size() <= 4 - lockedCards) {
-			throw new ToFewCardsException(
-					"To few cards sent to the robot. cards.size() <= 4");
-		}
 		placeCards(lockedCards);
 		robot.setChosenCards(chosenCards);
 	}
