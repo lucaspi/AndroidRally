@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
+		super.onResume();
 		refreshGamesList();
 	}
 
@@ -140,7 +141,11 @@ public class MainActivity extends Activity {
 		games = client.getSavedGames();
 		String[] gameNames = new String[games.length];
 		for (int i = 0; i < gameNames.length; i++) {
-			gameNames[i] = "Game " + games[i];
+			if(games[i] < 0) {
+				gameNames[i] = "Private game " + Math.abs(games[i]);
+			}else{
+				gameNames[i] = "Public game " + games[i];
+			}
 		}
 		ListAdapter gamesList = new ArrayAdapter<String>(
 				getApplicationContext(), android.R.layout.simple_list_item_1,

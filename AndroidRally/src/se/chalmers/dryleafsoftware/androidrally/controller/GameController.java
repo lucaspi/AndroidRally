@@ -37,7 +37,8 @@ public class GameController implements PropertyChangeListener {
 	private int cardTimerSeconds;
 	private Date endOfRoundDate;
 	
-	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26x07xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxx16:17x26xx88:16xxyxxxxxxx113xxxxxxxxx";
+	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxxxxxxx213xxxx5x26xx78x16xyxxxxxxx213xxxxxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xx32xxx22xxx12xxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26x07xx113xxxxx26xxx48:16xyxxxxxxx113xxxxxxxx68:16xyxx5xxxxx113xxxx16:17x26xx88:16xxyxxxxxxx113xxxxxxxxx";
+		
 	/*
 	 * *
 	 * Creates a new GameController.
