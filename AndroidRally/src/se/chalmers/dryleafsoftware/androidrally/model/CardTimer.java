@@ -67,8 +67,13 @@ public class CardTimer {
 	 * than once, and will be called as many times as it is added. If listener
 	 * is null, no exception is thrown and no action is taken.
 	 * 
+<<<<<<< HEAD
 	 * @param The
 	 *            PropertyChangeListener to be added
+=======
+	 * @param PropertyChangeListener
+	 *            The PropertyChangeListener to be added
+>>>>>>> 78dffe67bf3b3a6581f5799452477369c144539f
 	 * @see PropertyChangeSupport
 	 * @see PropertyChangeListener
 	 */
@@ -83,8 +88,13 @@ public class CardTimer {
 	 * notified one less time after being removed. If listener is null, or was
 	 * never added, no exception is thrown and no action is taken.
 	 * 
+<<<<<<< HEAD
 	 * @param The
 	 *            PropertyChangeListener to be added
+=======
+	 * @param PropertyChangeListener
+	 *            The PropertyChangeListener to be added
+>>>>>>> 78dffe67bf3b3a6581f5799452477369c144539f
 	 * @see PropertyChangeSupport
 	 * @see PropertyChangeListener
 	 */

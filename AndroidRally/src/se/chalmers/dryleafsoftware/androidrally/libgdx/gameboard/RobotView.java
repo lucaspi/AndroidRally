@@ -76,6 +76,7 @@ public class RobotView extends Image  {
 	public void setDead(boolean isDead) {
 		this.isDead = isDead;
 		setVisible(!isDead);
+		System.out.println("Robot " + robotID + ", visible: " + !isDead);
 	}
 	
 	public boolean isDead() {

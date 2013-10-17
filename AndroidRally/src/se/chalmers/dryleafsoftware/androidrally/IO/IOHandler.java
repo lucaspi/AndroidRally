@@ -75,7 +75,7 @@ public class IOHandler {
 	 * @return
 	 */
 	public static int getNewID() {
-		int id = prefs.getInt(PRIVATE_DATA, -1);
+		int id = prefs.getInt(PRIVATE_DATA, 0);
 		currentID = id -1;
 		System.out.println("New ID: " + currentID);
 		return id - 1;

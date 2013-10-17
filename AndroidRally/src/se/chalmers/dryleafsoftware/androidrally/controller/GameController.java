@@ -38,9 +38,8 @@ public class GameController implements PropertyChangeListener {
 	private Date endOfRoundDate;
 
 	private static final String testMap = "yxxxxxxx213xxxxxxx16xxyxx12xxxxx213xxxxx26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26x07xx213xxxxx26xxx38xyxxxx26xxx14x223x223x223x223x223xxx16xyxxxx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxxxx26xxx1x103x103x103x103x103xxxxyxxxx26x07xx113xxxxx26xxx48:16xyxxxxxxx113xxx22xxxxx68:16xyxx5xxxxx113xxxx16:17x26xx88:16xxyxxxxxxx113xxxxxxxxx";
-
+	
 	/**
-	 *
 	 * Creates a new GameController.
 	 * 
 	 * @param nbrOfHumanPlayers the number of playing people (for server-client
@@ -325,10 +324,8 @@ public class GameController implements PropertyChangeListener {
 			}
 			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
 			gameModel.getRobots().get(robotID).setSentCards(true);
-			gameModel.getRobots().get(robotID)
-					.setLastChosenCards(getCurrentChosenCards(robotID));
-			allCards.get(allCards.size() - 1)[robotID] = gameModel.getRobots()
-					.get(robotID).getLastRoundChosenCards();
+			gameModel.getRobots().get(robotID).setLastRoundChosenCards(getCurrentChosenCards(robotID));
+			allCards.get(allCards.size()-1)[robotID] = gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 		}
 		nbrOfRobotsDone++;
 	
@@ -367,8 +364,7 @@ public class GameController implements PropertyChangeListener {
 				aiRobotController.makeMove(gameModel.getRobots().get(i));
 				gameModel.getRobots().get(i).fillEmptyCardRegisters();
 				gameModel.getRobots().get(i).setSentCards(true);
-				gameModel.getRobots().get(i)
-						.setLastChosenCards(getCurrentChosenCards(i));
+				gameModel.getRobots().get(i).setLastRoundChosenCards(getCurrentChosenCards(i));
 			}
 			nbrOfRobotsDone++;
 		}
