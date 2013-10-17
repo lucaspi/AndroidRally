@@ -216,7 +216,6 @@ public class AIRobotController {
 
 	/**
 	 * Returns the next checkpoint for the robot.
-	 * @param robot the robot to find the next checkpoint for.
 	 * @return the next checkpoint for the robot in the form [posX][posY].
 	 */
 	private int[] nextCheckPoint() {
