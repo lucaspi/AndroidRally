@@ -54,7 +54,6 @@ public class AIRobotController {
 	 * @param robot
 	 *            the robot to choose cards for.
 	 */
-	@SuppressWarnings("unchecked")
 	public void makeMove(Robot robot) {
 		cards = new ArrayList<Card>();
 		moveForwardCards = new ArrayList<Move>();
@@ -238,9 +237,6 @@ public class AIRobotController {
 	 */
 	private int[] nextCheckPoint() {
 		int[] xy = new int[2];
-		System.out.println("gb.getCheckPoints().size(): "
-				+ gb.getCheckPoints().size());
-		System.out.println("nextCheckPoint: " + nextCheckPoint);
 		for (int i = 0; i <= 1; i++) {
 			xy[i] = gb.getCheckPoints().get(nextCheckPoint)[i];
 		}
