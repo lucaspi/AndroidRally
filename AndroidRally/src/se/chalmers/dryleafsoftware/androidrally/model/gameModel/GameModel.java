@@ -278,8 +278,9 @@ public class GameModel {
 	}
 
 	/**
-	 * Adds a string to the allMoves string with information that the robot has
-	 * reached a specific checkpoint.
+	 * Add a checkpoint update String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
 	 * 
 	 * @param oldCheckPoints
 	 *            checkpoints robots had before action
@@ -293,10 +294,11 @@ public class GameModel {
 			}
 		}
 	}
-
+	
 	/**
-	 * Adds a string to the allMoves string with information that the robot is
-	 * damaged a specific amount.
+	 * Add a damage update String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
 	 * 
 	 * @param oldRobotHealth
 	 *            health robots had before action
@@ -317,7 +319,7 @@ public class GameModel {
 	}
 
 	/**
-	 * 
+	 * Check if a robot is hit by a laser on a certain position.
 	 * @param x robot position x
 	 * @param y robot position y
 	 * @return true if a robot is hit, else false
@@ -361,8 +363,15 @@ public class GameModel {
 	}
 
 	/**
-	 * This method will only give proper answers if the robot moves in X-axis or
-	 * Y-axis, not both.
+	 * Check if there is a wall preventing a move from a tile to another tile.
+	 * This method will only function properly if the movement is one step in
+	 * the x-axis or the y-axis, not both.
+	 * 
+	 * @param oldX the position in the x-axis to move from.
+	 * @param oldY the position in the y-axis to move from.
+	 * @param x the position in the x-axis to move to.
+	 * @param y the position in the x-axis to move to.
+	 * @return true if there is no wall preventing the move.
 	 */
 	private boolean canMove(int oldX, int oldY, int x, int y) {
 		if (oldY > y) {
@@ -381,8 +390,7 @@ public class GameModel {
 	/**
 	 * Fire the robots' lasers.
 	 * 
-	 * @param robot
-	 *            A robot
+	 * @param robot A robot
 	 */
 	private void fireRobotLaser(Robot robot) {
 		int x = robot.getX();
@@ -405,10 +413,8 @@ public class GameModel {
 	 * Fire lasers on the map. Also called by fireRobotLaser because of almost
 	 * same logic.
 	 * 
-	 * @param x
-	 *            coordinate on x-axis
-	 * @param y
-	 *            coordinate on y-axis
+	 * @param x coordinate on x-axis
+	 * @param y coordinate on y-axis
 	 * @param direction
 	 *            a specific direction such as GameBoard.[DIRECTION]
 	 */
@@ -521,7 +527,6 @@ public class GameModel {
 	 * if the collision needs to be reversed.
 	 */
 	private boolean handleCollision(Robot robot, int oldX, int oldY) {
-		// TODO fix stackOverFlow
 		boolean wallCollision = false;
 		if (canMove(oldX, oldY, robot.getX(), robot.getY())) {
 			for (Robot r : robots) {
@@ -534,19 +539,10 @@ public class GameModel {
 					r.setY(r.getY() - (oldY - robot.getY()));
 					addSimultaneousMove(r);
 					// Check if other Robot collides
-					if (handleCollision(r, robot.getX(), robot.getY())) {// true
-																			// if
-																			// r
-																			// walks
-																			// into
-																			// a
-																			// wall
+					if (handleCollision(r, robot.getX(), robot.getY())) {// true if r walks into a wall
 						robot.setX(robot.getX() + (oldX - robot.getX()));
 						robot.setY(robot.getY() + (oldY - robot.getY()));
-						allMoves.remove(allMoves.size() - 1);// It is always the
-																// last move
-																// which should
-																// be reversed.
+						allMoves.remove(allMoves.size() - 1);// It is always the last move which should be reversed.
 						wallCollision = true;
 					}
 					checkGameStatus();
@@ -561,8 +557,7 @@ public class GameModel {
 		} else {// The robot can't walk through a wall
 			robot.setX(oldX);
 			robot.setY(oldY);
-			allMoves.remove(allMoves.size() - 1); // It is always the last move
-													// which should be reversed.
+			allMoves.remove(allMoves.size() - 1); // It is always the last move which should be reversed.
 			wallCollision = true;
 		}
 		return wallCollision;
@@ -646,8 +641,7 @@ public class GameModel {
 	 * Tries to place a robot one the spawnpoint. If another robot is standing
 	 * on it a tile nearby is used as a spawnpoint.
 	 * 
-	 * @param robot
-	 *            A robot
+	 * @param robot A robot
 	 */
 	private void resetRobotPosition(Robot robot) {
 		int distanceFromSpawnPoint = 0;
@@ -678,30 +672,65 @@ public class GameModel {
 		}
 	}
 
+	/**
+	 * Add a respawnMove String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the respawnMove for.
+	 */
 	private void addRespawnMove(Robot robot) {
 		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection()
 				+ robot.getXAsString() + robot.getYAsString());
 	}
 
-	// TODO skriva javadoc till dessa
+	/**
+	 * Add a robotWon String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the robotWon for.
+	 */
 	private void addRobotWon(Robot robot) {
 		allMoves.add(";W#" + robots.indexOf(robot));
 	}
 
+	/**
+	 * Add a robotLost String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the robotLost for.
+	 */
 	private void addRobotLost(Robot robot) {
 		allMoves.add(";L#" + robots.indexOf(robot));
 	}
 
+	/**
+	 * Add a simultaneousMove String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the simultaneousMove for.
+	 */
 	private void addSimultaneousMove(Robot robot) {
 		allMoves.add("#" + robots.indexOf(robot) + ":" + robot.getDirection()
 				+ robot.getXAsString() + robot.getYAsString());
 	}
 
+	/**
+	 * Add a standard move String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the standard move for.
+	 */
 	private void addMove(Robot robot) {
 		allMoves.add(";" + robots.indexOf(robot) + ":" + robot.getDirection()
 				+ robot.getXAsString() + robot.getYAsString());
 	}
 
+	/**
+	 * Add a robotDeadMove String to allMoves. This method will generate errors
+	 * in the allMove string if called with a bad timing. See separate developer
+	 * document for when to use it.
+	 * @param robot the robot to add the robotDeadMove for.
+	 */
 	private void addRobotDeadMove(Robot robot) {
 		allMoves.add(";F#" + robots.indexOf(robot) + ":" + robot.getLife());
 	}
