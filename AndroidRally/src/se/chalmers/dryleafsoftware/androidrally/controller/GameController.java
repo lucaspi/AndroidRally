@@ -31,7 +31,6 @@ public class GameController implements PropertyChangeListener {
 	private AIRobotController aiRobotController;
 	private int nbrOfHumanPlayers;
 	private int nbrOfBots;
-	private static final int PING_TIME = 5; // seconds
 	private List<String> allMoves;
 	private List<String[]> allCards;
 	private int cardTimerSeconds;
