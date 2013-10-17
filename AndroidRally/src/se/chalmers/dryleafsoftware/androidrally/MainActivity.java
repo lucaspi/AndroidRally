@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 	private ListView gameListView;
 	private Client client;
 	private int[] games;
+	private PopupWindow popupWindow;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +68,15 @@ public class MainActivity extends Activity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view,
 					final int position, long id) {
+				if (popupWindow != null) {
+					popupWindow.dismiss();
+				}
+				
 				LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
 						.getSystemService(LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.delete_popup, null);
 
-				final PopupWindow popupWindow = new PopupWindow(popupView,
+				popupWindow = new PopupWindow(popupView,
 						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 				Button deleteGame = (Button) popupView.findViewById(R.id.yesButton);
