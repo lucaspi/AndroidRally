@@ -293,6 +293,9 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 			drawCards();
 		} else if (event.getPropertyName().equals(DeckView.TIMER_CARDS)) {
 			onCardTimer();
+			if (singlePlayer) {
+				onRoundTimer();
+			}
 		} else if (event.getPropertyName().equals(DeckView.TIMER_ROUND)
 				&& currentStage.equals(Stage.WAITING)) {
 			onRoundTimer();
