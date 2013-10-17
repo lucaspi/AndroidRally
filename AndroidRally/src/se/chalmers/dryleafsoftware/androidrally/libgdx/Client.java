@@ -113,6 +113,7 @@ public class Client {
 			}
 			sb.append(":" + temp[i]);
 		}
+		System.out.println("Setting chosencards: " + sb.toString());
 		controller.setChosenCardsToRobot(robotID, sb.toString().substring(1));
 		// TODO: server
 	}
@@ -383,6 +384,7 @@ public class Client {
 	 * @return The number of rounds the view is behind.
 	 */
 	public int getRoundsBehind() {
+		System.out.println("Controller round: " + controller.getRound());
 		return controller.getRound() - roundID;
 	}
 }
