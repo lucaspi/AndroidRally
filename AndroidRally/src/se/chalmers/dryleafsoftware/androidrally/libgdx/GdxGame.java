@@ -323,6 +323,7 @@ public class GdxGame implements ApplicationListener, PropertyChangeListener {
 	}
 
 	private void onCardTimer() {
+		deckView.disableRun(true);
 		client.sendCard(deckView.getChosenCards());
 		deckView.displayWaiting();
 		currentStage = Stage.WAITING;

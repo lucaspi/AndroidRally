@@ -37,17 +37,14 @@ public class IOHandler {
 	public static void save(String saveData, int gameID, String location) {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString(location + gameID, saveData);
-		System.out.println("(Saving) Location: \"" + location + gameID + "\", "
-				+ "data: \"" + saveData + "\"");
 		if (currentID == gameID) {
 			editor.putInt(PRIVATE_DATA, currentID);
-			System.out.println("(Saving) LastID: \"" + currentID + "\"");
 		}
 		if (!isSaved(gameID)) {
 			editor.putString(ID_DATA, prefs.getString(ID_DATA, "") + ":"
 					+ gameID);
 		}
-		System.out.println("Commit: " + editor.commit());
+		editor.commit();
 	}
 
 	/**
@@ -83,11 +80,10 @@ public class IOHandler {
 		for (int i = 0; i < ids.length; i++) {
 			if (ids[i] != gameID) {
 				sb.append(":" + ids[i]);
-				System.out.println("Saving ID: " + ids[i]);
 			}
 		}
 		editor.putString(ID_DATA, sb.toString());
-		System.out.println("Commit: " + editor.commit());
+		editor.commit();
 	}
 
 	/**
@@ -101,8 +97,6 @@ public class IOHandler {
 	 */
 	public static String load(int gameID, String location) {
 		String data = prefs.getString(location + gameID, null);
-		System.out.println("(Loading) Location: \"" + location + gameID
-				+ "\", " + "data: \"" + data + "\"");
 		return data;
 	}
 	
@@ -114,7 +108,6 @@ public class IOHandler {
 	public static int getNewID() {
 		int id = prefs.getInt(PRIVATE_DATA, 0);
 		currentID = id - 1;
-		System.out.println("New ID: " + currentID);
 		return id - 1;
 	}
 
@@ -129,12 +122,10 @@ public class IOHandler {
 		if (data == null || data.length() == 0) {
 			return new int[0];
 		}
-		System.out.println("IDs: \"" + data + "\"");
 		String idString[] = data.substring(1).split(":");
 		int[] ids = new int[idString.length];
 		for (int i = 0; i < idString.length; i++) {
 			ids[i] = Integer.parseInt(idString[i]);
-			System.out.println("Loaded stored ID: " + ids[i]);
 		}
 		return ids;
 	}

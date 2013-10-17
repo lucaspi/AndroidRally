@@ -303,6 +303,15 @@ public class DeckView extends Stage {
 	}
 
 	/**
+	 * Disable the run-button.
+	 * 
+	 * @param disable
+	 */
+	public void disableRun(boolean disable) {
+		runButton.setDisabled(true);
+	}
+
+	/**
 	 * Resets the roundtimer.
 	 */
 	public void resetRoundTimer() {
