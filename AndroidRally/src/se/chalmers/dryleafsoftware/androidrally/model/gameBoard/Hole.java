@@ -6,14 +6,14 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
  * Representing a hole on the game board. Robot standing on this board element
  * will die instantly.
  */
-public class Hole implements BoardElement{
+public class Hole implements BoardElement {
 
 	/**
 	 * Does nothing.
 	 */
 	@Override
 	public void action(Robot robot) {
-		//Do nothing
+		// Do nothing
 	}
 
 	/**

@@ -128,22 +128,8 @@ public class MainActivity extends Activity {
 			return true;
 
 		case R.id.action_help:
-			LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
-					.getSystemService(LAYOUT_INFLATER_SERVICE);
-			View popupView = layoutInflater.inflate(R.layout.help, null);
-
-			final PopupWindow popupWindow = new PopupWindow(popupView,
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-			Button closeHelp = (Button) popupView.findViewById(R.id.closeHelp);
-			closeHelp.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					popupWindow.dismiss();
-				}
-			});
-			popupWindow.showAtLocation(findViewById(R.id.action_help),
-					Gravity.CENTER, 0, 0);
+			Intent i = new Intent(getApplicationContext(), HelpActivity.class);
+			startActivity(i);
 			return true;
 
 		default:

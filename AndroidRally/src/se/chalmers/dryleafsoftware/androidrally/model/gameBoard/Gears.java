@@ -4,19 +4,22 @@ import se.chalmers.dryleafsoftware.androidrally.model.cards.TurnType;
 import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 
 /**
- * Representing a gear on the gameBoard. Will turn the robot 90 degrees when standing on it.
+ * Representing a gear on the gameBoard. Will turn the robot 90 degrees when
+ * standing on it.
  */
-public class Gears implements BoardElement{
+public class Gears implements BoardElement {
 	private boolean isTurnRight = false;
-	
+
 	/**
 	 * Creates a new gear element which will turn a robot left or right.
-	 * @param isTurnRight true if the robot should be turn right, false for left.
+	 * 
+	 * @param isTurnRight
+	 *            true if the robot should be turn right, false for left.
 	 */
-	public Gears(boolean isTurnRight){
+	public Gears(boolean isTurnRight) {
 		this.isTurnRight = isTurnRight;
 	}
-	
+
 	/**
 	 * Turns the robot in the direction given in the constructor.
 	 */
