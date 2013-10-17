@@ -136,6 +136,7 @@ public class BoardView extends Stage {
 
 		// To be added on top of all the other objects
 		final List<Image> overlay = new ArrayList<Image>();
+		final List<AnimatedElement> lasers = new ArrayList<AnimatedElement>();
 
 		this.mapBuilder = new MapBuilder(map) {
 			@Override
@@ -198,7 +199,7 @@ public class BoardView extends Stage {
 			public void buildLaser(int x, int y, int dir) {
 				overlay.add(setCommonOverlayValues(
 						new Image(new TextureRegion(texture, 448, 0, 64, 64)), x, y, dir));
-				animated.add((AnimatedElement)setCommonValues(
+				lasers.add((AnimatedElement)setCommonValues(
 						new LaserView(new TextureRegion(texture, 128, 320, 64, 64), (dir + 2)%4), x, y));
 			}
 			private Image setCommonOverlayValues(Image overlayImage, int x, int y, int dir) {
@@ -224,11 +225,11 @@ public class BoardView extends Stage {
 		};
 		collisionMatrix = new CollisionMatrix(mapBuilder.getWidth(), mapBuilder.getHeight());
 		mapBuilder.build();
-				
+			
+		animated.addAll(lasers);
 		for(AnimatedElement i : animated) {
 			container.addActor(i);
-		}
-		
+		}		
 		//Add walls (added last to be on top of everything else)
 		for(Image i : overlay) {
 			container.addActor(i);
