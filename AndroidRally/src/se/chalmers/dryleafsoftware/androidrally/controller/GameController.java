@@ -273,7 +273,7 @@ public class GameController implements PropertyChangeListener {
 			}
 			gameModel.getRobots().get(robotID).fillEmptyCardRegisters();
 			gameModel.getRobots().get(robotID).setSentCards(true);
-			gameModel.getRobots().get(robotID).setLastChosenCards(getCurrentChosenCards(robotID));
+			gameModel.getRobots().get(robotID).setLastRoundChosenCards(getCurrentChosenCards(robotID));
 			allCards.get(allCards.size()-1)[robotID] = gameModel.getRobots().get(robotID).getLastRoundChosenCards();
 		}
 		nbrOfRobotsDone++;
@@ -379,7 +379,7 @@ public class GameController implements PropertyChangeListener {
 				aiRobotController.makeMove(gameModel.getRobots().get(i));
 				gameModel.getRobots().get(i).fillEmptyCardRegisters();
 				gameModel.getRobots().get(i).setSentCards(true);
-				gameModel.getRobots().get(i).setLastChosenCards(getCurrentChosenCards(i));
+				gameModel.getRobots().get(i).setLastRoundChosenCards(getCurrentChosenCards(i));
 			}
 			nbrOfRobotsDone++;
 		}

@@ -15,22 +15,25 @@ public class CardTimer {
 	private long seconds;
 	private Timer timer;
 	private TimerTask timeOut;
-	
+
 	/**
 	 * Create a new CardTimer.
-	 * @param seconds the length of the timer
-	 * @param robotID the robot that is supposed to have the timer
+	 * 
+	 * @param seconds
+	 *            the length of the timer
+	 * @param robotID
+	 *            the robot that is supposed to have the timer
 	 */
 	public CardTimer(long seconds, int robotID) {
 		timer = new Timer();
 		this.seconds = seconds * 1000;
 		this.robotNbr = robotID;
 	}
-	
+
 	/**
-	 * Starts the timer based on the number of seconds given in the
-	 * constructor. Sends an event to listeners with name given by
-	 * static modifier CardTimer.CARD_TIME_OUT.
+	 * Starts the timer based on the number of seconds given in the constructor.
+	 * Sends an event to listeners with name given by static modifier
+	 * CardTimer.CARD_TIME_OUT.
 	 */
 	public void start() {
 		reSchedule();
@@ -45,7 +48,7 @@ public class CardTimer {
 			timeOut.cancel();
 		}
 	}
-	
+
 	/**
 	 * Set a new task to be able to start a new round. Is called by start().
 	 */
@@ -57,31 +60,31 @@ public class CardTimer {
 			}
 		};
 	}
-	
+
 	/**
-	 * Add a PropertyChangeListener to the listener list.
-	 * The listener is registered for all properties.
-	 * The same listener object may be added more than once,
-	 * and will be called as many times as it is added. If listener is null,
-	 * no exception is thrown and no action is taken.
+	 * Add a PropertyChangeListener to the listener list. The listener is
+	 * registered for all properties. The same listener object may be added more
+	 * than once, and will be called as many times as it is added. If listener
+	 * is null, no exception is thrown and no action is taken.
 	 * 
-	 * @param The PropertyChangeListener to be added
+	 * @param PropertyChangeListener
+	 *            The PropertyChangeListener to be added
 	 * @see PropertyChangeSupport
 	 * @see PropertyChangeListener
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		pcs.addPropertyChangeListener(pcl);
 	}
-	
+
 	/**
-	 * Remove a PropertyChangeListener from the listener list.
-	 * This removes a PropertyChangeListener that was registered
-	 * for all properties. If listener was added more than once
-	 * to the same event source, it will be notified one less time
-	 * after being removed. If listener is null, or was never added,
-	 * no exception is thrown and no action is taken.
+	 * Remove a PropertyChangeListener from the listener list. This removes a
+	 * PropertyChangeListener that was registered for all properties. If
+	 * listener was added more than once to the same event source, it will be
+	 * notified one less time after being removed. If listener is null, or was
+	 * never added, no exception is thrown and no action is taken.
 	 * 
-	 * @param The PropertyChangeListener to be added
+	 * @param PropertyChangeListener
+	 *            The PropertyChangeListener to be added
 	 * @see PropertyChangeSupport
 	 * @see PropertyChangeListener
 	 */
