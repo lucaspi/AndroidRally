@@ -2,6 +2,7 @@ package se.chalmers.dryleafsoftware.androidrally.libgdx.actions;
 
 import java.util.List;
 
+import se.chalmers.dryleafsoftware.androidrally.libgdx.AnimatedImage;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
@@ -17,6 +18,7 @@ public class HealthAction extends GameAction {
 
 	public static final int DECREASE_ONE = -2;
 	public static final int INCREASE_ONE = -3;
+	private final AnimationAction hitAnim;
 
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
@@ -28,10 +30,11 @@ public class HealthAction extends GameAction {
 	 * @param lives
 	 *            The number of lives to set to the robot. Supports UNCHANGED.
 	 */
-	public HealthAction(int robotID, int damage, int lives) {
+	public HealthAction(int robotID, int damage, int lives, AnimatedImage animation) {
 		super(robotID, 0);
 		this.damage = damage;
 		this.lives = lives;
+		this.hitAnim = new AnimationAction(robotID, damage, animation);
 	}
 
 	@Override
@@ -43,13 +46,21 @@ public class HealthAction extends GameAction {
 	@Override
 	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		RobotView robot = robots.get(getRobotID());
+		int oldDamage = robot.getDamage();
+		int newDamage = oldDamage;
 		if (damage != UNCHANGED) {
 			if (damage == INCREASE_ONE) {
 				robot.setDamage(robot.getDamage() + 1);
 			} else if (damage == DECREASE_ONE) {
 				robot.setDamage(robot.getDamage() - 1);
+				newDamage = robot.getDamage();
 			} else {
 				robots.get(getRobotID()).setDamage(damage);
+				newDamage = robot.getDamage();
+			}
+			if(oldDamage < newDamage) {
+				hitAnim.setDuration(getDuration());
+				hitAnim.action(robots, map);
 			}
 		}
 		if (lives != UNCHANGED) {
