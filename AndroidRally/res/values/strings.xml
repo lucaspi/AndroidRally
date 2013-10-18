@@ -39,10 +39,6 @@
     <string name="help_h1">General game idea</string>
     <string name="help_h2_board_element">Board elements</string>
     <string name="h_checkpoints">Checkpoints</string>
-    <string name="h_picture_round">1. Displays how long time you got to choose your cards.
- 2. Displays how much damage the robot has taken.
- 3. Displays how many lives the robot has left.
- 4. The card which will be executed first when the round starts. You should fill all the five slots, otherwise the ones you left empty will be filled with random cards.
- 5. Sends the cards to the game. You cannot change cards after sending them!</string>
+    <string name="h_picture_round">1. Displays how long time you got to choose your cards.\n2. Displays how much damage the robot has taken.\n3. Displays how many lives the robot has left.\n4. The card which will be executed first when the round starts. You should fill all the five slots, otherwise the ones you left empty will be filled with random cards.\n5. Sends the cards to the game. You cannot change cards after sending them!</string>
 
 </resources>

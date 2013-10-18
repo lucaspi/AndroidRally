@@ -45,7 +45,7 @@
             <ImageView
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
-                android:layout_height="386dp"
+                android:layout_height="210dp"
                 android:src="@drawable/general_help" />
 
             <TextView
