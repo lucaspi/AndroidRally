@@ -194,7 +194,7 @@ public class GameModel {
 						if (((ConveyorBelt) boardElements.get(0))		// ..be first
 								.getTravelDistance() >= maxTravelDistance - i) {
 							boardElements.get(0).action(robots.get(j));
-							addSimultaneousMove(robots.get(j));
+//							addSimultaneousMove(robots.get(j));
 							if (checkGameStatus())
 								return;
 							if (robots.get(j).isDead()) {
