@@ -6,7 +6,6 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.CheckPointAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.ExplodeAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.FallAction;
@@ -162,11 +161,9 @@ public class Client {
 						HealthAction ha = new HealthAction(
 								Integer.parseInt(data[0]),
 								Integer.parseInt(data[1].substring(2)),
-								Integer.parseInt(data[1].substring(1, 2)));
+								Integer.parseInt(data[1].substring(1, 2)),
+								new AnimatedImage(damageAnim, 4, 2));
 						multiDamage.add(ha);
-						multiDamage.add(new AnimationAction(Integer
-								.parseInt(data[0]), 1000, new AnimatedImage(
-								damageAnim, 4, 2)));
 						if (data[1].substring(0, 1).equals("1")) {
 							// Robot should explode
 							multiExplode.add(new ExplodeAction(Integer
@@ -207,7 +204,7 @@ public class Client {
 			} else if (parallel[0].equals("F")) { // When a player falls
 				String[] data = parallel[1].split(":");
 				result.addAction(new HealthAction(Integer.parseInt(data[0]), 0,
-						Integer.parseInt(data[1])));
+						Integer.parseInt(data[1]), null));
 				result.addAction(new FallAction(Integer.parseInt(data[0]), 1000));
 			} else if (parallel[0].equals("L")) { // When a player lose.
 				if (Integer.parseInt(parallel[1]) == robotID) {
