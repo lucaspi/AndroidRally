@@ -40,5 +40,13 @@
     <string name="help_h2_board_element">Board elements</string>
     <string name="h_checkpoints">Checkpoints</string>
     <string name="h_picture_round">1. Displays how long time you got to choose your cards.\n2. Displays how much damage the robot has taken.\n3. Displays how many lives the robot has left.\n4. The card which will be executed first when the round starts. You should fill all the five slots, otherwise the ones you left empty will be filled with random cards.\n5. Sends the cards to the game. You cannot change cards after sending them!</string>
+    <string name="h_conveyor_belts">Conveyor belts</string>
+    <string name="h_gears">Gears</string>
+    <string name="h_repair">Repair</string>
+    <string name="h_holes">Holes</string>
+    <string name="h_dock">Dock</string>
+    <string name="h_laser">Laser</string>
+    <string name="laser">Lasers shoot at the same time as the robots shoot. They will draw 1 damage token from your robot if hit. You can be hit by multiple lasers at the same time.</string>
+    <string name="h_round">Round</string>
 
 </resources>
