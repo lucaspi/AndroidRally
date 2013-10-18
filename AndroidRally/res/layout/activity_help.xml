@@ -13,5 +13,61 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/help" />
+	
+	<TextView
+		android:id="@+id/generalGameIdea"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/general_game_idea" />
+	
+	<TextView
+		android:id="@+id/round"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/round" />
+	
+	<TextView
+		android:id="@+id/boardElements"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/board_elements" />
+	
+	<TextView
+		android:id="@+id/checkpoints"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/checkpoints" />
+	
+	<TextView
+		android:id="@+id/conveyorBelt"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/conveyor_belt" />
+	
+	<TextView
+		android:id="@+id/gears"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/gears" />
+	
+	<TextView
+		android:id="@+id/repair"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/repair" />
+	
+	<TextView
+		android:id="@+id/hole"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/hole" />
+	
+	<TextView
+		android:id="@+id/dock"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/dock" />
+	
+	
 
 </RelativeLayout>
