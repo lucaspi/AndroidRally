@@ -6,7 +6,6 @@ import java.util.List;
 import se.chalmers.dryleafsoftware.androidrally.IO.IOHandler;
 import se.chalmers.dryleafsoftware.androidrally.controller.GameController;
 import se.chalmers.dryleafsoftware.androidrally.game.GameSettings;
-import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.AnimationAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.CheckPointAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.ExplodeAction;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.actions.FallAction;
