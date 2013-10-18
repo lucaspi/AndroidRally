@@ -35,5 +35,7 @@
 	<string name="repair">This will repair your robot reducing the damage taken by one.</string>
 	<string name="hole">Do not walk into a hole, it will cause you to die which means that you lose a life and not be able to walk more that round.</string>
 	<string name="dock">This will be the starting position for the robot with the specific number.</string>
+	<string name="help_h1">General game idea</string>
+	<string name="help_h2_board_element">Board elements</string>
 
 </resources>
