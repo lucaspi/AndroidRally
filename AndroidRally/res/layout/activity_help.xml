@@ -93,7 +93,8 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/h_conveyor_belts" />
+                android:text="@string/h_conveyor_belts"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -113,7 +114,8 @@
                 android:id="@+id/textView14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/h_gears" />
+                android:text="@string/h_gears"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -133,7 +135,8 @@
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/h_repair" />
+                android:text="@string/h_repair"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -153,7 +156,8 @@
                 android:id="@+id/textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/h_holes" />
+                android:text="@string/h_holes"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -173,7 +177,8 @@
                 android:id="@+id/textView17"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/h_dock" />
+                android:text="@string/h_dock"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView10"
