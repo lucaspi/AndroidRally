@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="se.chalmers.dryleafsoftware.androidrally"
-	android:versionCode="1"
-	android:versionName="1.0" >
+	android:versionCode="2"
+	android:versionName="1.1" >
 
 	<uses-sdk
 		android:minSdkVersion="8"
@@ -15,7 +15,8 @@
 		android:theme="@style/AppTheme" >
 		<activity
 			android:name="se.chalmers.dryleafsoftware.androidrally.MainActivity"
-			android:label="@string/app_name" android:screenOrientation="portrait">
+			android:label="@string/app_name"
+			android:screenOrientation="portrait" >
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +31,13 @@
 		</activity>
 		<activity
 			android:name="se.chalmers.dryleafsoftware.androidrally.GameConfigurationActivity"
-			android:label="@string/title_activity_game_configuration" android:screenOrientation="portrait">
+			android:label="@string/title_activity_game_configuration"
+			android:screenOrientation="portrait" >
+		</activity>
+		<activity
+			android:name="se.chalmers.dryleafsoftware.androidrally.HelpActivity"
+			android:label="@string/title_activity_help" 
+			android:theme="@android:style/Theme.Dialog" >
 		</activity>
 	</application>
 

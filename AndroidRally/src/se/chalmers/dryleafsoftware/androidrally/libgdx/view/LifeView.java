@@ -15,6 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/**
+ * This class displays how many lives a robot has.
+ * 
+ * @author
+ * 
+ */
 public class LifeView extends Table implements PropertyChangeListener {
 
 	private final Image[] lifeIndicator = new Image[RobotView.MAX_LIVES];
@@ -33,8 +39,8 @@ public class LifeView extends Table implements PropertyChangeListener {
 	 */
 	public LifeView(Texture texture, RobotView playerData) {
 		super();
-		playerData.addListener(this);		
-		add(new Image(playerData.getDrawable())).maxSize(40, 40).left();		
+		playerData.addListener(this);
+		add(new Image(playerData.getDrawable())).maxSize(40, 40).left();
 		notLife = new TextureRegion(texture, 424, 14, 24, 24);
 		gotLife = new TextureRegion(texture, 400, 14, 24, 24);
 		for (int i = 0; i < lifeIndicator.length; i++) {
@@ -42,23 +48,22 @@ public class LifeView extends Table implements PropertyChangeListener {
 			add(lifeIndicator[i]);
 		}
 		setLives(playerData.getLives());
-		Label name = new Label(playerData.getName(), new LabelStyle(new BitmapFont(), Color.WHITE));
+		Label name = new Label(playerData.getName(), new LabelStyle(
+				new BitmapFont(), Color.WHITE));
 		name.setPosition(10, 0);
 		name.setWrap(true);
 		row();
 		add(name).left();
 	}
-	
+
 	private void setLives(int lives) {
 		for (int i = 0; i < lifeIndicator.length; i++) {
 			if (i < lives) {
-				lifeIndicator[lifeIndicator.length - 1 - i].
-				setDrawable(new TextureRegionDrawable(
-						gotLife));
+				lifeIndicator[lifeIndicator.length - 1 - i]
+						.setDrawable(new TextureRegionDrawable(gotLife));
 			} else {
-				lifeIndicator[lifeIndicator.length - 1 - i].
-				setDrawable(new TextureRegionDrawable(
-						notLife));
+				lifeIndicator[lifeIndicator.length - 1 - i]
+						.setDrawable(new TextureRegionDrawable(notLife));
 			}
 		}
 	}

@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 	private ListView gameListView;
 	private Client client;
 	private int[] games;
+	private PopupWindow popupWindow;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,24 +63,27 @@ public class MainActivity extends Activity {
 
 		});
 
-		// Deletes the selected game on longpress
+		// Deletes the selected game on longpress with a popup dialog
 		gameListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view,
 					final int position, long id) {
+				if (popupWindow != null) {
+					popupWindow.dismiss();
+				}
+				
 				LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
 						.getSystemService(LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.delete_popup, null);
 
-				final PopupWindow popupWindow = new PopupWindow(popupView,
+				popupWindow = new PopupWindow(popupView,
 						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-				Button deleteGame = (Button) popupView
-						.findViewById(R.id.yesButton);
+				Button deleteGame = (Button) popupView.findViewById(R.id.yesButton);
 				Button noButton = (Button) popupView.findViewById(R.id.noButton);
-				
+
 				deleteGame.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						client.deleteGame(games[position]);
@@ -87,21 +91,35 @@ public class MainActivity extends Activity {
 						refreshGamesList();
 					}
 				});
-				
+
 				noButton.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						popupWindow.dismiss();
 					}
 				});
-				
-				popupWindow.showAtLocation(findViewById(R.id.currentGames), Gravity.CENTER, 0, 0);
-				refreshGamesList();
+
+				popupWindow.showAtLocation(findViewById(R.id.currentGames),
+						Gravity.CENTER, 0, 0);
 				return true;
 			}
 
 		});
+		refreshGamesList();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (popupWindow != null) {
+			popupWindow.dismiss();
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 		refreshGamesList();
 	}
 
@@ -122,22 +140,8 @@ public class MainActivity extends Activity {
 			return true;
 
 		case R.id.action_help:
-			LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
-					.getSystemService(LAYOUT_INFLATER_SERVICE);
-			View popupView = layoutInflater.inflate(R.layout.help, null);
-
-			final PopupWindow popupWindow = new PopupWindow(popupView,
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-			Button closeHelp = (Button) popupView.findViewById(R.id.closeHelp);
-			closeHelp.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					popupWindow.dismiss();
-				}
-			});
-			popupWindow.showAtLocation(findViewById(R.id.action_help),
-					Gravity.CENTER, 0, 0);
+			Intent i = new Intent(getApplicationContext(), HelpActivity.class);
+			startActivity(i);
 			return true;
 
 		default:
@@ -146,10 +150,17 @@ public class MainActivity extends Activity {
 	}
 
 	private void refreshGamesList() {
+		if (popupWindow != null) {
+			popupWindow.dismiss();
+		}
 		games = client.getSavedGames();
 		String[] gameNames = new String[games.length];
 		for (int i = 0; i < gameNames.length; i++) {
-			gameNames[i] = "Game " + games[i];
+			if (games[i] < 0) {
+				gameNames[i] = "Single player game " + Math.abs(games[i]);
+			} else {
+				gameNames[i] = "Multiplayer game " + games[i];
+			}
 		}
 		ListAdapter gamesList = new ArrayAdapter<String>(
 				getApplicationContext(), android.R.layout.simple_list_item_1,
@@ -162,19 +173,31 @@ public class MainActivity extends Activity {
 	 * Starts the chosen game
 	 * 
 	 * @param view
+	 * @param gameID The ID of the game
 	 */
-	public void startChosenGame(View view, int gameID) {
+	protected void startChosenGame(View view, int gameID) {
 		Intent i = new Intent(getApplicationContext(), GameActivity.class);
 		i.putExtra("GAME_ID", gameID);
 		startActivity(i);
 	}
 
+	/**
+	 * Shows a toaster with a message
+	 * 
+	 * @param message
+	 *            the message to show
+	 */
 	public void showToaster(CharSequence message) {
 		Context context = getApplicationContext();
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		toast.show();
 	}
 
+	/**
+	 * Starts the activity with configuration of a new game
+	 * 
+	 * @param view
+	 */
 	public void startConfiguration(View view) {
 		Intent i = new Intent(getApplicationContext(),
 				GameConfigurationActivity.class);

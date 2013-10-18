@@ -16,21 +16,29 @@ public class Robot {
 	public static final int STARTING_HEALTH = 9;
 	public static final int STARTING_LIFE = 3;
 
-	private int positionX;
-	private int positionY;
-	private int robotDirection = GameBoard.NORTH;
 	private List<Card> cards;
 	private Card[] chosenCards;
-	private int damage = 0;
-	private int life = STARTING_LIFE;
+	private String lastRoundChosenCards;
+	private int robotDirection = GameBoard.NORTH;
+	private int positionX;
+	private int positionY;
 	private int spawnPointX;
 	private int spawnPointY;
 	private int checkpoint;
+	private int damage = 0;
+	private int life = STARTING_LIFE;
 	private boolean sentCards;
 	private boolean isDead;
 	private boolean hasLost;
-	private String lastRoundChosenCards;
 
+	/**
+	 * Creates a new robot with the specified starting position.
+	 * 
+	 * @param startX
+	 *            the starting position in the x-axis.
+	 * @param startY
+	 *            the starting position in the y-axis.
+	 */
 	public Robot(int startX, int startY) {
 		positionX = startX;
 		positionY = startY;
@@ -88,12 +96,22 @@ public class Robot {
 	 * @see Deck
 	 */
 	public void addCards(List<Card> cards) {
+		System.out.println("Cards: " + cards.size());
 		this.cards = cards;
+		int i = 0;
 		for (Card card : chosenCards) {
 			if (card != null) {
+				System.out.println("Chosencard: " + i + ", "
+						+ card.getPriority());
 				this.cards.add(card);
 			}
+			i++;
 		}
+		System.out.print("Robot cards:");
+		for (Card car : cards) {
+			System.out.print("," + car.getPriority());
+		}
+		System.out.println("");
 	}
 
 	/**
@@ -101,53 +119,42 @@ public class Robot {
 	 */
 	public List<Card> returnCards() {
 		List<Card> returnCards = new ArrayList<Card>();
-
 		returnCards.addAll(cards);
-
 		for (int i = 0; i < damage - 4; i++) {
 			returnCards.remove(chosenCards[4 - i]);
 		}
-
 		for (int i = 0; i < 5; i++) {
 			if (returnCards.contains(chosenCards[i])) {
 				chosenCards[i] = null;
 			}
 		}
-
 		cards.clear();
 		setSentCards(false);
-
 		return returnCards;
-	}
-
-	/**
-	 * Return how much health the robot have.
-	 * 
-	 * @return Starting health - damage
-	 */
-	public int getHealth() {
-		return STARTING_HEALTH - damage;
 	}
 
 	/**
 	 * Increase the damage with the value of the parameter.
 	 * <p>
-	 * Absolute value will be used so if damage
-	 * input is negative it will still damage the robot. Use repair(int repairAmount) instead for repairing.
-	 * @param damage the amount of damage
+	 * Absolute value will be used so if damage input is negative it will still
+	 * damage the robot. Use repair(int repairAmount) instead for repairing.
+	 * 
+	 * @param damage
+	 *            the amount of damage
 	 */
 	public void damage(int damage) {
 		this.damage += Math.abs(damage);
 	}
 
 	/**
-	 * Called when damage is higher than starting health.
-	 * Decreases life with repairAmount
-	 * and set damage to one less.
+	 * Called when damage is higher than starting health. Decreases life with
+	 * repairAmount and set damage to one less.
 	 * <p>
-	 * Absolute value will be used so if repairAmount
-	 * input is negative it will still repair the robot. Use damage(int damage) instead for damaging robot.
-	 * @param repairAmount 
+	 * Absolute value will be used so if repairAmount input is negative it will
+	 * still repair the robot. Use damage(int damage) instead for damaging
+	 * robot.
+	 * 
+	 * @param repairAmount
 	 */
 	public void repair(int repairAmount) {
 		if (this.damage > 0) {
@@ -157,10 +164,10 @@ public class Robot {
 			}
 		}
 	}
-	
+
 	/**
-	 *  Decreases life with 1 and sets damage to 0.
-	 *  Sets hasLost to true if life equals 0.
+	 * Decreases life with 1 and sets damage to 0. Sets hasLost to true if life
+	 * equals 0.
 	 */
 	public void die() {
 		life--;
@@ -178,6 +185,127 @@ public class Robot {
 	public void newSpawnPoint() {
 		spawnPointX = positionX;
 		spawnPointY = positionY;
+	}
+
+	/**
+	 * If a robot hasn't chosen all cards, the empty spots (registers) will be
+	 * randomized.
+	 */
+	public void fillEmptyCardRegisters() {
+		if (!hasLost) { // locked cards shouldn't be able to be randomized
+			Random random = new Random();
+			List<Card> tempCards = new ArrayList<Card>();
+			tempCards.addAll(cards);
+			for (int i = 0; i < 5; i++) {
+				tempCards.remove(chosenCards[i]);
+			}
+			for (int i = 0; i < 5; i++) {
+				if (this.chosenCards[i] == null) {
+					this.chosenCards[i] = tempCards.remove(random
+							.nextInt(tempCards.size()));
+				}
+			}
+		}
+	}
+
+	/**
+	 * If the next checkpoint is reached the "next checkpoint" value will be
+	 * increased with 1. Damage will decrease with 1 and newSpawnPoint() will be
+	 * called so that the robot spawns at the specific checkpoint if it dies
+	 * (die() is called). Decreases damage with 1.
+	 * 
+	 * @param checkpoint
+	 */
+	public void reachCheckPoint(int checkpoint) {
+		if (checkpoint == this.checkpoint + 1) {
+			this.checkpoint++;
+			newSpawnPoint();
+			repair(1);
+		}
+	}
+
+	/**
+	 * Return how much health the robot have.
+	 * 
+	 * @return Starting health - damage
+	 */
+	public int getHealth() {
+		return STARTING_HEALTH - damage;
+	}
+
+	/**
+	 * Return the last checkpoint the robot reached.
+	 * 
+	 * @return the last checkpoint the robot reached.
+	 */
+	public int getLastCheckPoint() {
+		return checkpoint;
+	}
+
+	/**
+	 * Return the postion in the x-axis with a two digit number. ints < 10 will
+	 * be have a 0 in front.
+	 * 
+	 * @return the postion in the y-axis with a two digit number.
+	 */
+	public String getXAsString() {
+		if (positionX >= 10 || positionX < 0) {
+			return positionX + "";
+		} else {
+			return "0" + positionX;
+		}
+	}
+
+	/**
+	 * Return the postion in the y-axis with a two digit number. ints < 10 will
+	 * be have a 0 in front.
+	 * 
+	 * @return the postion in the y-axis with a two digit number.
+	 */
+	public String getYAsString() {
+		if (positionY >= 10 || positionY < 0) {
+			return positionY + "";
+		} else {
+			return "0" + positionY;
+		}
+	}
+
+	/**
+	 * Return the robot's position in the x-axis.
+	 * 
+	 * @return the robot's position in the x-axis.
+	 */
+	public int getX() {
+		return positionX;
+	}
+
+	/**
+	 * Set the robot's position in the x-axis.
+	 * 
+	 * @param x
+	 *            the robot's position in the x-axis.
+	 */
+	public void setX(int x) {
+		positionX = x;
+	}
+
+	/**
+	 * Return the robot's position in the y-axis.
+	 * 
+	 * @return the robot's position in the y-axis.
+	 */
+	public int getY() {
+		return positionY;
+	}
+
+	/**
+	 * Set the robot's position in the y-axis.
+	 * 
+	 * @param y
+	 *            the robot's position in the y-axis.
+	 */
+	public void setY(int y) {
+		positionY = y;
 	}
 
 	/**
@@ -199,66 +327,28 @@ public class Robot {
 	}
 
 	/**
-	 * If the next checkpoint is reached the "next checkpoint" value will be
-	 * increased with 1. Damage will decrease with 1 and newSpawnPoint() will be
-	 * called so that the robot spawns at the specific checkpoint if it dies
-	 * (die() is called).
-	 * Decreases damage with 1.
+	 * Return the direction of the robot.
 	 * 
-	 * @param checkpoint
+	 * @return the direction of the robot.
 	 */
-	public void reachCheckPoint(int checkpoint) {
-		if (checkpoint == this.checkpoint + 1) {
-			this.checkpoint++;
-			newSpawnPoint();
-			repair(1);
-		}
-	}
-
-	public int getLastCheckPoint() {
-		return checkpoint;
-	}
-
-	public int getX() {
-		return positionX;
-	}
-
-	public int getY() {
-		return positionY;
-	}
-
-	public String getXAsString() {
-		if (positionX >= 10 || positionX < 0) {
-			return positionX + "";
-		} else {
-			return "0" + positionX;
-		}
-	}
-
-	public String getYAsString() {
-		if (positionY >= 10 || positionY < 0) {
-			return positionY + "";
-		} else {
-			return "0" + positionY;
-		}
-	}
-
-	public void setX(int x) {
-		positionX = x;
-	}
-
-	public void setY(int y) {
-		positionY = y;
-	}
-
 	public int getDirection() {
 		return robotDirection;
 	}
 
+	/**
+	 * Return the amount of lives remaining.
+	 * 
+	 * @return the amount of lives remaining.
+	 */
 	public int getLife() {
 		return life;
 	}
 
+	/**
+	 * Return the chosen cards.
+	 * 
+	 * @return the chosen cards. The length is 5.
+	 */
 	public Card[] getChosenCards() {
 		return chosenCards;
 	}
@@ -274,27 +364,23 @@ public class Robot {
 	 *            chosen
 	 */
 	public void setChosenCards(List<Card> chosenCards) {
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < Math.min(5, chosenCards.size()); i++) {
 			if (this.chosenCards[i] == null) {
+				System.out.println("Setting chosencard "
+						+ i
+						+ ", prio:"
+						+ (chosenCards.get(i) == null ? "-1" : chosenCards.get(
+								i).getPriority()));
 				this.chosenCards[i] = chosenCards.get(i);
 			}
 		}
 	}
 
-	public void fillEmptyCardRegisters() {
-		if (!hasLost) { // locked cards shouldn't be able to be randomized
-			Random random = new Random();
-			List<Card> tempCards = new ArrayList<Card>();
-			tempCards.addAll(cards);
-			for (int i = 0; i < 5; i++) {
-				if (this.chosenCards[i] == null) {
-					this.chosenCards[i] = tempCards.remove(random
-							.nextInt(tempCards.size()));
-				}
-			}
-		}
-	}
-
+	/**
+	 * Return all cards the robot got.
+	 * 
+	 * @return all cards the robot got.
+	 */
 	public List<Card> getCards() {
 		return cards;
 	}
@@ -309,10 +395,21 @@ public class Robot {
 		return sentCards;
 	}
 
+	/**
+	 * Set whether the robot has decided cards the current round.
+	 * 
+	 * @param sentCards
+	 *            whether the robot has decided cards the current round.
+	 */
 	public void setSentCards(boolean sentCards) {
 		this.sentCards = sentCards;
 	}
 
+	/**
+	 * Return whether the robot is dead at the moment.
+	 * 
+	 * @return whether the robot is dead at the moment.
+	 */
 	public boolean isDead() {
 		return isDead;
 	}
@@ -329,11 +426,11 @@ public class Robot {
 		this.hasLost = hasLost;
 	}
 
-	public void setLastChosenCards(String cards) {
-		this.lastRoundChosenCards = cards;
-	}
-
 	public String getLastRoundChosenCards() {
 		return lastRoundChosenCards;
+	}
+
+	public void setLastRoundChosenCards(String cards) {
+		this.lastRoundChosenCards = cards;
 	}
 }

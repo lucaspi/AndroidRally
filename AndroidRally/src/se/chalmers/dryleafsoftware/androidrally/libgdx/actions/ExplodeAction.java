@@ -12,23 +12,26 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 /**
  * Action for when a robot dies.
  * 
- * @author 
- *
+ * @author
+ * 
  */
 public class ExplodeAction extends AnimationAction {
 
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
-	 * @param robotID The ID of the robot to handle.
+	 * 
+	 * @param robotID
+	 *            The ID of the robot to handle.
 	 */
 	public ExplodeAction(int robotID, Texture texture) {
-		super(robotID, 1000, new AnimatedImage(texture, 4, 2, 1000));
+		super(robotID, 1000, new AnimatedImage(texture, 4, 2));
 	}
 
 	@Override
 	public void action(List<RobotView> robots, MapBuilder map) {
 		super.action(robots, map);
-		robots.get(getRobotID()).addAction(Actions.fadeOut(getDuration() / 1000f));
+		robots.get(getRobotID()).addAction(
+				Actions.fadeOut(getDuration() / 1000f));
 	}
 
 	@Override

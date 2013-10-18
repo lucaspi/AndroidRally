@@ -26,36 +26,16 @@ public class GameBoard {
 	public static final int SOUTH = 2;
 	public static final int NORTH = 0;
 
-	private static final int
-		TILE_HOLE = 1,
-		TILE_CHECKPOINT = 2,
-		TILE_CONVEYORBELT = 3,
-		TILE_GEARS = 4,
-		TILE_REPAIR = 5,
-		TILE_WALL = 6,
-		TILE_LASER = 7,
-		TILE_START = 8;
+	private static final int TILE_HOLE = 1, TILE_CHECKPOINT = 2,
+			TILE_CONVEYORBELT = 3, TILE_GEARS = 4, TILE_REPAIR = 5,
+			TILE_WALL = 6, TILE_LASER = 7, TILE_START = 8;
 
 	/**
 	 * Creates a new gameBoard from a String[][].
 	 * <p>
-	 * Hole = 1
-	 * <br>
-	 * CheckPoint = (nr)2
-	 * <br>
-	 * ConveyorBelt = (nbrOfSteps)(GameBoard.staticfinal)3
-	 * <br>
-	 * Gear = 4 -> left, 14 -> right
-	 * <br>
-	 * Repair = 5
-	 * <br>
-	 * Wall = (GameBoard.staticFinal)6
-	 * <br>
-	 * Laser = (GameBoard.staticFinal)7
-	 * <br>
-	 * : between different elements on the same tile
-	 *  
-	 * @param map the String[][] which will be converted to a gameBoard.
+	 * See separate develop document for protocol
+	 * @param map
+	 *            the String[][] which will be converted to a gameBoard.
 	 */
 	public GameBoard(String map) {
 		nbrOfCheckPoints = 0;
@@ -65,110 +45,65 @@ public class GameBoard {
 		createBoard(map);
 		this.map = map;
 	}
-
-	/**
-	 * Returns a specific tile. (0, 0) being the tile in the top left corner.
-	 * @param x the tile's position on the x-axis.
-	 * @param y the tile's position on the y-axis.
-	 * @return the specified tile.
-	 */
-	public Tile getTile(int x, int y){
-		return tiles[x][y];
-	}
-
-	public int getWidth(){
-		return tiles.length;
-	}
-
-	public int getHeight(){
-		return tiles[0].length;
-	}
-
-	/**
-	 * Returns a matrix containing all startingPositions for the map.
-	 * [i][0] will provide the x value for starting position i and [i][1]
-	 * will provide the y value.
-	 * @return a matrix containing all startingPositions for the map.
-	 */
-	public int[][] getStartingPositions(){
-		return startingPosition;
-	}
-
-	/**
-	 * Returns a list of all lasers on the gameBoard.
-	 * @return a list of all lasers on the gameBoard.
-	 */
-	public List<Laser> getLasers(){
-		return lasers;
-	}
-
-	/**
-	 * Return a String[][] representation of the map.
-	 * 
-	 * Hole = 1
-	 * CheckPoint = (nr)2
-	 * ConveyorBelt = (GameBoard.staticfinal)3
-	 * Gear = 4 -> left, 14 -> right
-	 * Repair = 5
-	 * Wall = (GameBoard.staticFinal)6
-	 * Laser = (GameBoard.staticFinal)7
-	 * 
-	 *  : between different elements on the same tile
-	 *  
-	 * 
-	 * @return a String[][] representation of the map.
-	 */
-	public String getMapAsString(){
-		return map;
-	}
-
-
+	
 	/**
 	 * Builds the board using the specified map data.
-	 * @param map An array of integers mapping the map's layout.
+	 * 
+	 * @param map
+	 *            An array of integers mapping the map's layout.
 	 */
 	private void createBoard(String indata) {
 		String[] mapY = indata.substring(1).split("y");
 		String[][] map = new String[mapY.length][];
-		for(int i = 0; i < map.length; i++) {
+		for (int i = 0; i < map.length; i++) {
 			map[i] = mapY[i].substring(1).split("x", 64);
 		}
 
 		tiles = new Tile[map.length][map[0].length];
-		//Tiles need to created first or nullPointException will occur during wall creations
-		for(int x = 0; x < map.length; x++) {
-			for(int y = 0; y < map[0].length; y++) {
+		// Tiles need to created first or nullPointException will occur during
+		// wall creations
+		for (int x = 0; x < map.length; x++) {
+			for (int y = 0; y < map[0].length; y++) {
 				tiles[x][y] = new Tile();
 			}
 		}
 
-		for(int x = 0; x < map.length; x++) {
-			for(int y = 0; y < map[0].length; y++) {	
+		for (int x = 0; x < map.length; x++) {
+			for (int y = 0; y < map[0].length; y++) {
 				// Add all the elements to the tile
-				if(!map[x][y].equals("")) {
-					for(String elementData : map[x][y].split(":")) {
+				if (!map[x][y].equals("")) {
+					for (String elementData : map[x][y].split(":")) {
 						int tileData = Integer.parseInt(elementData);
 						// Create the boardelement
 						int tile = tileData % 10;
-						if(tile == TILE_HOLE) {
+						if (tile == TILE_HOLE) {
 							tiles[x][y].addBoardElement(new Hole());
-						}else if(tile == TILE_GEARS) {
-							tiles[x][y].addBoardElement(new Gears(!(tileData / 10 == 0)));
-						}else if(tile == TILE_CONVEYORBELT) {
-							longestConveyorBelt = Math.max(longestConveyorBelt, tileData / 100);
-							tiles[x][y].addBoardElement(new ConveyorBelt(tileData / 100, ((tileData / 10)%10)));
-						}else if(tile == TILE_CHECKPOINT) {
-							tiles[x][y].addBoardElement(new CheckPoint(tileData / 10));
-							checkPoints.put(tileData/10, new int[]{x,y});
+						} else if (tile == TILE_GEARS) {
+							tiles[x][y].addBoardElement(new Gears(
+									!(tileData / 10 == 0)));
+						} else if (tile == TILE_CONVEYORBELT) {
+							longestConveyorBelt = Math.max(longestConveyorBelt,
+									tileData / 100);
+							tiles[x][y].addBoardElement(new ConveyorBelt(
+									tileData / 100, ((tileData / 10) % 10)));
+						} else if (tile == TILE_CHECKPOINT) {
+							tiles[x][y].addBoardElement(new CheckPoint(
+									tileData / 10));
+							checkPoints.put(tileData / 10, new int[] { x, y });
 							nbrOfCheckPoints++;
-						}else if(tile == TILE_REPAIR) {
+						} else if (tile == TILE_REPAIR) {
 							tiles[x][y].addBoardElement(new Wrench(1));
-						}else if(tile == TILE_WALL || tile == TILE_LASER) {
+						} else if (tile == TILE_WALL || tile == TILE_LASER) {
 							setWallOnTile(tileData / 10, x, y);
-							if(tile == TILE_LASER){
-								lasers.add(new Laser(x, y, ((tileData / 10) + 2) % 4)); //set direction of laser correct
+							if (tile == TILE_LASER) {
+								lasers.add(new Laser(x, y,
+										((tileData / 10) + 2) % 4)); // set
+																		// direction
+																		// of
+																		// laser
+																		// correct
 							}
-						}else if(tile == TILE_START){
+						} else if (tile == TILE_START) {
 							startingPosition[tileData / 10 - 1][0] = x;
 							startingPosition[tileData / 10 - 1][1] = y;
 							nbrOfPlayers++;
@@ -181,37 +116,97 @@ public class GameBoard {
 
 	/**
 	 * Sets a wall on a tile given by a coordinate position
-	 * @param wall GameBoard.[DIRECTION]
-	 * @param x coordinate on x-axis
-	 * @param y coordinate on y-axis
+	 * 
+	 * @param wall
+	 *            GameBoard.[DIRECTION]
+	 * @param x
+	 *            coordinate on x-axis
+	 * @param y
+	 *            coordinate on y-axis
 	 */
-	private void setWallOnTile(int wall, int x, int y){
+	private void setWallOnTile(int wall, int x, int y) {
 		tiles[x][y].setWall(wall);
-		switch (wall){
+		switch (wall) {
 		case GameBoard.NORTH:
-			if(y-1>0){
-				tiles[x][y-1].setWall(GameBoard.SOUTH);
+			if (y - 1 > 0) {
+				tiles[x][y - 1].setWall(GameBoard.SOUTH);
 			}
 			break;
 		case GameBoard.EAST:
-			if(x+1<getWidth()){
-				tiles[x+1][y].setWall(GameBoard.WEST);
+			if (x + 1 < getWidth()) {
+				tiles[x + 1][y].setWall(GameBoard.WEST);
 			}
 			break;
 		case GameBoard.SOUTH:
-			if(y+1<getHeight()){
-				tiles[x][y+1].setWall(GameBoard.NORTH);
+			if (y + 1 < getHeight()) {
+				tiles[x][y + 1].setWall(GameBoard.NORTH);
 			}
 			break;
 		case GameBoard.WEST:
-			if(x-1>0){
-				tiles[x-1][y].setWall(GameBoard.EAST);	
+			if (x - 1 > 0) {
+				tiles[x - 1][y].setWall(GameBoard.EAST);
 			}
 			break;
 		}
 	}
 
-	public int getMaxConveyorBeltDistance(){
+	/**
+	 * Returns a specific tile. (0, 0) being the tile in the top left corner.
+	 * 
+	 * @param x
+	 *            the tile's position on the x-axis.
+	 * @param y
+	 *            the tile's position on the y-axis.
+	 * @return the specified tile.
+	 */
+	public Tile getTile(int x, int y) {
+		return tiles[x][y];
+	}
+
+	public int getWidth() {
+		return tiles.length;
+	}
+
+	public int getHeight() {
+		return tiles[0].length;
+	}
+
+	/**
+	 * Returns a matrix containing all startingPositions for the map. [i][0]
+	 * will provide the x value for starting position i and [i][1] will provide
+	 * the y value.
+	 * 
+	 * @return a matrix containing all startingPositions for the map.
+	 */
+	public int[][] getStartingPositions() {
+		return startingPosition;
+	}
+
+	/**
+	 * Returns a list of all lasers on the gameBoard.
+	 * 
+	 * @return a list of all lasers on the gameBoard.
+	 */
+	public List<Laser> getLasers() {
+		return lasers;
+	}
+
+	/**
+	 * Return a String[][] representation of the map.
+	 * 
+	 * <P>See separate developer document for protocol
+	 * 
+	 * @return a String[][] representation of the map.
+	 */
+	public String getMapAsString() {
+		return map;
+	}
+
+	/**
+	 * Return the longest distance of the all conveyor belts on the gameboard.
+	 * @return
+	 */
+	public int getMaxConveyorBeltDistance() {
 		return longestConveyorBelt;
 	}
 
@@ -219,6 +214,12 @@ public class GameBoard {
 		return nbrOfCheckPoints;
 	}
 
+	/**
+	 * Return the all checkpoints and their position. A map with all checkpoints
+	 * and their position. The array got the length 2. int[0] = positionX, 
+	 * int[1] = positionY.
+	 * @return
+	 */
 	public Map<Integer, int[]> getCheckPoints() {
 		return checkPoints;
 	}
