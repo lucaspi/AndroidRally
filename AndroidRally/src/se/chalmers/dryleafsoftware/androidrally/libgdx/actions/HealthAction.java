@@ -19,8 +19,8 @@ public class HealthAction extends GameAction {
 	public static final int DECREASE_ONE = -2;
 	public static final int INCREASE_ONE = -3;
 	private final AnimationAction hitAnim;
-	private int newDamage;
-	private int newLive;
+	private int newDamage = -1;
+	private int newLive = -1;
 
 	/**
 	 * Creates a new instance which will handle the robot with the specified ID.
@@ -42,11 +42,7 @@ public class HealthAction extends GameAction {
 		this.hitAnim = new AnimationAction(robotID, damage, animation);
 	}
 
-	@Override
-	public void action(List<RobotView> robots, MapBuilder map) {
-		start();
-		RobotView robot = robots.get(getRobotID());
-		int oldDamage = robot.getDamage();
+	private void changeHealth(RobotView robot) {
 		if (damage != UNCHANGED) {
 			if (damage == INCREASE_ONE) {
 				newDamage = robot.getDamage() + 1;
@@ -65,6 +61,14 @@ public class HealthAction extends GameAction {
 				newLive = lives;
 			}
 		}
+	}
+
+	@Override
+	public void action(List<RobotView> robots, MapBuilder map) {
+		start();
+		RobotView robot = robots.get(getRobotID());
+		int oldDamage = robot.getDamage();
+		changeHealth(robot);
 		if (oldDamage < newDamage) {
 			hitAnim.setDuration(getDuration());
 			hitAnim.action(robots, map);
@@ -74,6 +78,9 @@ public class HealthAction extends GameAction {
 	@Override
 	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		RobotView robot = robots.get(getRobotID());
+		if (newDamage == -1 && newLive == -1) {
+			changeHealth(robot);
+		}
 		robot.setDamage(newDamage);
 		robot.setLives(newLive);
 		if (robots.get(getRobotID()).getLives() == 0) {
