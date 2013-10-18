@@ -36,8 +36,6 @@ public class GameController implements PropertyChangeListener {
 	private List<String[]> allCards;
 	private int cardTimerSeconds;
 	private Date endOfRoundDate;
-
-	private static final String testMap = "yxxxxxxxxx36:37xxxx06xxxyxxxxxxx133xx113xxxxx78x16xyxxx12xxxx133x5x113xxx32xxx58:16xyx5x103x103x103xxx133xx113xxxxxx38:16xyxxxxx06:07xxxxxxxx06xx16xyxxxxx06x5x123x123x123x123x123x4xxx18:16xyxxxx27x06xxxxxxxxxx28:16xyx123x123x123x123x06:07xxxxxxxx06xx16xyxxxxxx5x203x203x203x203x203x203xxx48:16xyxxx42xxx14x123x123x123x123x123x14xxx68:16xyxx5xxxx22x1xxxxxxx88xxyxxxxxxxxxxxx5x46xxx";
 	
 	/**
 	 * Creates a new GameController.
@@ -67,7 +65,7 @@ public class GameController implements PropertyChangeListener {
 		}
 		isRunRunning = false;
 		gameModel = new GameModel(this.nbrOfHumanPlayers + this.nbrOfBots,
-				testMap);
+				map);
 		this.nbrOfRobots = gameModel.getRobots().size();
 		allMoves = new ArrayList<String>();
 		allCards = new ArrayList<String[]>();
