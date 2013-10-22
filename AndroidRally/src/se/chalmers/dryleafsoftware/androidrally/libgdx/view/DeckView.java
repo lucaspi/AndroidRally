@@ -243,7 +243,8 @@ public class DeckView extends Stage {
 		statusBar.add(statusCenter);
 		LabelStyle lStyle = new LabelStyle();
 		lStyle.font = new BitmapFont();
-		timerLabel = new Label("", lStyle);
+		timerLabel = new Label("00:00:00", lStyle);
+		timerLabel.setVisible(false);
 		statusCenter.add(timerLabel);
 		statusCenter.row();
 

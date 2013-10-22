@@ -102,12 +102,19 @@ public class MainActivity extends Activity {
 
 				popupWindow.showAtLocation(findViewById(R.id.currentGames),
 						Gravity.CENTER, 0, 0);
-				refreshGamesList();
 				return true;
 			}
 
 		});
 		refreshGamesList();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (popupWindow != null) {
+			popupWindow.dismiss();
+		}
 	}
 
 	@Override
@@ -143,6 +150,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void refreshGamesList() {
+		if (popupWindow != null) {
+			popupWindow.dismiss();
+		}
 		games = client.getSavedGames();
 		String[] gameNames = new String[games.length];
 		for (int i = 0; i < gameNames.length; i++) {

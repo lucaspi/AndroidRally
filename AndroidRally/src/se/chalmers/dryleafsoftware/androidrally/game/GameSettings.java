@@ -1,5 +1,7 @@
 package se.chalmers.dryleafsoftware.androidrally.game;
 
+import java.util.Random;
+
 public class GameSettings {
 
 	public final static int DEFAULT_HUMAN_PLAYERS = 1;
@@ -7,12 +9,12 @@ public class GameSettings {
 	public final static int DEFAULT_HOURS_ROUND = 24;
 	public final static int DEFAULT_CARD_SECOND = 45;
 
-	private int nbr_of_human_players = DEFAULT_HUMAN_PLAYERS;
-	private int nbr_of_bots = DEFAULT_BOTS;
-	private int hours_each_round = DEFAULT_HOURS_ROUND;
-	private int card_timer_seconds = DEFAULT_CARD_SECOND;
+	private int nbrOfHumanPlayers = DEFAULT_HUMAN_PLAYERS;
+	private int nbrOfBots = DEFAULT_BOTS;
+	private int hoursEachRound = DEFAULT_HOURS_ROUND;
+	private int cardTimerSeconds = DEFAULT_CARD_SECOND;
 
-	public static final String DEFAULT_MAP = null;
+	public static final String DEFAULT_MAP = "yxxxxxxxxx36:37xxxx06xxxyxxxxxxx133xx113xxxxx78x16xyxxx12xxxx133x5x113xxx32xxx58:16xyx5x103x103x103xxx133xx113xxxxxx38:16xyxxxxx06:07xxxxxxxx06xx16xyxxxxx06x5x123x123x123x123x123x4xxx18:16xyxxxx27x06xxxxxxxxxx28:16xyx123x123x123x123x06:07xxxxxxxx06xx16xyxxxxxx5x203x203x203x203x203x203xxx48:16xyxxx42xxx14x123x123x123x123x123x14xxx68:16xyxx5xxxx22x1xxxxxxx88xxyxxxxxxxxxxxx5x46xxx";
 	private String map = DEFAULT_MAP;
 
 	/**
@@ -70,31 +72,50 @@ public class GameSettings {
 	 */
 	public GameSettings(int humanPlayer, int bots, int hoursEachRound,
 			int cardTimeSeconds, String map) {
-		this.nbr_of_human_players = humanPlayer;
-		this.nbr_of_bots = bots;
-		this.hours_each_round = hoursEachRound;
-		this.card_timer_seconds = cardTimeSeconds;
+		this.nbrOfHumanPlayers = humanPlayer;
+		this.nbrOfBots = bots;
+		this.hoursEachRound = hoursEachRound;
+		this.cardTimerSeconds = cardTimeSeconds;
 		this.map = map;
 	}
 
 	public int getNbrOfHumanPlayers() {
-		return this.nbr_of_human_players;
+		return this.nbrOfHumanPlayers;
 	}
 
 	public int getNbrOfBots() {
-		return this.nbr_of_bots;
+		return this.nbrOfBots;
 	}
 
 	public int getHoursEachRound() {
-		return this.hours_each_round;
+		return this.hoursEachRound;
 	}
 
 	public int getCardTimerSeconds() {
-		return this.card_timer_seconds;
+		return this.cardTimerSeconds;
 	}
 
 	public String getMap() {
 		return this.map;
+	}
+	
+	/**
+	 * Gives a random map.
+	 * @return a random map
+	 */
+	public String getRandomMap() {
+		Random random = new Random();
+		int i = random.nextInt(2);
+		
+		switch (i) {
+		case 0:
+			map = DEFAULT_MAP;
+			break;
+		case 1:
+			map = "yxxxxxxx213xxxx16xxx16xxyxx12xxxx16x213xxxx37x26xx78x16xyxxxxxxx213xxx32xxxxx58:16xyxxxx26xxx213xxxx16x26xxx38xyxx1x1xx06xx14x223x223x223x223x223xxx16xyxx26xx26xxxxxxxxxxx18:16xyxxxx26xxxxxxxxxxx28:16xyxx26xx26xxx5x103x103x103x103x103xxxxyxx26xx26x07xx113xxxx36x26xxx48:16xyxxxxxx16x113xxx22xxxxx68:16xyxx5xxxxx113xxxx16:17x26xx88:16xxyxxxxxxx113xxxxxxxxx";
+			break;
+		}
+		return map;
 	}
 
 }

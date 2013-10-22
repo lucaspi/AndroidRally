@@ -72,7 +72,7 @@ public class Client {
 		resetGameValues();
 		this.controller = new GameController(settings.getNbrOfHumanPlayers(),
 				settings.getNbrOfBots(), settings.getHoursEachRound(),
-				settings.getCardTimerSeconds(), settings.getMap());
+				settings.getCardTimerSeconds(), settings.getRandomMap());
 		controller.newRound();
 	}
 
