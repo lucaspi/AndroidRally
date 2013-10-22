@@ -4,22 +4,19 @@ import se.chalmers.dryleafsoftware.androidrally.shared.ACOperator;
 
 public class Operator extends ACOperator{
 
-	@Override
-	protected void doSomething() {
-		// TODO Auto-generated method stub
-		
+	public Operator(Client client) {
+		super(client);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	protected void doSomethingElse() {
-		// TODO Auto-generated method stub
-		
+	protected void verifyClientID(String data, String route) {
+		getClient().setID(data);
 	}
 
 	@Override
-	protected void verifyClientID(String data) {
-		// TODO Auto-generated method stub
-		
+	protected void generateNewGame(String data, String route) {
+		((Client) getClient()).setGameID(data);
 	}
 
 }

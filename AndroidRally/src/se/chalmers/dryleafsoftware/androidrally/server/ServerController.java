@@ -1,11 +1,7 @@
-package se.chalmers.dryleafsoftware.androidrally.server.controller;
+package se.chalmers.dryleafsoftware.androidrally.server;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import se.chalmers.dryleafsoftware.androidrally.server.Game;
-import se.chalmers.dryleafsoftware.androidrally.server.network.DataHandler;
-import se.chalmers.dryleafsoftware.androidrally.server.network.ServerListener;
 
 /**
  * This is the controller that manages all the functionality of the server.
@@ -17,7 +13,7 @@ public class ServerController {
 	private ServerListener serverListener;
 	
 	public ServerController(){
-		serverListener = new ServerListener(new DataHandler(games));
+		serverListener = new ServerListener(games);
 		serverListener.start();
 		
 	}
@@ -26,9 +22,6 @@ public class ServerController {
 	private ArrayList<Game> loadGames() {
 		// TODO Should load all games from file
 		return new ArrayList<Game>();
-	}
-	public List<Game> getGames(){
-		return games;
 	}
 	
 }

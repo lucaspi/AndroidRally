@@ -1,6 +1,11 @@
 package se.chalmers.dryleafsoftware.androidrally.shared;
 
 public abstract class ACOperator {
+	private ACClient client;	
+	
+	public ACOperator(ACClient c) {
+		this.client = c;
+	}
 	
 	public void interpret(String data){
 		int newOperator = parseIntToFirst(data, '$');
@@ -13,16 +18,16 @@ public abstract class ACOperator {
 		String newData = substractData(data, '$');
 		switch (operator){
 			case 1:{
-				client(newOperator, newData);
+				client(newOperator, newData, operator +"$");
 				break;
 			} case 2:{
-				game(newOperator, newData);
+				game(newOperator, newData, operator +"$");
 			} default:{
 				break;
 			}
 		}
 	}
-	private void game(int operator, String data) {
+	private void game(int operator, String data, String route) {
 		int newOperator = parseIntToFirst(data, '$');
 		String newData = substractData(data, '$');
 		
@@ -39,12 +44,12 @@ public abstract class ACOperator {
 		// TODO Auto-generated method stub
 		
 	}
-	private void client(int operator, String data) {
+	private void client(int operator, String data, String route) {
 		int newOperator = parseIntToFirst(data, '$');
 		String newData = substractData(data, '$');
 		switch (operator){
 			case 1:{
-				verifyClientID(data);
+				verifyClientID(data, route + operator + "$");
 				break;
 			} case 2:{
 				//TODO
@@ -56,7 +61,9 @@ public abstract class ACOperator {
 		
 	}
 
-	protected abstract void verifyClientID(String data);
+	protected abstract void verifyClientID(String data, String route);
+	
+	protected abstract void generateNewGame(String data, String route); //TODO använd
 	
 	
 	
@@ -90,5 +97,11 @@ public abstract class ACOperator {
 		return s;
 		
 	}
+
+	public ACClient getClient() {
+		return client;
+	}
+
+
 
 }

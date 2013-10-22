@@ -1,21 +1,27 @@
 package se.chalmers.dryleafsoftware.androidrally.server;
 
-import se.chalmers.dryleafsoftware.androidrally.shared.IConnection;
+import java.util.List;
 
-public class Operator {
-	public void handle(Game game, String operatorString, String data){
-		int operator = Integer.parseInt(operatorString);
-		switch (operator){
-			case 1: {
-				break;
-			} default : {
-				break;
-			}
-		}
+import se.chalmers.dryleafsoftware.androidrally.shared.ACOperator;
+
+public class Operator extends ACOperator {
+	private List<Game> games = null;
+	
+	public Operator(Client c, List<Game> games) {
+		super(c);
+		this.games = games;
+		// TODO Auto-generated constructor stub
 	}
 
-	public static void handle(IConnection connection, String clientID,
-			Game game, String substring) {
+	@Override
+	protected void verifyClientID(String data, String route) {
+		
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void generateNewGame(String data, String route) {
 		// TODO Auto-generated method stub
 		
 	}

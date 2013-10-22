@@ -5,7 +5,6 @@ import se.chalmers.dryleafsoftware.androidrally.model.robots.Robot;
 /**
  * Turn extends the class Card.
  * {@inheritDoc}
-
  */
 public class Turn extends Card {
 	private TurnType turnType;
@@ -13,7 +12,7 @@ public class Turn extends Card {
 	/**
 	 * Creates an instance of Turn.
 	 * @param priority the priority of the card
-	 * @param turnType an enum value from the enum TurnType
+	 * @param turnType a value from enum TurnType
  	 * @see TurnType
 	 */
 	public Turn(int priority, TurnType turnType) {

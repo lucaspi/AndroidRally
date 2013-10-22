@@ -5,21 +5,25 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 /**
  * This will render a gear, a board element which rotates robots.
  * 
- * @author 
- *
+ * @author
+ * 
  */
 public class GearsView extends AnimatedElement {
 
 	private int direction = -1;
-	
+
 	/**
 	 * Creates a new gear which will rotate in the specified direction.
-	 * @param texture The texture to use.
-	 * @param clockWise Set to <code>true</code> if the gears should rotate clockwise (right).
+	 * 
+	 * @param texture
+	 *            The texture to use.
+	 * @param clockWise
+	 *            Set to <code>true</code> if the gears should rotate clockwise
+	 *            (right).
 	 */
 	public GearsView(TextureRegion texture, boolean clockWise) {
-		super(texture);	
-		if(!clockWise) {
+		super(texture);
+		if (!clockWise) {
 			texture.flip(true, false);
 			direction *= -1;
 		}

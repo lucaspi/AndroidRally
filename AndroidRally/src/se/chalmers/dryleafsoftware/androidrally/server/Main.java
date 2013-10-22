@@ -1,6 +1,5 @@
 package se.chalmers.dryleafsoftware.androidrally.server;
 
-import se.chalmers.dryleafsoftware.androidrally.server.controller.ServerController;
 
 /**
  * 

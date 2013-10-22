@@ -1,15 +1,12 @@
-package se.chalmers.dryleafsoftware.androidrally.server.network;
+package se.chalmers.dryleafsoftware.androidrally.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class ServerListener extends Thread{
 	private List<Client> clients = new ArrayList<Client>();
-    private ServerSocket serverSocket = null;
-    private DataHandler dataHandler;
+	private List<Game> games = null;
     
     
     /**
@@ -17,30 +14,27 @@ public class ServerListener extends Thread{
      */
     private ServerListener() {
     	super();
-    	try {
-			serverSocket = new ServerSocket(10000);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 	}
     
     /**
      * Creates the server listener, the start() method has to be called.
      * @param h should be responsible for handling data.
      */
-    public ServerListener(DataHandler handler) {
+    public ServerListener(List<Game> g) {
     	this();
-		this.dataHandler = handler;
+		this.games = g;
 	}
 
 	@Override
     public void run(){
         while (true) {
         	try {
-        		Connection c = new Connection(serverSocket.accept(), dataHandler);
-				clients.add(new Client(c, dataHandler));
-				c.start();
-			} catch (IOException e) {
+        		Operator o = null;
+        		Client c = new Client(o);
+				clients.add(c);
+				o = new Operator(c, games);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
         	

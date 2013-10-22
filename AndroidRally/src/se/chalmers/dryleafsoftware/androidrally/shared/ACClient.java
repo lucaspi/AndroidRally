@@ -1,20 +1,20 @@
 package se.chalmers.dryleafsoftware.androidrally.shared;
 
 public abstract class ACClient {
-	private IConnection connection = null;
-//	private IDataHandler dataHandler = null;
 	private String ID = "-1";
+	private ACConnection connection = null;
 	
-	public ACClient(IConnection c){
-		this.connection = c;
-//		this.dataHandler = d;
+	public ACClient(ACOperator o){
+		this.connection = generateConnection(o);		
 	}
 	
-
-	public IConnection getConnection() {
+	protected abstract ACConnection generateConnection(ACOperator o);
+	
+	
+	public ACConnection getConnection() {
 		return connection;
 	}
-
+	
 	public String getID() {
 		return ID;
 	}
@@ -23,9 +23,5 @@ public abstract class ACClient {
 		ID = iD;
 	}
 
-//	public IDataHandler getDataHandler() {
-//		return dataHandler;
-//	}
-	
 
 }

@@ -1,4 +1,4 @@
-package se.chalmers.dryleafsoftware.androidrally.server.network;
+package se.chalmers.dryleafsoftware.androidrally.shared;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,31 +6,24 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import se.chalmers.dryleafsoftware.androidrally.shared.IConnection;
-
 /**
  * Handles the network connections for the server.
  * @author Vidar Eriksson
  *
  */
-public class Connection extends Thread implements IConnection{
-	private Socket socket;
-	private PrintWriter outputWriter;
-	private BufferedReader inputReader;
-	private DataHandler dataHandler;
+public abstract class ACConnection extends Thread{
+	private Socket socket = generateSocket();
+	private PrintWriter outputWriter = null;
+	private BufferedReader inputReader = null;
+	private ACOperator operator = null;
 	
-	private Connection(){
-		super();
-	}
+	
 	/**
 	 * Should always call this start() method.
-	 * @param s
-	 * @param h
 	 */
-	public Connection(Socket s, DataHandler dataHandler){
-		this();
-		this.socket=s;
-		this.dataHandler=dataHandler;
+	public ACConnection(ACOperator o){
+		super();
+		this.operator = o;
 		try {
 			outputWriter = new PrintWriter(socket.getOutputStream(), true);
 			inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,6 +33,8 @@ public class Connection extends Thread implements IConnection{
 		}
 	}
 	
+	protected abstract Socket generateSocket();
+	
 	@Override
     public void run(){
     	try {
@@ -47,7 +42,7 @@ public class Connection extends Thread implements IConnection{
     		String inputLine;        
 	        while ((inputLine = inputReader.readLine()) != null) {
 	        	System.out.println("Recived:" + inputLine);
-        		dataHandler.handle(inputLine, this);				
+	        	operator.interpret(inputLine);				
 			}
 
 		} catch (IOException e) {
@@ -66,11 +61,11 @@ public class Connection extends Thread implements IConnection{
 	/**
 	 * Sends data over the connection.
 	 * @param data the data to be sent over the connection.
+	 * @return 
 	 */
-	public String send(String data){
+	public synchronized void send(String data){
 		System.out.println("Sent:" + data);
 		outputWriter.println(data);
-		return null;	
 	}
 	
 }

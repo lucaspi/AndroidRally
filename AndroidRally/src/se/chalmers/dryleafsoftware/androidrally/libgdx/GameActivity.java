@@ -23,7 +23,7 @@ public class GameActivity extends AndroidApplication {
 		// Turn off these to save battery
 		cfg.useAccelerometer = false;
 		cfg.useCompass = false;
-		
+
 		int ID = getIntent().getIntExtra("GAME_ID", IOHandler.getNewID());
 		initialize(new GdxGame(ID, true), cfg);
 	}

@@ -6,24 +6,27 @@ import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.MapBuilder;
 import se.chalmers.dryleafsoftware.androidrally.libgdx.gameboard.RobotView;
 
 /**
- * This Action simple stops any other action to perform for the specified duration.
+ * This Action simple stops any other action to perform for the specified
+ * duration.
  * 
  * @author
- *
+ * 
  */
 public class HolderAction extends GameAction {
 
 	/**
 	 * Creates a new instance with the specified duration.
-	 * @param duration The duration of the action, in millis.
+	 * 
+	 * @param duration
+	 *            The duration of the action, in millis.
 	 */
 	public HolderAction(int duration) {
 		super(-1, duration);
 	}
-	
+
 	public HolderAction(int duration, int phase) {
 		this(duration);
-		this.setMoveRound(phase);
+		this.setPhase(phase);
 	}
 
 	@Override
@@ -35,5 +38,4 @@ public class HolderAction extends GameAction {
 	public void cleanUp(List<RobotView> robots, MapBuilder map) {
 		// Do nothing
 	}
-
 }
