@@ -15,9 +15,20 @@ public class Operator extends ACOperator {
 
 	@Override
 	protected void verifyClientID(String data, String route) {
-		
+		String clientID = data;
+		if (clientID.equalsIgnoreCase("-1")){
+			clientID = generateNewClientID()+"";
+			getClient().getConnection().send(clientID + "$" + route);
+		} else {
+			
+		}
 		// TODO Auto-generated method stub
 		
+	}
+
+	private String generateNewClientID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
