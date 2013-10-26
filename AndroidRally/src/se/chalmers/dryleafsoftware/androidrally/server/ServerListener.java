@@ -5,7 +5,7 @@ import java.util.List;
 
 
 public class ServerListener extends Thread{
-	private List<Client> clients = new ArrayList<Client>();
+	private List<Connection> connection = new ArrayList<Connection>();
 	private List<Game> games = null;
     
     
@@ -31,18 +31,18 @@ public class ServerListener extends Thread{
         while (true) {
         	try {
         		Operator o = null;
-        		Client c = new Client(o);
-				clients.add(c);
+        		Connection c = new Connection(o);
+				connection.add(c);
 				o = new Operator(c, games);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
         	
-        	for (int a=0; a < clients.size(); ) {
-        		if( clients.get(a).getConnection().isAlive()){
+        	for (int a=0; a < connection.size(); ) {
+        		if( connection.get(a).isAlive()){
         			a++;
         		} else{
-        			clients.remove(a);
+        			connection.remove(a);
         		}
         	}
     	}

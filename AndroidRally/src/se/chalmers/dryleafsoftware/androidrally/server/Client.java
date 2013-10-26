@@ -1,21 +1,24 @@
 package se.chalmers.dryleafsoftware.androidrally.server;
 
-import se.chalmers.dryleafsoftware.androidrally.shared.ACClient;
-import se.chalmers.dryleafsoftware.androidrally.shared.ACConnection;
-import se.chalmers.dryleafsoftware.androidrally.shared.ACOperator;
-
-public class Client extends ACClient{
-
-	public Client(ACOperator o) {
-		super(o);
-		// TODO Auto-generated constructor stub
+public class Client {
+	private static int ID = 0;
+	
+	public static String generateID(){
+		ID++;
+		return ID + "";
+		//TODO
 	}
 
-	@Override
-	protected ACConnection generateConnection(ACOperator o) {
-		Connection c = new Connection(o);
-		c.start();
-		return c;
+	public static boolean IDExists(String iD) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
+	public static String getCorrectID(String iD) {
+		if (iD.equalsIgnoreCase("-1") || Client.IDExists(iD)){
+			iD = Client.generateID();
+		}
+		// TODO Auto-generated method stub
+		return iD;
+	}
 }
